@@ -1,17 +1,20 @@
-package restopass.mongo;
+package restopass.dto;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "restaurants")
-public class RestaurantDTO {
+import java.util.HashMap;
 
-    @Id
-    private String id;
+@Document(collection = "users")
+public class UserDTO {
+
+    private String userId;
     private String name;
+    private String lastName;
     private String address;
+    private HashMap<String, Boolean> userPermissions;
 
-    public RestaurantDTO(String id, String name, String address) {
+
+    public UserDTO(String id, String name, String address) {
         this.id = id;
         this.name = name;
         this.address = address;
