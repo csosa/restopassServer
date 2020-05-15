@@ -18,7 +18,8 @@ import restopass.dto.UserDTO;
 public class JWTHelper {
 
     private static String SECRET_KEY = "PRUEBA";
-    private static long TTL_MILLIS = 60000;
+    //10 minutes to millis
+    private static long TTL_MILLIS = 600000;
 
     public static String createAccessToken(String userEmail) {
         return createJWT(userEmail, true);
