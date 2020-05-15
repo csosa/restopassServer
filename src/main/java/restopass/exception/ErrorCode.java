@@ -3,7 +3,12 @@ package restopass.exception;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
-    INVALID_USERNAME_OR_PASSWORD(HttpStatus.BAD_REQUEST.value(), 1, "Username or password incorrect");
+    INVALID_USERNAME_OR_PASSWORD(HttpStatus.BAD_REQUEST.value(), 1, "Username or password incorrect"),
+    USER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST.value(), 2, "Email already in use"),
+    ACCESS_TOKEN_REQUIRED(HttpStatus.BAD_REQUEST.value(), 3, "Access token is required for this request"),
+    ACCESS_REFRESH_TOKEN_INVALID(HttpStatus.BAD_REQUEST.value(), 4, "Invalid access or refresh token"),
+
+    ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED.value(), 1, "Expired access token");
 
     private Integer status;
     private Integer code;

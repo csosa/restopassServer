@@ -1,5 +1,6 @@
 package restopass.dto;
 
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashMap;
@@ -7,17 +8,34 @@ import java.util.HashMap;
 @Document(collection = "users")
 public class UserDTO {
 
-    private String userId;
+    @Indexed(unique=true)
+    private String email;
+    private String password;
     private String name;
     private String lastName;
-    private String address;
-    private HashMap<String, Boolean> userPermissions;
+    private HashMap<String, Boolean> userPreferences;
 
-
-    public UserDTO(String id, String name, String address) {
-        this.id = id;
+    public UserDTO(String email, String password, String name, String lastName) {
+        this.email = email;
+        this.password = password;
         this.name = name;
-        this.address = address;
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getName() {
@@ -28,11 +46,19 @@ public class UserDTO {
         this.name = name;
     }
 
-    public String getAddress() {
-        return address;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public HashMap<String, Boolean> getUserPreferences() {
+        return userPreferences;
+    }
+
+    public void setUserPreferences(HashMap<String, Boolean> userPreferences) {
+        this.userPreferences = userPreferences;
     }
 }

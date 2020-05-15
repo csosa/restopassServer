@@ -6,14 +6,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import restopass.exception.RestoPassException;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class ExceptionController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionController.class);
 
     @ExceptionHandler(RestoPassException.class)
+    @ResponseBody
     public ResponseEntity<RestoPassException> handleApiException(RestoPassException apiException) {
         HttpStatus httpStatus = HttpStatus.valueOf(apiException.getHttpStatusCode());
 
@@ -22,7 +25,6 @@ public class ExceptionController {
         } else {
             LOGGER.error(apiException.getMessage(), apiException);
         }
-
         return new ResponseEntity<>(apiException, httpStatus);
     }
 }
