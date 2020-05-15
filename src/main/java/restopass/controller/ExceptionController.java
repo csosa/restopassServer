@@ -16,7 +16,6 @@ public class ExceptionController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionController.class);
 
     @ExceptionHandler(RestoPassException.class)
-    @ResponseBody
     public ResponseEntity<RestoPassException> handleApiException(RestoPassException apiException) {
         HttpStatus httpStatus = HttpStatus.valueOf(apiException.getHttpStatusCode());
 

@@ -24,8 +24,8 @@ public class UserService {
 
     private static String EMAIL_FIELD = "email";
     private static String PASSWORD_FIELD = "password";
-    private static String ACCESS_TOKEN_HEADER = "access-token";
-    private static String REFRESH_TOKEN_HEADER = "refresh-token";
+    private static String ACCESS_TOKEN_HEADER = "X-Auth-Token";
+    private static String REFRESH_TOKEN_HEADER = "X-Refresh-Token";
 
     MongoTemplate mongoTemplate;
     UsersRepository usersRepository;

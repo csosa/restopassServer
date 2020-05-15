@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
 
-    private static String ACCESS_TOKEN_HEADER = "access-token";
+    private static String ACCESS_TOKEN_HEADER = "X-Auth-Token";
 
     @Override
     public boolean preHandle

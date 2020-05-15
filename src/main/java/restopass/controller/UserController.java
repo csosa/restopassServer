@@ -25,7 +25,7 @@ public class UserController {
         userService.loginUser(user, response);
     }
 
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    @RequestMapping(value = "/", method = RequestMethod.POST)
     public void userLogin(@RequestBody UserCreationRequest user) {
         this.userService.createUser(user);
     }
@@ -33,7 +33,10 @@ public class UserController {
     @RequestMapping(value = "/refresh", method = RequestMethod.GET)
     public void userLogin(HttpServletRequest request, HttpServletResponse response) {
         this.userService.refreshToken(request, response);
+    }
 
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public void isAccessTokenValid() {
     }
 
 
