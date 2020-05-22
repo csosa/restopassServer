@@ -12,7 +12,6 @@ import java.util.Date;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
-import restopass.dto.UserDTO;
 
 @Service
 public class JWTHelper {

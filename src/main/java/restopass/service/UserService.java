@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import restopass.dto.UserDTO;
+import restopass.dto.User;
 import restopass.dto.request.UserCreationRequest;
 import restopass.dto.request.UserLoginRequest;
 import restopass.exception.InvalidAccessOrRefreshTokenException;
@@ -41,7 +41,7 @@ public class UserService {
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(user.getEmail()));
         query.addCriteria(Criteria.where(PASSWORD_FIELD).is(user.getPassword()));
 
-        UserDTO userDTO = this.mongoTemplate.findOne(query, UserDTO.class);
+        User userDTO = this.mongoTemplate.findOne(query, User.class);
 
         if(userDTO == null) {
             throw new InvalidUsernameOrPasswordException();
@@ -53,7 +53,7 @@ public class UserService {
     }
 
     public void createUser(UserCreationRequest user) {
-        UserDTO userDTO = new UserDTO(user.getEmail(), user.getPassword(), user.getName(), user.getLastName());
+        User userDTO = new User(user.getEmail(), user.getPassword(), user.getName(), user.getLastName());
         try {
             usersRepository.save(userDTO);
         } catch(DuplicateKeyException e) {
@@ -78,6 +78,13 @@ public class UserService {
         } catch (Exception e) {
             throw new InvalidAccessOrRefreshTokenException();
         }
+    }
+
+    public User findById(String userId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+
+        return this.mongoTemplate.findOne(query, User.class);
     }
 
 

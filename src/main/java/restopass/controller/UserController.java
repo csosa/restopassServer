@@ -26,12 +26,12 @@ public class UserController {
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    public void userLogin(@RequestBody UserCreationRequest user) {
+    public void createUser(@RequestBody UserCreationRequest user) {
         this.userService.createUser(user);
     }
 
     @RequestMapping(value = "/refresh", method = RequestMethod.GET)
-    public void userLogin(HttpServletRequest request, HttpServletResponse response) {
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
         this.userService.refreshToken(request, response);
     }
 

@@ -1,5 +1,6 @@
 package restopass.interceptor;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 public class AuthInterceptor implements HandlerInterceptor {
 
     private static String ACCESS_TOKEN_HEADER = "X-Auth-Token";
+    private static String USER_ID_ATTR = "userId";
 
     @Override
     public boolean preHandle
@@ -27,7 +29,8 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         try {
-            JWTHelper.decodeJWT(accessToken);
+            Claims tokenDecoded = JWTHelper.decodeJWT(accessToken);
+            request.setAttribute(USER_ID_ATTR, tokenDecoded.getId());
         }catch (ExpiredJwtException e) {
             throw new ExpiredAccessTokenException();
         }catch (Exception e) {

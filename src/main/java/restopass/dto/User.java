@@ -6,20 +6,38 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.HashMap;
 
 @Document(collection = "users")
-public class UserDTO {
+public class User {
 
     @Indexed(unique=true)
     private String email;
     private String password;
     private String name;
     private String lastName;
+    private String creditCard;
+    private MembershipType actualMembership;
     private HashMap<String, Boolean> userPreferences;
 
-    public UserDTO(String email, String password, String name, String lastName) {
+    public User(String email, String password, String name, String lastName) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.lastName = lastName;
+    }
+
+    public String getCreditCard() {
+        return creditCard;
+    }
+
+    public void setCreditCard(String creditCard) {
+        this.creditCard = creditCard;
+    }
+
+    public MembershipType getActualMembership() {
+        return actualMembership;
+    }
+
+    public void setActualMembership(MembershipType actualMembership) {
+        this.actualMembership = actualMembership;
     }
 
     public String getEmail() {
