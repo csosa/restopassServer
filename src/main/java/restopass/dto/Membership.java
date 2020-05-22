@@ -1,5 +1,8 @@
 package restopass.dto;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "memberships")
 public class Membership {
 
     private MembershipType membershipId;

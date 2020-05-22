@@ -2,8 +2,8 @@ package restopass.mongo;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
-import restopass.dto.Restaurant;
+import restopass.dto.Reservation;
 
 @Service
-public interface RestaurantsRepository extends MongoRepository<Restaurant, String> {
+public interface ReservationRepository extends MongoRepository<Reservation, String> {
 }

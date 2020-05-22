@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import restopass.dto.Dish;
 import restopass.dto.Membership;
 import restopass.dto.Restaurant;
-import restopass.mongo.RestaurantsRepository;
+import restopass.mongo.RestaurantRepository;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,7 +21,7 @@ import java.util.UUID;
 @Service
 public class RestaurantService {
 
-    final RestaurantsRepository restaurantsRepository;
+    final RestaurantRepository restaurantRepository;
     protected final MongoTemplate mongoTemplate;
 
     private String RESTAURANT_ID = "restaurantId";
@@ -32,15 +32,15 @@ public class RestaurantService {
 
 
     @Autowired
-    public RestaurantService(RestaurantsRepository restaurantsRepository, MongoTemplate mongoTemplate) {
-        this.restaurantsRepository = restaurantsRepository;
+    public RestaurantService(RestaurantRepository restaurantRepository, MongoTemplate mongoTemplate) {
+        this.restaurantRepository = restaurantRepository;
         this.mongoTemplate = mongoTemplate;
     }
 
     public void createRestaurant(Restaurant restaurant) {
         String restaurantId = UUID.randomUUID().toString();
         restaurant.setRestaurantId(restaurantId);
-        this.restaurantsRepository.save(restaurant);
+        this.restaurantRepository.save(restaurant);
     }
 
     public void addDish(Dish dish, String restaurantId) {

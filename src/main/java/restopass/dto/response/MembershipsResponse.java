@@ -1,4 +1,6 @@
-package restopass.dto;
+package restopass.dto.response;
+
+import restopass.dto.Membership;
 
 import java.util.List;
 

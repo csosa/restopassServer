@@ -5,5 +5,5 @@ import org.springframework.stereotype.Service;
 import restopass.dto.User;
 
 @Service
-public interface UsersRepository extends MongoRepository<User, String> {
+public interface UserRepository extends MongoRepository<User, String> {
 }

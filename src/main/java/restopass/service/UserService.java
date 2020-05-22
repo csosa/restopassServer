@@ -13,7 +13,7 @@ import restopass.dto.request.UserLoginRequest;
 import restopass.exception.InvalidAccessOrRefreshTokenException;
 import restopass.exception.InvalidUsernameOrPasswordException;
 import restopass.exception.UserAlreadyExistsException;
-import restopass.mongo.UsersRepository;
+import restopass.mongo.UserRepository;
 import restopass.utils.JWTHelper;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,12 +28,12 @@ public class UserService {
     private static String REFRESH_TOKEN_HEADER = "X-Refresh-Token";
 
     MongoTemplate mongoTemplate;
-    UsersRepository usersRepository;
+    UserRepository userRepository;
 
     @Autowired
-    public UserService(MongoTemplate mongoTemplate, UsersRepository usersRepository) {
+    public UserService(MongoTemplate mongoTemplate, UserRepository userRepository) {
         this.mongoTemplate = mongoTemplate;
-        this.usersRepository = usersRepository;
+        this.userRepository = userRepository;
     }
 
     public void loginUser(UserLoginRequest user, HttpServletResponse response) {
@@ -55,7 +55,7 @@ public class UserService {
     public void createUser(UserCreationRequest user) {
         User userDTO = new User(user.getEmail(), user.getPassword(), user.getName(), user.getLastName());
         try {
-            usersRepository.save(userDTO);
+            userRepository.save(userDTO);
         } catch(DuplicateKeyException e) {
             throw new UserAlreadyExistsException();
         }

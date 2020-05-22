@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class JWTHelper {
 
-    private static String SECRET_KEY = "PRUEBA";
+    private static String SECRET_KEY = "Yami";
     //10 minutes to millis
     private static long TTL_MILLIS = 600000;
 

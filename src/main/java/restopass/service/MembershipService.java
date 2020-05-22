@@ -4,11 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import restopass.dto.Membership;
-import restopass.dto.MembershipsResponse;
+import restopass.dto.response.MembershipsResponse;
 import restopass.dto.User;
 import restopass.mongo.MembershipRepository;
 
-import java.lang.reflect.Member;
 import java.util.List;
 
 @Service
