@@ -1,11 +1,7 @@
 package restopass.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import restopass.dto.Dish;
 import restopass.dto.Restaurant;
 import restopass.dto.request.RestaurantTagsRequest;
@@ -13,7 +9,7 @@ import restopass.service.RestaurantService;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/restaurants")
 public class RestaurantsController {
 
@@ -35,11 +31,17 @@ public class RestaurantsController {
         return this.restaurantService.getInARadius(lat,lng);
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     public List<Restaurant> getRestaurantByTags(@RequestBody RestaurantTagsRequest request) {
         return this.restaurantService.getByTags(request.getTags(), request.getTopMembership());
     }
 
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public Restaurant test() {
+        Restaurant restaurant =  new Restaurant();
+        restaurant.setRestaurantId("Holis");
+        return restaurant;
+    }
 
 
 }

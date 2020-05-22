@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import restopass.dto.Membership;
 import restopass.dto.MembershipsResponse;
 import restopass.dto.request.UserCreationRequest;
@@ -12,7 +13,7 @@ import restopass.service.MembershipService;
 
 import javax.servlet.http.HttpServletRequest;
 
-@Controller
+@RestController
 @RequestMapping("/memberships")
 public class MembershipController {
 
@@ -31,5 +32,5 @@ public class MembershipController {
         return this.membershipService.getMemberships(request.getAttribute(USER_ID_ATTR).toString());
     }
 
-    
+
 }
