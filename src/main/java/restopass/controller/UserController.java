@@ -25,7 +25,7 @@ public class UserController {
         userService.loginUser(user, response);
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @RequestMapping(value = "", method = RequestMethod.POST)
     public void createUser(@RequestBody UserCreationRequest user) {
         this.userService.createUser(user);
     }

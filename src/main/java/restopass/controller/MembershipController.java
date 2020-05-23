@@ -12,7 +12,7 @@ import restopass.service.MembershipService;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping("/memberships")
+@RequestMapping(value = "/memberships")
 public class MembershipController {
 
     @Autowired
@@ -20,12 +20,12 @@ public class MembershipController {
 
     private String USER_ID_ATTR = "userId";
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @RequestMapping(value = "", method = RequestMethod.POST)
     public void createMembership(@RequestBody Membership membership) {
         this.membershipService.createMembership(membership);
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.GET)
     public MembershipsResponse getMemberships(HttpServletRequest request) {
         return this.membershipService.getMemberships(request.getAttribute(USER_ID_ATTR).toString());
     }

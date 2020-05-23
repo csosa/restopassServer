@@ -17,7 +17,7 @@ public class RestaurantsController {
     @Autowired
     RestaurantService restaurantService;
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @RequestMapping(value = "", method = RequestMethod.POST)
     public void createRestaurante(@RequestBody RestaurantCreationRequest restaurant) {
         this.restaurantService.createRestaurant(restaurant);
     }
@@ -32,7 +32,7 @@ public class RestaurantsController {
         return this.restaurantService.getInARadius(lat,lng);
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.GET)
     public List<Restaurant> getRestaurantByTags(@RequestBody RestaurantTagsRequest request) {
         return this.restaurantService.getByTags(request.getTags(), request.getTopMembership());
     }

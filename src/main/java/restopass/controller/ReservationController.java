@@ -16,12 +16,12 @@ public class ReservationController {
 
     private String USER_ID = "userId";
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @RequestMapping(value = "", method = RequestMethod.POST)
     public void createReservation(@RequestBody Reservation restaurant) {
         this.reservationService.createReservation(restaurant);
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.GET)
     public void getReservationByUser(HttpServletRequest request) {
         String userId = request.getAttribute(USER_ID).toString();
         this.reservationService.getReservationsForUser(userId);
