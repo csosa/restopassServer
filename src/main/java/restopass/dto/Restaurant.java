@@ -16,11 +16,20 @@ public class Restaurant {
     private String address;
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
     private GeoJsonPoint location;
-    private List<RestaurantHours> restaurantTimeTable;
+    private List<RestaurantHours> timeTable;
     private List<String> tags;
     private List<Dish> dishes;
+    private Integer stars = 3;
 
     public Restaurant() {
+    }
+
+    public Integer getStars() {
+        return stars;
+    }
+
+    public void setStars(Integer stars) {
+        this.stars = stars;
     }
 
     public String getRestaurantId() {
@@ -63,12 +72,12 @@ public class Restaurant {
         this.address = address;
     }
 
-    public List<RestaurantHours> getRestaurantTimeTable() {
-        return restaurantTimeTable;
+    public List<RestaurantHours> getTimeTable() {
+        return timeTable;
     }
 
-    public void setRestaurantTimeTable(List<RestaurantHours> restaurantTimeTable) {
-        this.restaurantTimeTable = restaurantTimeTable;
+    public void setTimeTable(List<RestaurantHours> timeTable) {
+        this.timeTable = timeTable;
     }
 
     public List<String> getTags() {

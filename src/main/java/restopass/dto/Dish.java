@@ -4,16 +4,25 @@ public class Dish {
 
     private String name;
     private String description;
-    private MembershipType topPlan;
+    private MembershipType topMembership;
+    private Integer stars = 3;
 
     public Dish(){
 
     }
 
-    public Dish(String name, String description, MembershipType topPlan) {
+    public Dish(String name, String description, MembershipType topMembership) {
         this.name = name;
         this.description = description;
-        this.topPlan = topPlan;
+        this.topMembership = topMembership;
+    }
+
+    public Integer getStars() {
+        return stars;
+    }
+
+    public void setStars(Integer stars) {
+        this.stars = stars;
     }
 
     public String getName() {
@@ -32,11 +41,11 @@ public class Dish {
         this.description = description;
     }
 
-    public MembershipType getTopPlan() {
-        return topPlan;
+    public MembershipType getTopMembership() {
+        return topMembership;
     }
 
-    public void setTopPlan(MembershipType topPlan) {
-        this.topPlan = topPlan;
+    public void setTopMembership(MembershipType topMembership) {
+        this.topMembership = topMembership;
     }
 }

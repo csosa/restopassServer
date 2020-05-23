@@ -21,7 +21,7 @@ public class MembershipController {
     private String USER_ID_ATTR = "userId";
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    public void createUser(@RequestBody Membership membership) {
+    public void createMembership(@RequestBody Membership membership) {
         this.membershipService.createMembership(membership);
     }
 

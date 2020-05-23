@@ -6,13 +6,15 @@ import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import restopass.dto.Dish;
-import restopass.dto.Membership;
+import restopass.dto.MembershipType;
 import restopass.dto.Restaurant;
+import restopass.dto.request.RestaurantCreationRequest;
 import restopass.mongo.RestaurantRepository;
 
 import java.util.List;
@@ -37,9 +39,19 @@ public class RestaurantService {
         this.mongoTemplate = mongoTemplate;
     }
 
-    public void createRestaurant(Restaurant restaurant) {
+    public void createRestaurant(RestaurantCreationRequest restaurantCreation) {
+        Restaurant restaurant = new Restaurant();
         String restaurantId = UUID.randomUUID().toString();
         restaurant.setRestaurantId(restaurantId);
+
+        restaurant.setAddress(restaurantCreation.getAddress());
+        restaurant.setImg(restaurantCreation.getImg());
+        GeoJsonPoint point = new GeoJsonPoint(restaurantCreation.getLongitude(), restaurantCreation.getLatitude());
+        restaurant.setLocation(point);
+        restaurant.setName(restaurantCreation.getName());
+        restaurant.setTimeTable(restaurantCreation.getTimeTable());
+        restaurant.setTags(restaurantCreation.getTags());
+
         this.restaurantRepository.save(restaurant);
     }
 
@@ -63,7 +75,7 @@ public class RestaurantService {
         return this.mongoTemplate.find(query, Restaurant.class);
     }
 
-    public List<Restaurant> getByTags(List<String> tags, Membership topMembership) {
+    public List<Restaurant> getByTags(List<String> tags, MembershipType topMembership) {
         return null;
     }
 

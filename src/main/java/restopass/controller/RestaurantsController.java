@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import restopass.dto.Dish;
 import restopass.dto.Restaurant;
+import restopass.dto.request.RestaurantCreationRequest;
 import restopass.dto.request.RestaurantTagsRequest;
 import restopass.service.RestaurantService;
 
@@ -17,7 +18,7 @@ public class RestaurantsController {
     RestaurantService restaurantService;
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    public void createRestaurante(@RequestBody Restaurant restaurant) {
+    public void createRestaurante(@RequestBody RestaurantCreationRequest restaurant) {
         this.restaurantService.createRestaurant(restaurant);
     }
 
