@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import restopass.dto.Membership;
+import restopass.dto.request.UpdateMembershipToUserRequest;
 import restopass.dto.response.MembershipsResponse;
 import restopass.service.MembershipService;
 
@@ -30,5 +31,10 @@ public class MembershipController {
         return this.membershipService.getMemberships(request.getAttribute(USER_ID_ATTR).toString());
     }
 
+    @RequestMapping(value = "/users", method = RequestMethod.PATCH)
+    public void updateMembershipToUser(HttpServletRequest request, @RequestBody UpdateMembershipToUserRequest updateMembershipToUserRequest) {
+        String userId = request.getAttribute(USER_ID_ATTR).toString();
+        this.membershipService.updateMembershipToUser(userId, updateMembershipToUserRequest);
+    }
 
 }

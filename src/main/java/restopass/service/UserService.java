@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import restopass.dto.MembershipType;
 import restopass.dto.User;
 import restopass.dto.request.UserCreationRequest;
 import restopass.dto.request.UserLoginRequest;
@@ -27,6 +28,7 @@ public class UserService {
     private static String EMAIL_FIELD = "email";
     private static String PASSWORD_FIELD = "password";
     private static String VISITS_FIELD = "visits";
+    private static String ACTUAL_MEMBERSHIP = "actualMembership";
     private static String USER_COLLECTION = "users";
     private static String ACCESS_TOKEN_HEADER = "X-Auth-Token";
     private static String REFRESH_TOKEN_HEADER = "X-Refresh-Token";
@@ -102,6 +104,15 @@ public class UserService {
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
 
         Update update = new Update().inc(VISITS_FIELD, -1);
+
+        this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+    }
+
+    public void updateMembership(String userId, String membership)  {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+
+        Update update = new Update().set(ACTUAL_MEMBERSHIP, membership);
 
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }

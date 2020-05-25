@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import restopass.dto.Membership;
+import restopass.dto.request.UpdateMembershipToUserRequest;
 import restopass.dto.response.MembershipsResponse;
 import restopass.dto.User;
+import restopass.exception.InvalidUsernameOrPasswordException;
 import restopass.mongo.MembershipRepository;
 
 import java.util.List;
@@ -44,5 +46,15 @@ public class MembershipService {
         membershipsResponse.setMemberships(memberships);
 
         return membershipsResponse;
+    }
+
+    public void updateMembershipToUser(String userId, UpdateMembershipToUserRequest request){
+        User user = this.userService.findById(userId);
+
+        if(user == null) {
+            throw new InvalidUsernameOrPasswordException();
+        }
+
+        this.userService.updateMembership(userId, request.getMembershipId().name());
     }
 }
