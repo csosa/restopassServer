@@ -52,10 +52,11 @@ public class UserService {
         return this.buildAuthAndRefreshToken(user.getEmail());
     }
 
-    public void createUser(UserCreationRequest user) {
+    public User createUser(UserCreationRequest user) {
         User userDTO = new User(user.getEmail(), user.getPassword(), user.getName(), user.getLastName());
         try {
             userRepository.save(userDTO);
+            return userDTO;
         } catch(DuplicateKeyException e) {
             throw new UserAlreadyExistsException();
         }

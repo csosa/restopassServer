@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import restopass.dto.User;
 import restopass.dto.request.UserCreationRequest;
 import restopass.dto.request.UserLoginRequest;
 import restopass.dto.response.UserLoginResponse;
@@ -27,8 +28,8 @@ public class UserController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public void createUser(@RequestBody UserCreationRequest user) {
-        this.userService.createUser(user);
+    public User createUser(@RequestBody UserCreationRequest user) {
+        return this.userService.createUser(user);
     }
 
     @RequestMapping(value = "/refresh", method = RequestMethod.GET)
