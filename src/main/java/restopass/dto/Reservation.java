@@ -13,8 +13,17 @@ public class Reservation {
     private LocalDateTime date;
     private ReservationState state = ReservationState.CONFIRMED;
     private String ownerUser;
+    private String qrBase64;
     private List<String> confirmedUsers;
     private List<String> toConfirmUsers;
+
+    public String getQrBase64() {
+        return qrBase64;
+    }
+
+    public void setQrBase64(String qrBase64) {
+        this.qrBase64 = qrBase64;
+    }
 
     public String getReservationId() {
         return reservationId;

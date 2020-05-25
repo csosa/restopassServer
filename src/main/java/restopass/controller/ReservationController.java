@@ -34,9 +34,12 @@ public class ReservationController {
 
 
     @RequestMapping(value = "/done/{reservationId}", method = RequestMethod.PATCH)
-    public void doneReservation(@PathVariable String reservationId) {
-        this.reservationService.doneReservation(reservationId);
+    public void doneReservation(@PathVariable String reservationId, HttpServletRequest request) {
+        String userId = request.getAttribute(USER_ID).toString();
+        this.reservationService.doneReservation(reservationId, userId);
     }
+
+
 
 
 }

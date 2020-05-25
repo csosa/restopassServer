@@ -9,6 +9,7 @@ public class Membership {
     private String name;
     private String description;
     private String img;
+    private Integer visits = 1;
     private Double price;
 
     public String getName() {
@@ -17,6 +18,14 @@ public class Membership {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getVisits() {
+        return visits;
+    }
+
+    public void setVisits(Integer visits) {
+        this.visits = visits;
     }
 
     public String getImg() {

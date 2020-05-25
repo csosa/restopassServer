@@ -14,6 +14,7 @@ public class User {
     private String name;
     private String lastName;
     private String creditCard;
+    private Integer visits;
     private MembershipType actualMembership;
     private HashMap<String, Boolean> userPreferences;
 
@@ -22,6 +23,14 @@ public class User {
         this.password = password;
         this.name = name;
         this.lastName = lastName;
+    }
+
+    public Integer getVisits() {
+        return visits;
+    }
+
+    public void setVisits(Integer visits) {
+        this.visits = visits;
     }
 
     public String getCreditCard() {

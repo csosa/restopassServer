@@ -18,15 +18,17 @@ public class ReservationService {
 
     private MongoTemplate mongoTemplate;
     private ReservationRepository reservationRepository;
+    private UserService userService;
     private String OWNER_USER_ID = "ownerUser";
     private String RESERVATION_ID = "reservationId";
     private String RESERVATION_STATE = "state";
     private String RESERVATION_COLLECTION = "reservations";
 
     @Autowired
-    public ReservationService(MongoTemplate mongoTemplate, ReservationRepository reservationRepository) {
+    public ReservationService(MongoTemplate mongoTemplate, ReservationRepository reservationRepository, UserService userService) {
         this.mongoTemplate = mongoTemplate;
         this.reservationRepository = reservationRepository;
+        this.userService = userService;
     }
 
     public void createReservation(Reservation reservation) {
@@ -46,8 +48,9 @@ public class ReservationService {
         this.updateReservationState(reservationId, ReservationState.CANCELED);
     }
 
-    public void doneReservation(String reservationId) {
+    public void doneReservation(String reservationId, String userId) {
         this.updateReservationState(reservationId, ReservationState.DONE);
+        this.userService.decrementUserVisits(userId);
     }
 
     private void updateReservationState(String reservationId, ReservationState state) {
@@ -59,6 +62,5 @@ public class ReservationService {
 
         this.mongoTemplate.updateMulti(query, update, RESERVATION_COLLECTION);
     }
-
 
 }

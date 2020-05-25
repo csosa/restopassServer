@@ -7,6 +7,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import restopass.dto.User;
 import restopass.dto.request.UserCreationRequest;
@@ -25,6 +26,8 @@ public class UserService {
 
     private static String EMAIL_FIELD = "email";
     private static String PASSWORD_FIELD = "password";
+    private static String VISITS_FIELD = "visits";
+    private static String USER_COLLECTION = "users";
     private static String ACCESS_TOKEN_HEADER = "X-Auth-Token";
     private static String REFRESH_TOKEN_HEADER = "X-Refresh-Token";
 
@@ -92,6 +95,15 @@ public class UserService {
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
 
         return this.mongoTemplate.findOne(query, User.class);
+    }
+
+    public void decrementUserVisits(String userId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+
+        Update update = new Update().inc(VISITS_FIELD, -1);
+
+        this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
 
     private UserLoginResponse buildAuthAndRefreshToken(User user) {
