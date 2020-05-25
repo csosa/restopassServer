@@ -1,10 +1,12 @@
 package restopass.dto.response;
 
+import restopass.dto.User;
+
 public class UserLoginResponse {
 
     private String xAuthToken;
     private String xRefreshToken;
-    private String userId;
+    private User user;
 
     public String getxAuthToken() {
         return xAuthToken;
@@ -22,12 +24,12 @@ public class UserLoginResponse {
         this.xRefreshToken = xRefreshToken;
     }
 
-    public String getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 }
 

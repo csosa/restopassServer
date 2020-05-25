@@ -19,7 +19,6 @@ import restopass.mongo.UserRepository;
 import restopass.utils.JWTHelper;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class UserService {
@@ -49,7 +48,7 @@ public class UserService {
             throw new InvalidUsernameOrPasswordException();
         }
 
-        return this.buildAuthAndRefreshToken(user.getEmail());
+        return this.buildAuthAndRefreshToken(userDTO);
     }
 
     public User createUser(UserCreationRequest user) {
@@ -68,17 +67,18 @@ public class UserService {
         String refreshAccessToken = req.getHeader(REFRESH_TOKEN_HEADER);
 
         String emailRefresh = JWTHelper.decodeJWT(refreshAccessToken).getId();
+        User userDTO = this.findById(emailRefresh);
 
         try {
             Claims claims = JWTHelper.decodeJWT(oldAccessToken);
             if(claims.getId().equalsIgnoreCase(emailRefresh)) {
-                return this.buildAuthAndRefreshToken(emailRefresh);
+                return this.buildAuthAndRefreshToken(userDTO);
             } else {
                 throw new InvalidAccessOrRefreshTokenException();
             }
         } catch (ExpiredJwtException e) {
             if(e.getClaims().getId().equalsIgnoreCase(emailRefresh)) {
-                return this.buildAuthAndRefreshToken(emailRefresh);
+                return this.buildAuthAndRefreshToken(userDTO);
             } else {
                 throw new InvalidAccessOrRefreshTokenException();
             }
@@ -94,11 +94,11 @@ public class UserService {
         return this.mongoTemplate.findOne(query, User.class);
     }
 
-    private UserLoginResponse buildAuthAndRefreshToken(String email) {
+    private UserLoginResponse buildAuthAndRefreshToken(User user) {
         UserLoginResponse userResponse = new UserLoginResponse();
-        userResponse.setxAuthToken(JWTHelper.createAccessToken(email));
-        userResponse.setxRefreshToken(JWTHelper.createRefreshToken(email));
-        userResponse.setUserId(email);
+        userResponse.setxAuthToken(JWTHelper.createAccessToken(user.getEmail()));
+        userResponse.setxRefreshToken(JWTHelper.createRefreshToken(user.getEmail()));
+        userResponse.setUser(user);
 
         return userResponse;
     }
