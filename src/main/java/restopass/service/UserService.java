@@ -1,5 +1,6 @@
 package restopass.service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import restopass.dto.User;
 import restopass.dto.request.UserCreationRequest;
 import restopass.dto.request.UserLoginRequest;
+import restopass.dto.response.UserLoginResponse;
 import restopass.exception.InvalidAccessOrRefreshTokenException;
 import restopass.exception.InvalidUsernameOrPasswordException;
 import restopass.exception.UserAlreadyExistsException;
@@ -36,7 +38,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public void loginUser(UserLoginRequest user, HttpServletResponse response) {
+    public UserLoginResponse loginUser(UserLoginRequest user) {
         Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(user.getEmail()));
         query.addCriteria(Criteria.where(PASSWORD_FIELD).is(user.getPassword()));
@@ -47,9 +49,7 @@ public class UserService {
             throw new InvalidUsernameOrPasswordException();
         }
 
-        response.setHeader(ACCESS_TOKEN_HEADER, JWTHelper.createAccessToken(userDTO.getEmail()));
-        response.setHeader(REFRESH_TOKEN_HEADER, JWTHelper.createRefreshToken(userDTO.getEmail()));
-
+        return this.buildAuthAndRefreshToken(user.getEmail());
     }
 
     public void createUser(UserCreationRequest user) {
@@ -61,19 +61,25 @@ public class UserService {
         }
     }
 
-    public void refreshToken(HttpServletRequest req, HttpServletResponse res) {
+    public UserLoginResponse refreshToken(HttpServletRequest req) {
 
         String oldAccessToken = req.getHeader(ACCESS_TOKEN_HEADER);
         String refreshAccessToken = req.getHeader(REFRESH_TOKEN_HEADER);
 
-        try {
-            JWTHelper.decodeJWT(oldAccessToken);
-        } catch (ExpiredJwtException e) {
-            String emailRefresh = JWTHelper.decodeJWT(refreshAccessToken).getId();
+        String emailRefresh = JWTHelper.decodeJWT(refreshAccessToken).getId();
 
+        try {
+            Claims claims = JWTHelper.decodeJWT(oldAccessToken);
+            if(claims.getId().equalsIgnoreCase(emailRefresh)) {
+                return this.buildAuthAndRefreshToken(emailRefresh);
+            } else {
+                throw new InvalidAccessOrRefreshTokenException();
+            }
+        } catch (ExpiredJwtException e) {
             if(e.getClaims().getId().equalsIgnoreCase(emailRefresh)) {
-                res.setHeader(ACCESS_TOKEN_HEADER, JWTHelper.createAccessToken(emailRefresh));
-                res.setHeader(REFRESH_TOKEN_HEADER, JWTHelper.createRefreshToken(emailRefresh));
+                return this.buildAuthAndRefreshToken(emailRefresh);
+            } else {
+                throw new InvalidAccessOrRefreshTokenException();
             }
         } catch (Exception e) {
             throw new InvalidAccessOrRefreshTokenException();
@@ -87,5 +93,13 @@ public class UserService {
         return this.mongoTemplate.findOne(query, User.class);
     }
 
+    private UserLoginResponse buildAuthAndRefreshToken(String email) {
+        UserLoginResponse userResponse = new UserLoginResponse();
+        userResponse.setxAuthToken(JWTHelper.createAccessToken(email));
+        userResponse.setxRefreshToken(JWTHelper.createRefreshToken(email));
+        userResponse.setUserId(email);
+
+        return userResponse;
+    }
 
 }

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import restopass.dto.request.UserCreationRequest;
 import restopass.dto.request.UserLoginRequest;
+import restopass.dto.response.UserLoginResponse;
 import restopass.service.UserService;
 import restopass.utils.JWTHelper;
 
@@ -21,8 +22,8 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public void userLogin(@RequestBody UserLoginRequest user, HttpServletResponse response) {
-        userService.loginUser(user, response);
+    public UserLoginResponse userLogin(@RequestBody UserLoginRequest user) {
+        return userService.loginUser(user);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
@@ -31,8 +32,8 @@ public class UserController {
     }
 
     @RequestMapping(value = "/refresh", method = RequestMethod.GET)
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        this.userService.refreshToken(request, response);
+    public UserLoginResponse refreshToken(HttpServletRequest request) {
+        return this.userService.refreshToken(request);
     }
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)

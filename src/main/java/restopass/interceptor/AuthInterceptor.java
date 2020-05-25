@@ -2,6 +2,7 @@ package restopass.interceptor;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import restopass.exception.ExpiredAccessTokenException;
@@ -23,7 +24,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         String accessToken = request.getHeader(ACCESS_TOKEN_HEADER);
 
-        if(accessToken == null) {
+        if(Strings.isBlank(accessToken)) {
             //throw new AccessTokenRequiredException();
             request.setAttribute(USER_ID_ATTR, request.getHeader(USER_ID_ATTR));
             return true;
