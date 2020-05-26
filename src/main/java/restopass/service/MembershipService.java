@@ -9,6 +9,7 @@ import restopass.dto.request.UpdateMembershipToUserRequest;
 import restopass.dto.response.MembershipsResponse;
 import restopass.dto.User;
 import restopass.exception.InvalidUsernameOrPasswordException;
+import restopass.exception.UserNotFoundException;
 import restopass.mongo.MembershipRepository;
 
 import java.util.List;
@@ -65,9 +66,9 @@ public class MembershipService {
         User user = this.userService.findById(userId);
 
         if(user == null) {
-            throw new InvalidUsernameOrPasswordException();
+            throw new UserNotFoundException();
         }
 
-        this.userService.updateMembership(userId, request.getMembershipId().name());
+        this.userService.updateMembership(userId, request.getMembershipId());
     }
 }
