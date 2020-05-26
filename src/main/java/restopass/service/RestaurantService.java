@@ -1,5 +1,6 @@
 package restopass.service;
 
+import io.jsonwebtoken.lang.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Circle;
 import org.springframework.data.geo.Distance;
@@ -17,6 +18,7 @@ import restopass.dto.Restaurant;
 import restopass.dto.request.RestaurantCreationRequest;
 import restopass.mongo.RestaurantRepository;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -78,10 +80,13 @@ public class RestaurantService {
         return this.mongoTemplate.find(query, Restaurant.class);
     }
 
-    public List<Restaurant> getByTags(List<String> tags, MembershipType topMembership) {
+    public List<Restaurant> getByTags(List<String> tags, MembershipType topMembership, String freeText) {
+        tags.addAll(Arrays.asList(Strings.delimitedListToStringArray(freeText, " ")));
         Query query = new Query();
         query.addCriteria(Criteria.where(TAGS_FIELD).all(tags));
-        return null;
+        query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(TOP_MEMBERSHIP_FIELD).lte(topMembership.ordinal())));
+
+        return this.mongoTemplate.find(query, Restaurant.class);
     }
 
     public List<Restaurant> getRestaurantInAMemberships(MembershipType membership) {
