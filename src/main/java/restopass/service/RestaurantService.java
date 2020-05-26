@@ -1,5 +1,6 @@
 package restopass.service;
 
+import io.jsonwebtoken.lang.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Circle;
 import org.springframework.data.geo.Distance;
@@ -17,6 +18,7 @@ import restopass.dto.Restaurant;
 import restopass.dto.request.RestaurantCreationRequest;
 import restopass.mongo.RestaurantRepository;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,8 +30,10 @@ public class RestaurantService {
 
     private String RESTAURANT_ID = "restaurantId";
     private String DISHES_FIELD = "dishes";
+    private String TOP_MEMBERSHIP_FIELD = "topMembership";
     private String LOCATION_FIELD = "location";
     private String RESTAURANTS_COLLECTION = "restaurants";
+    private String TAGS_FIELD = "tags";
     private Double KM_RADIUS = 10D;
 
 
@@ -51,6 +55,7 @@ public class RestaurantService {
         restaurant.setName(restaurantCreation.getName());
         restaurant.setTimeTable(restaurantCreation.getTimeTable());
         restaurant.setTags(restaurantCreation.getTags());
+        restaurant.setDishes(restaurantCreation.getDishes());
 
         this.restaurantRepository.save(restaurant);
     }
@@ -75,8 +80,20 @@ public class RestaurantService {
         return this.mongoTemplate.find(query, Restaurant.class);
     }
 
-    public List<Restaurant> getByTags(List<String> tags, MembershipType topMembership) {
-        return null;
+    public List<Restaurant> getByTags(List<String> tags, MembershipType topMembership, String freeText) {
+        tags.addAll(Arrays.asList(Strings.delimitedListToStringArray(freeText, " ")));
+        Query query = new Query();
+        query.addCriteria(Criteria.where(TAGS_FIELD).all(tags));
+        query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(TOP_MEMBERSHIP_FIELD).lte(topMembership.ordinal())));
+
+        return this.mongoTemplate.find(query, Restaurant.class);
+    }
+
+    public List<Restaurant> getRestaurantInAMemberships(MembershipType membership) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(TOP_MEMBERSHIP_FIELD).lte(membership.ordinal())));
+
+        return this.mongoTemplate.find(query, Restaurant.class);
     }
 
 

@@ -1,27 +1,28 @@
 package restopass.dto.response;
 
 import restopass.dto.Membership;
+import restopass.dto.Restaurant;
 
 import java.util.List;
 
 public class MembershipsResponse {
 
-    private Membership actualMembership;
-    private List<Membership> memberships;
+    private MembershipResponse actualMembership;
+    private List<MembershipResponse> memberships;
 
-    public Membership getActualMembership() {
+    public MembershipResponse getActualMembership() {
         return actualMembership;
     }
 
-    public void setActualMembership(Membership actualMembership) {
+    public void setActualMembership(MembershipResponse actualMembership) {
         this.actualMembership = actualMembership;
     }
 
-    public List<Membership> getMemberships() {
+    public List<MembershipResponse> getMemberships() {
         return memberships;
     }
 
-    public void setMemberships(List<Membership> memberships) {
+    public void setMemberships(List<MembershipResponse> memberships) {
         this.memberships = memberships;
     }
 }

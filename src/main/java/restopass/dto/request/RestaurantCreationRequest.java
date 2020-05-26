@@ -1,5 +1,6 @@
 package restopass.dto.request;
 
+import restopass.dto.Dish;
 import restopass.dto.RestaurantHours;
 
 import java.util.List;
@@ -13,6 +14,15 @@ public class RestaurantCreationRequest {
     private double longitude;
     private List<RestaurantHours> timeTable;
     private List<String> tags;
+    private List<Dish> dishes;
+
+    public List<Dish> getDishes() {
+        return dishes;
+    }
+
+    public void setDishes(List<Dish> dishes) {
+        this.dishes = dishes;
+    }
 
     public String getName() {
         return name;

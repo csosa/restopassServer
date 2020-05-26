@@ -27,14 +27,14 @@ public class RestaurantsController {
         this.restaurantService.addDish(dish, restaurantId);
     }
 
-    @RequestMapping(value = "/{lat}/{lng}", method = RequestMethod.POST)
+    @RequestMapping(value = "/{lat}/{lng}", method = RequestMethod.GET)
     public List<Restaurant> getRestaurantInARadius(@PathVariable Double lat, @PathVariable Double lng) {
         return this.restaurantService.getInARadius(lat,lng);
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.PUT)
     public List<Restaurant> getRestaurantByTags(@RequestBody RestaurantTagsRequest request) {
-        return this.restaurantService.getByTags(request.getTags(), request.getTopMembership());
+        return this.restaurantService.getByTags(request.getTags(), request.getTopMembership(), request.getFreeText());
     }
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)

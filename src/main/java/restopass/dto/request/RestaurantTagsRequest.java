@@ -7,8 +7,17 @@ import java.util.List;
 
 public class RestaurantTagsRequest {
 
+    private String freeText;
     private List<String> tags;
     private MembershipType topMembership;
+
+    public String getFreeText() {
+        return freeText;
+    }
+
+    public void setFreeText(String freeText) {
+        this.freeText = freeText;
+    }
 
     public List<String> getTags() {
         return tags;
