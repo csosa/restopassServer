@@ -28,8 +28,10 @@ public class RestaurantService {
 
     private String RESTAURANT_ID = "restaurantId";
     private String DISHES_FIELD = "dishes";
+    private String TOP_MEMBERSHIP_FIELD = "topMembership";
     private String LOCATION_FIELD = "location";
     private String RESTAURANTS_COLLECTION = "restaurants";
+    private String TAGS_FIELD = "tags";
     private Double KM_RADIUS = 10D;
 
 
@@ -51,6 +53,7 @@ public class RestaurantService {
         restaurant.setName(restaurantCreation.getName());
         restaurant.setTimeTable(restaurantCreation.getTimeTable());
         restaurant.setTags(restaurantCreation.getTags());
+        restaurant.setDishes(restaurantCreation.getDishes());
 
         this.restaurantRepository.save(restaurant);
     }
@@ -76,7 +79,16 @@ public class RestaurantService {
     }
 
     public List<Restaurant> getByTags(List<String> tags, MembershipType topMembership) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(TAGS_FIELD).all(tags));
         return null;
+    }
+
+    public List<Restaurant> getRestaurantInAMemberships(MembershipType membership) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(TOP_MEMBERSHIP_FIELD).lte(membership.ordinal())));
+
+        return this.mongoTemplate.find(query, Restaurant.class);
     }
 
 
