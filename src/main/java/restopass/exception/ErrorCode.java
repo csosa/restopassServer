@@ -8,6 +8,8 @@ public enum ErrorCode {
     ACCESS_TOKEN_REQUIRED(HttpStatus.BAD_REQUEST.value(), 3, "Access token is required for this request"),
     ACCESS_REFRESH_TOKEN_INVALID(HttpStatus.BAD_REQUEST.value(), 4, "Invalid access or refresh token"),
 
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 1, "User not found"),
+
     ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED.value(), 1, "Expired access token");
 
     private Integer status;
