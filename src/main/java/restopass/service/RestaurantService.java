@@ -12,21 +12,23 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import restopass.dto.Dish;
-import restopass.dto.MembershipType;
-import restopass.dto.Restaurant;
+import restopass.dto.*;
 import restopass.dto.request.RestaurantCreationRequest;
+import restopass.dto.response.RestaurantTagsResponse;
+import restopass.mongo.FiltersMapRepository;
 import restopass.mongo.RestaurantRepository;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class RestaurantService {
 
     final RestaurantRepository restaurantRepository;
+    final FiltersMapRepository filtersMapRepository;
     protected final MongoTemplate mongoTemplate;
+
+    @Autowired
+    private MembershipService membershipService;
 
     private String RESTAURANT_ID = "restaurantId";
     private String DISHES_FIELD = "dishes";
@@ -38,9 +40,13 @@ public class RestaurantService {
 
 
     @Autowired
-    public RestaurantService(RestaurantRepository restaurantRepository, MongoTemplate mongoTemplate) {
+    public RestaurantService(RestaurantRepository restaurantRepository,
+                             FiltersMapRepository filtersMapRepository,
+                             MongoTemplate mongoTemplate) {
         this.restaurantRepository = restaurantRepository;
+        this.filtersMapRepository = filtersMapRepository;
         this.mongoTemplate = mongoTemplate;
+
     }
 
     public void createRestaurant(RestaurantCreationRequest restaurantCreation) {
@@ -96,5 +102,34 @@ public class RestaurantService {
         return this.mongoTemplate.find(query, Restaurant.class);
     }
 
+    public void generateSlotsByRestaurantConfig(String restaurantId) {
+        RestaurantConfig restaurantConfig = this.findConfigurationById(restaurantId);
 
+
+    }
+
+    public RestaurantConfig findConfigurationById(String restaurantId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
+
+        return this.mongoTemplate.findOne(query, RestaurantConfig.class);
+    }
+
+    public RestaurantTagsResponse getRestaurantsTags() {
+        RestaurantTagsResponse response = new RestaurantTagsResponse();
+
+        List<FilterMap> filtersMap = this.filtersMapRepository.findAll();
+        List<Membership> memberships = membershipService.findAll();
+
+        HashMap<String, List<String>> tags = new HashMap<>();
+        List<MembershipType> membershipTypes = new ArrayList<>();
+
+        memberships.forEach(membership -> membershipTypes.add(membership.getMembershipId()));
+        filtersMap.forEach(filter -> tags.put(filter.getName(), filter.getElements()));
+
+        response.setMemberships(membershipTypes);
+        response.setTags(tags);
+
+        return response;
+    }
 }

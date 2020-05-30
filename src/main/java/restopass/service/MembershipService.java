@@ -20,17 +20,18 @@ public class MembershipService {
 
     private final MembershipRepository membershipRepository;
     private final MongoTemplate mongoTemplate;
-    private final RestaurantService restaurantService;
+
+    @Autowired
+    private RestaurantService restaurantService;
 
     private UserService userService;
 
     @Autowired
     public MembershipService(MembershipRepository membershipRepository, MongoTemplate mongoTemplate,
-                             UserService userService, RestaurantService restaurantService) {
+                             UserService userService) {
         this.membershipRepository = membershipRepository;
         this.mongoTemplate = mongoTemplate;
         this.userService = userService;
-        this.restaurantService = restaurantService;
     }
 
     public void createMembership(Membership membership) {
@@ -70,5 +71,9 @@ public class MembershipService {
         }
 
         this.userService.updateMembership(userId, request.getMembershipId());
+    }
+
+    public List<Membership> findAll() {
+        return this.membershipRepository.findAll();
     }
 }

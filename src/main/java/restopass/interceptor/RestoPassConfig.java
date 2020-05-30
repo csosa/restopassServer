@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-public class InterceptorConfig extends WebMvcConfigurerAdapter {
+public class RestoPassConfig extends WebMvcConfigurerAdapter {
 
     @Autowired
     AuthInterceptor authInterceptor;

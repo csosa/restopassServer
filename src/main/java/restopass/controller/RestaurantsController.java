@@ -6,7 +6,9 @@ import restopass.dto.Dish;
 import restopass.dto.Restaurant;
 import restopass.dto.request.RestaurantCreationRequest;
 import restopass.dto.request.RestaurantTagsRequest;
+import restopass.dto.response.RestaurantTagsResponse;
 import restopass.service.RestaurantService;
+import restopass.utils.QRHelper;
 
 import java.util.List;
 
@@ -18,7 +20,7 @@ public class RestaurantsController {
     RestaurantService restaurantService;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public void createRestaurante(@RequestBody RestaurantCreationRequest restaurant) {
+    public void createRestaurant(@RequestBody RestaurantCreationRequest restaurant) {
         this.restaurantService.createRestaurant(restaurant);
     }
 
@@ -37,10 +39,15 @@ public class RestaurantsController {
         return this.restaurantService.getByTags(request.getTags(), request.getTopMembership(), request.getFreeText());
     }
 
+    @RequestMapping(value = "/tags", method = RequestMethod.GET)
+    public RestaurantTagsResponse getRestaurantsTags() {
+        return this.restaurantService.getRestaurantsTags();
+    }
+
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     public Restaurant test() {
         Restaurant restaurant =  new Restaurant();
-        restaurant.setRestaurantId("Holis");
+        restaurant.setRestaurantId(QRHelper.createQRBase64("www.google.com.ar"));
         return restaurant;
     }
 
