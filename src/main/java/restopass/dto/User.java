@@ -4,6 +4,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashMap;
+import java.util.List;
 
 @Document(collection = "users")
 public class User {
@@ -16,13 +17,21 @@ public class User {
     private String creditCard;
     private Integer visits;
     private MembershipType actualMembership;
-    private HashMap<String, Boolean> userPreferences;
+    private List<String> secondaryEmails;
 
     public User(String email, String password, String name, String lastName) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.lastName = lastName;
+    }
+
+    public List<String> getSecondaryEmails() {
+        return secondaryEmails;
+    }
+
+    public void setSecondaryEmails(List<String> secondaryEmails) {
+        this.secondaryEmails = secondaryEmails;
     }
 
     public Integer getVisits() {
@@ -57,10 +66,6 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public void setPassword(String password) {
         this.password = password;
     }
@@ -79,13 +84,5 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public HashMap<String, Boolean> getUserPreferences() {
-        return userPreferences;
-    }
-
-    public void setUserPreferences(HashMap<String, Boolean> userPreferences) {
-        this.userPreferences = userPreferences;
     }
 }
