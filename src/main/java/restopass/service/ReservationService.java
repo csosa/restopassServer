@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import restopass.dto.*;
 import restopass.mongo.ReservationRepository;
+import restopass.utils.QRHelper;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -52,6 +53,7 @@ public class ReservationService {
 
         this.userService.decrementUserVisits(userId);
 
+        reservation.setQrBase64(QRHelper.createQRBase64(reservationId, reservation.getRestaurantId(), userId));
         this.reservationRepository.save(reservation);
     }
 
@@ -66,7 +68,8 @@ public class ReservationService {
         this.updateReservationState(reservationId, ReservationState.CANCELED);
     }
 
-    public void doneReservation(String reservationId, String userId) {
+    public void doneReservation(String reservationId, String restaurantId, String userId) {
+        //TODO show web with plates
         this.updateReservationState(reservationId, ReservationState.DONE);
     }
 

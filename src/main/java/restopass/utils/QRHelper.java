@@ -16,8 +16,9 @@ public class QRHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QRHelper.class);
 
-    public static String createQRBase64(String content) {
+    public static String createQRBase64(String reservationId, String restaurantId, String userId) {
         ByteArrayOutputStream createQrCodeImg = null;
+        String content = generateUrl(reservationId,restaurantId,userId);
         try {
             createQrCodeImg = getQRCodeImage(content, 200, 200, "JPEG");
         } catch (WriterException | IOException e) {
@@ -37,6 +38,10 @@ public class QRHelper {
         ByteArrayOutputStream jpgOutputStream = new ByteArrayOutputStream();
         MatrixToImageWriter.writeToStream(bitMatrix, imgFormat, jpgOutputStream);
         return jpgOutputStream;
+    }
+
+    private static String generateUrl(String reservationId, String restaurantId, String userId) {
+        return "https://restopass.herokuapp.com/reservations/done/" + reservationId + "?restaurant_id=" + restaurantId + "&user_id=" + userId;
     }
 
 }

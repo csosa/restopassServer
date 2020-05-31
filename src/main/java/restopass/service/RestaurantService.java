@@ -76,7 +76,7 @@ public class RestaurantService {
     public List<RestaurantSlot> decrementTableInSlot(RestaurantConfig restaurantConfig, LocalDateTime dateTime) {
 
         //TODO calculate day full
-        
+
         Boolean dayFull = true;
         restaurantConfig.getSlots().forEach(
                 slot ->

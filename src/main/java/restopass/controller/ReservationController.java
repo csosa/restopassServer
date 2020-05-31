@@ -18,8 +18,9 @@ public class ReservationController {
     private String USER_ID = "userId";
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public void createReservation(@RequestBody Reservation restaurant) {
-        this.reservationService.createReservation(restaurant);
+    public void createReservation(@RequestBody Reservation restaurant, HttpServletRequest request) {
+        String userId = request.getAttribute(USER_ID).toString();
+        this.reservationService.createReservation(restaurant, userId);
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
@@ -35,9 +36,10 @@ public class ReservationController {
 
 
     @RequestMapping(value = "/done/{reservationId}", method = RequestMethod.PATCH)
-    public void doneReservation(@PathVariable String reservationId, HttpServletRequest request) {
-        String userId = request.getAttribute(USER_ID).toString();
-        this.reservationService.doneReservation(reservationId, userId);
+    public void doneReservation(@PathVariable String reservationId,
+                                @RequestParam(value = "restaurant_id") String restaurantId,
+                                @RequestParam(value = "user_id") String userId) {
+        this.reservationService.doneReservation(reservationId, restaurantId, userId);
     }
 
 
