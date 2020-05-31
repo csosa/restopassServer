@@ -16,6 +16,7 @@ import restopass.dto.*;
 import restopass.dto.request.RestaurantCreationRequest;
 import restopass.dto.response.RestaurantTagsResponse;
 import restopass.mongo.FiltersMapRepository;
+import restopass.mongo.RestaurantConfigRepository;
 import restopass.mongo.RestaurantRepository;
 
 import java.util.*;
@@ -25,6 +26,7 @@ public class RestaurantService {
 
     final RestaurantRepository restaurantRepository;
     final FiltersMapRepository filtersMapRepository;
+    final RestaurantConfigRepository restaurantConfigRepository;
     protected final MongoTemplate mongoTemplate;
 
     @Autowired
@@ -42,9 +44,10 @@ public class RestaurantService {
     @Autowired
     public RestaurantService(RestaurantRepository restaurantRepository,
                              FiltersMapRepository filtersMapRepository,
-                             MongoTemplate mongoTemplate) {
+                             MongoTemplate mongoTemplate, RestaurantConfigRepository restaurantConfigRepository) {
         this.restaurantRepository = restaurantRepository;
         this.filtersMapRepository = filtersMapRepository;
+        this.restaurantConfigRepository = restaurantConfigRepository;
         this.mongoTemplate = mongoTemplate;
 
     }
@@ -64,6 +67,10 @@ public class RestaurantService {
         restaurant.setDishes(restaurantCreation.getDishes());
 
         this.restaurantRepository.save(restaurant);
+    }
+
+    public void createRestaurantConfig(RestaurantConfig restaurantConfig) {
+        this.restaurantConfigRepository.save(restaurantConfig);
     }
 
     public void addDish(Dish dish, String restaurantId) {
@@ -100,19 +107,6 @@ public class RestaurantService {
         query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(TOP_MEMBERSHIP_FIELD).lte(membership.ordinal())));
 
         return this.mongoTemplate.find(query, Restaurant.class);
-    }
-
-    public void generateSlotsByRestaurantConfig(String restaurantId) {
-        RestaurantConfig restaurantConfig = this.findConfigurationById(restaurantId);
-
-
-    }
-
-    public RestaurantConfig findConfigurationById(String restaurantId) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
-
-        return this.mongoTemplate.findOne(query, RestaurantConfig.class);
     }
 
     public RestaurantTagsResponse getRestaurantsTags() {

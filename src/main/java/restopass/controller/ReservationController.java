@@ -6,6 +6,7 @@ import restopass.dto.Reservation;
 import restopass.service.ReservationService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/reservations")
@@ -22,9 +23,9 @@ public class ReservationController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public void getReservationByUser(HttpServletRequest request) {
+    public List<Reservation> getReservationByUser(HttpServletRequest request) {
         String userId = request.getAttribute(USER_ID).toString();
-        this.reservationService.getReservationsForUser(userId);
+        return this.reservationService.getReservationsForUser(userId);
     }
 
     @RequestMapping(value = "/cancel/{reservationId}", method = RequestMethod.PATCH)

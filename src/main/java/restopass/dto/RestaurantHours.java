@@ -6,14 +6,7 @@ import java.util.List;
 public class RestaurantHours {
 
     private List<DayOfWeek> openingDays;
-    private String openingHour;
-    private String closingHour;
-
-    public RestaurantHours(List<DayOfWeek> openingDays, String openingHour, String closingHour) {
-        this.openingDays = openingDays;
-        this.openingHour = openingHour;
-        this.closingHour = closingHour;
-    }
+    private List<PairHour> pairHours;
 
     public List<DayOfWeek> getOpeningDays() {
         return openingDays;
@@ -23,19 +16,11 @@ public class RestaurantHours {
         this.openingDays = openingDays;
     }
 
-    public String getOpeningHour() {
-        return openingHour;
+    public List<PairHour> getPairHours() {
+        return pairHours;
     }
 
-    public void setOpeningHour(String openingHour) {
-        this.openingHour = openingHour;
-    }
-
-    public String getClosingHour() {
-        return closingHour;
-    }
-
-    public void setClosingHour(String closingHour) {
-        this.closingHour = closingHour;
+    public void setPairHours(List<PairHour> pairHours) {
+        this.pairHours = pairHours;
     }
 }

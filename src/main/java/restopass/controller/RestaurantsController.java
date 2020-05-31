@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import restopass.dto.Dish;
 import restopass.dto.Restaurant;
+import restopass.dto.RestaurantConfig;
 import restopass.dto.request.RestaurantCreationRequest;
 import restopass.dto.request.RestaurantTagsRequest;
 import restopass.dto.response.RestaurantTagsResponse;
+import restopass.service.ReservationService;
 import restopass.service.RestaurantService;
 import restopass.utils.QRHelper;
 
@@ -18,10 +20,17 @@ public class RestaurantsController {
 
     @Autowired
     RestaurantService restaurantService;
+    @Autowired
+    ReservationService reservationService;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public void createRestaurant(@RequestBody RestaurantCreationRequest restaurant) {
         this.restaurantService.createRestaurant(restaurant);
+    }
+
+    @RequestMapping(value = "config", method = RequestMethod.POST)
+    public void createRestaurantConfig(@RequestBody RestaurantConfig restaurant) {
+        this.restaurantService.createRestaurantConfig(restaurant);
     }
 
     @RequestMapping(value = "/dishes/{restaurantId}", method = RequestMethod.PATCH)
@@ -45,10 +54,8 @@ public class RestaurantsController {
     }
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public Restaurant test() {
-        Restaurant restaurant =  new Restaurant();
-        restaurant.setRestaurantId(QRHelper.createQRBase64("www.google.com.ar"));
-        return restaurant;
+    public RestaurantConfig test() {
+        return reservationService.generateSlotsByRestaurantConfig("pruebaConfiguracion");
     }
 
 
