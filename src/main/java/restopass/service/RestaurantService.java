@@ -19,16 +19,16 @@ import restopass.mongo.FiltersMapRepository;
 import restopass.mongo.RestaurantConfigRepository;
 import restopass.mongo.RestaurantRepository;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 public class RestaurantService {
 
+    protected final MongoTemplate mongoTemplate;
     final RestaurantRepository restaurantRepository;
     final FiltersMapRepository filtersMapRepository;
     final RestaurantConfigRepository restaurantConfigRepository;
-    protected final MongoTemplate mongoTemplate;
-
     @Autowired
     private MembershipService membershipService;
 
@@ -71,6 +71,26 @@ public class RestaurantService {
 
     public void createRestaurantConfig(RestaurantConfig restaurantConfig) {
         this.restaurantConfigRepository.save(restaurantConfig);
+    }
+
+    public List<RestaurantSlot> decrementTableInSlot(RestaurantConfig restaurantConfig, LocalDateTime dateTime) {
+
+        //TODO calculate day full
+        
+        Boolean dayFull = true;
+        restaurantConfig.getSlots().forEach(
+                slot ->
+                        slot.getDateTime().forEach(dt ->
+                                dt.forEach(date -> {
+                                            if (date.getDateTime().equals(dateTime)) {
+                                                date.setTablesAvailable(date.getTablesAvailable() - 1);
+                                            }
+                                        }
+                                )
+                        )
+        );
+
+        return restaurantConfig.getSlots();
     }
 
     public void addDish(Dish dish, String restaurantId) {

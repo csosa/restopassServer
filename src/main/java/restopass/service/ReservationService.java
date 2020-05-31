@@ -33,15 +33,25 @@ public class ReservationService {
     private Integer SIZE_CALENDAR = 45;
 
     @Autowired
+    private RestaurantService restaurantService;
+
+    @Autowired
     public ReservationService(MongoTemplate mongoTemplate, ReservationRepository reservationRepository, UserService userService) {
         this.mongoTemplate = mongoTemplate;
         this.reservationRepository = reservationRepository;
         this.userService = userService;
     }
 
-    public void createReservation(Reservation reservation) {
+    public void createReservation(Reservation reservation, String userId) {
         String reservationId = UUID.randomUUID().toString();
         reservation.setReservationId(reservationId);
+
+        RestaurantConfig restaurantConfig = this.findConfigurationByRestaurantId(reservation.getRestaurantId());
+        List<RestaurantSlot> slots = this.restaurantService.decrementTableInSlot(restaurantConfig, reservation.getDate());
+        this.updateSlotsInDB(reservation.getRestaurantId(), slots);
+
+        this.userService.decrementUserVisits(userId);
+
         this.reservationRepository.save(reservation);
     }
 
@@ -94,8 +104,8 @@ public class ReservationService {
 
                         //Por cada par hora inicio hora fin genero los distintos horarios con sus mesas
                         pairHours.forEach(pair -> {
-                            LocalDateTime startHour = date.withHour(pair.getOpeningHour()).withMinute(pair.getOpeningMinute());
-                            LocalDateTime endHour = date.withHour(pair.getClosingHour()).withMinute(pair.getClosingMinute());
+                            LocalDateTime startHour = date.withHour(pair.getOpeningHour()).withMinute(pair.getOpeningMinute()).truncatedTo(ChronoUnit.MINUTES);;
+                            LocalDateTime endHour = date.withHour(pair.getClosingHour()).withMinute(pair.getClosingMinute()).truncatedTo(ChronoUnit.MINUTES);;
                             List<DateTimeWithTables> dateTimeWithTables = new ArrayList<>();
 
                             Integer minutes = restaurantConfig.getMinutesGap();
