@@ -12,6 +12,7 @@ import restopass.utils.EmailSender;
 import restopass.utils.QRHelper;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -27,6 +28,7 @@ public class ReservationService {
     private String OWNER_USER_ID = "ownerUser";
     private String RESERVATION_ID = "reservationId";
     private String RESERVATION_STATE = "state";
+    private String CONFIRMED_USERS = "confirmedUsers";
     private String SLOTS_FIELD = "slots";
     private String RESERVATION_COLLECTION = "reservations";
     private String RESTAURANT_CONFIG_COLLECTION = "restaurant_configs";
@@ -45,7 +47,7 @@ public class ReservationService {
     public void createReservation(Reservation reservation, String userId) {
         String reservationId = UUID.randomUUID().toString();
         reservation.setReservationId(reservationId);
-
+        /*
         RestaurantConfig restaurantConfig = this.findConfigurationByRestaurantId(reservation.getRestaurantId());
         List<RestaurantSlot> slots = this.restaurantService.decrementTableInSlot(restaurantConfig, reservation.getDate());
         this.updateSlotsInDB(reservation.getRestaurantId(), slots);
@@ -56,7 +58,7 @@ public class ReservationService {
 
         this.sendConfirmBookingEmail(reservation);
         this.sendNewBookingEmail(reservation);
-
+           */
         this.reservationRepository.save(reservation);
     }
 
@@ -105,7 +107,14 @@ public class ReservationService {
 
     public List<Reservation> getReservationsForUser(String userId) {
         Query query = new Query();
-        query.addCriteria(Criteria.where(OWNER_USER_ID).is(userId));
+
+
+        Criteria orCriteria = new Criteria();
+        orCriteria.orOperator(
+                Criteria.where(OWNER_USER_ID).is(userId),
+                Criteria.where(CONFIRMED_USERS).in(userId));
+
+        query.addCriteria(orCriteria);
 
         return this.mongoTemplate.find(query, Reservation.class);
     }

@@ -19,9 +19,9 @@ public class ReservationController {
     private String USER_ID = "userId";
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public void createReservation(@RequestBody Reservation restaurant, HttpServletRequest request) {
+    public void createReservation(@RequestBody Reservation reservation, HttpServletRequest request) {
         String userId = request.getAttribute(USER_ID).toString();
-        this.reservationService.createReservation(restaurant, userId);
+        this.reservationService.createReservation(reservation, userId);
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
