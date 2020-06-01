@@ -8,14 +8,13 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import restopass.dto.*;
 import restopass.mongo.ReservationRepository;
+import restopass.utils.EmailSender;
 import restopass.utils.QRHelper;
 
 import java.time.LocalDateTime;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.IntStream;
 
 @Service
@@ -54,7 +53,54 @@ public class ReservationService {
         this.userService.decrementUserVisits(userId);
 
         reservation.setQrBase64(QRHelper.createQRBase64(reservationId, reservation.getRestaurantId(), userId));
+
+        this.sendConfirmBookingEmail(reservation);
+        this.sendNewBookingEmail(reservation);
+
         this.reservationRepository.save(reservation);
+    }
+
+    private void sendConfirmBookingEmail(Reservation reservation) {
+        User user = this.userService.findById(reservation.getOwnerUser());
+        Restaurant restaurant = this.restaurantService.findById(reservation.getRestaurantId());
+
+        HashMap<String, Object> modelEmail = new HashMap<>();
+        modelEmail.put("userName", user.getName());
+        modelEmail.put("restaurantName", restaurant.getName());
+        modelEmail.put("totalDiners", reservation.getToConfirmUsers().size() + 1);
+        modelEmail.put("date", this.generateHumanDate(reservation.getDate()));
+        modelEmail.put("restaurantAddress", restaurant.getAddress());
+        modelEmail.put("qrCode", reservation.getQrBase64());
+        modelEmail.put("cancelDate", reservation.getDate().minusHours(restaurant.getHoursToCancel()));
+
+
+        EmailModel emailModel = new EmailModel();
+        emailModel.setEmailTo(reservation.getOwnerUser());
+        emailModel.setMailTempate("confirm_booking.html");
+        emailModel.setSubject("Tu reserva ha sido confirmada");
+        emailModel.setModel(modelEmail);
+
+        EmailSender.sendEmail(emailModel);
+    }
+
+    private void sendNewBookingEmail(Reservation reservation) {
+        User ownerUser = this.userService.findById(reservation.getOwnerUser());
+        Restaurant restaurant = this.restaurantService.findById(reservation.getRestaurantId());
+
+        HashMap<String, Object> modelEmail = new HashMap<>();
+        modelEmail.put("ownerUser", ownerUser.getName() + " " + ownerUser.getLastName());
+        modelEmail.put("restaurantName", restaurant.getName());
+        modelEmail.put("totalDiners", reservation.getToConfirmUsers().size() + 1);
+        modelEmail.put("date", this.generateHumanDate(reservation.getDate()));
+        modelEmail.put("restaurantAddress", restaurant.getAddress());
+
+        EmailModel emailModel = new EmailModel();
+        emailModel.setEmailTo(reservation.getOwnerUser());
+        emailModel.setMailTempate("templates/new_booking.html");
+        emailModel.setSubject("Parece que tienes una nueva reserva");
+        emailModel.setModel(modelEmail);
+
+        EmailSender.sendEmail(emailModel);
     }
 
     public List<Reservation> getReservationsForUser(String userId) {
@@ -66,6 +112,11 @@ public class ReservationService {
 
     public void cancelReservation(String reservationId) {
         this.updateReservationState(reservationId, ReservationState.CANCELED);
+    }
+
+    public void confirmReservation(String reservationId, String userId) {
+        this.userService.decrementUserVisits(userId);
+
     }
 
     public void doneReservation(String reservationId, String restaurantId, String userId) {
@@ -153,6 +204,22 @@ public class ReservationService {
         update.set(SLOTS_FIELD, slots);
 
         this.mongoTemplate.updateMulti(query, update, RESTAURANT_CONFIG_COLLECTION);
+    }
+
+    private String generateHumanDate(LocalDateTime dt) {
+        String dayName = dt.getDayOfWeek().getDisplayName(TextStyle.FULL,
+                new Locale("es"));
+
+        String monthName = dt.getMonth().getDisplayName(TextStyle.FULL, new Locale("es"));
+
+        String hour;
+        if(dt.getMinute() == 0) {
+            hour = dt.getHour() + ":00";
+        } else {
+           hour = dt.getHour() + ":" + dt.getMinute();
+        }
+
+        return dayName + " de " + monthName + "de " + dt.getYear() + " a las " + hour + "hs";
     }
 
 }

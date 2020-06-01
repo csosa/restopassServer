@@ -20,8 +20,17 @@ public class Restaurant {
     private List<String> tags;
     private List<Dish> dishes;
     private Integer stars = 3;
+    private Integer hoursToCancel;
 
     public Restaurant() {
+    }
+
+    public Integer getHoursToCancel() {
+        return hoursToCancel;
+    }
+
+    public void setHoursToCancel(Integer hoursToCancel) {
+        this.hoursToCancel = hoursToCancel;
     }
 
     public Integer getStars() {

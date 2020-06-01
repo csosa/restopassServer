@@ -74,10 +74,6 @@ public class RestaurantService {
     }
 
     public List<RestaurantSlot> decrementTableInSlot(RestaurantConfig restaurantConfig, LocalDateTime dateTime) {
-
-        //TODO calculate day full
-
-        Boolean dayFull = true;
         restaurantConfig.getSlots().forEach(
                 slot ->
                         slot.getDateTime().forEach(dt ->
@@ -146,4 +142,13 @@ public class RestaurantService {
 
         return response;
     }
+
+    public Restaurant findById(String restaurantId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
+
+        return this.mongoTemplate.findOne(query, Restaurant.class);
+    }
+
+
 }

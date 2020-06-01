@@ -2,6 +2,7 @@ package restopass.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import restopass.dto.Reservation;
 import restopass.service.ReservationService;
 
@@ -40,6 +41,17 @@ public class ReservationController {
                                 @RequestParam(value = "restaurant_id") String restaurantId,
                                 @RequestParam(value = "user_id") String userId) {
         this.reservationService.doneReservation(reservationId, restaurantId, userId);
+    }
+
+    @RequestMapping(value = "/confirm/{reservationId}/{userId}", method = RequestMethod.PATCH)
+    public ModelAndView confirmReservation(@PathVariable String reservationId, @PathVariable String userId) {
+        //TODO validar que ya no sea un usuario confirmado (Osea que este en la lista confirmedUsers de la reserva).
+        //TODO mover al usuario de la list toConfirmUsers a confirmedUsers en la reserva, descontarle una visita y mandar mail con QR
+        //TODO si ya tenia las visitas en cero porque o acepto otra invitacion o hizo el otra reserva, mostrar error y pedirle que cancele alguna
+        this.reservationService.confirmReservation(reservationId, userId);
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("web de gracias por confirmar/error/ya confirmaste");
+        return modelAndView;
     }
 
 

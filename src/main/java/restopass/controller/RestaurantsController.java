@@ -57,25 +57,10 @@ public class RestaurantsController {
     }
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public void test() {
-        HashMap<String, Object> modelEmail = new HashMap<>();
-        modelEmail.put("ownerUser", "Yamila Casarini");
-        modelEmail.put("restaurantName", "La Causa Nikkei");
-        modelEmail.put("totalDiners", "4");
-        modelEmail.put("dayName", "Sabado");
-        modelEmail.put("day", "5");
-        modelEmail.put("monthName", "Mayo");
-        modelEmail.put("year", "2020");
-        modelEmail.put("hour", "20:00");
-        modelEmail.put("restaurantAddress", "Av Callao 1231, CABA");
-
-        EmailModel emailModel = new EmailModel();
-        emailModel.setEmailTo("restopassprueba@yopmail.com");
-        emailModel.setMailTempate("new_booking.html");
-        emailModel.setSubject("Parece que tienes una nueva reserva");
-        emailModel.setModel(modelEmail);
-
-        EmailSender.sendEmail(emailModel);
+    public Restaurant test() {
+        Restaurant restaurant = new Restaurant();
+        restaurant.setImg(QRHelper.createQRBase64("prueba", "pruebita", "pruebota"));
+        return restaurant;
     }
 
 
