@@ -121,7 +121,7 @@ public class ReservationService {
 
         List<Reservation> reservations = this.mongoTemplate.find(query, Reservation.class);
         reservations.sort(Comparator.comparing(Reservation::getDate,
-                Comparator.nullsLast(Comparator.naturalOrder())));
+                Comparator.nullsLast(Comparator.reverseOrder())));
 
         return reservations.stream().map(this::mapReservationToResponse).collect(Collectors.toList());
     }
