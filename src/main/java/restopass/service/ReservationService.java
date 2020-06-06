@@ -248,8 +248,8 @@ public class ReservationService {
         response.setQrBase64(reservation.getQrBase64());
         response.setRestaurantAddress(reservation.getRestaurantAddress());
         response.setState(reservation.getState());
-        response.setConfirmedUsers(reservation.getConfirmedUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
-        response.setToConfirmUsers(reservation.getToConfirmUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
+        if (reservation.getConfirmedUsers() != null) response.setConfirmedUsers(reservation.getConfirmedUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
+        if (reservation.getToConfirmUsers() != null) response.setToConfirmUsers(reservation.getToConfirmUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
         response.setOwnerUser(mapEmailToUserReservation(reservation.getOwnerUser()));
 
         return response;
