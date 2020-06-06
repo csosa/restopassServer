@@ -17,6 +17,7 @@ public class ReservationResponse {
     private List<UserReservation> toConfirmUsers;
     private String restaurantName;
     private String restaurantAddress;
+    private Boolean isInvitation = false;
 
     public String getReservationId() {
         return reservationId;
@@ -96,5 +97,13 @@ public class ReservationResponse {
 
     public void setRestaurantAddress(String restaurantAddress) {
         this.restaurantAddress = restaurantAddress;
+    }
+
+    public Boolean getIsInvitation() {
+        return isInvitation;
+    }
+
+    public void setIsInvitation(Boolean reservation) {
+        isInvitation = reservation;
     }
 }

@@ -123,7 +123,7 @@ public class ReservationService {
         reservations.sort(Comparator.comparing(Reservation::getDate,
                 Comparator.nullsLast(Comparator.reverseOrder())));
 
-        return reservations.stream().map(this::mapReservationToResponse).collect(Collectors.toList());
+        return reservations.stream().map(r -> this.mapReservationToResponse(r, userId)).collect(Collectors.toList());
     }
 
     public List<ReservationResponse> cancelReservation(String reservationId, String userId) {
@@ -239,7 +239,7 @@ public class ReservationService {
         return dayName + " de " + monthName + "de " + dt.getYear() + " a las " + hour + "hs";
     }
 
-    private ReservationResponse mapReservationToResponse(Reservation reservation) {
+    private ReservationResponse mapReservationToResponse(Reservation reservation, String userId) {
         ReservationResponse response = new ReservationResponse();
 
         response.setReservationId(reservation.getReservationId());
@@ -252,6 +252,7 @@ public class ReservationService {
         if (reservation.getConfirmedUsers() != null) response.setConfirmedUsers(reservation.getConfirmedUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
         if (reservation.getToConfirmUsers() != null) response.setToConfirmUsers(reservation.getToConfirmUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
         response.setOwnerUser(mapEmailToUserReservation(reservation.getOwnerUser()));
+        if(!reservation.getOwnerUser().equalsIgnoreCase(userId))response.setIsInvitation(true);
 
         return response;
     }
