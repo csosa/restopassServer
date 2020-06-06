@@ -4,8 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import restopass.dto.Reservation;
+import restopass.dto.User;
 import restopass.dto.response.ReservationResponse;
+import restopass.exception.NoMoreVisitsException;
+import restopass.exception.ReservationAlreadyConfirmedException;
+import restopass.exception.ReservationCanceledException;
 import restopass.service.ReservationService;
+import restopass.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -16,6 +21,8 @@ public class ReservationController {
 
     @Autowired
     private ReservationService reservationService;
+    @Autowired
+    private UserService userService;
 
     private String USER_ID = "userId";
 
@@ -38,21 +45,40 @@ public class ReservationController {
     }
 
 
-    @RequestMapping(value = "/done/{reservationId}", method = RequestMethod.PATCH)
-    public void doneReservation(@PathVariable String reservationId,
+    @RequestMapping(value = "/done/{reservationId}", method = RequestMethod.GET)
+    public ModelAndView doneReservation(@PathVariable String reservationId,
                                 @RequestParam(value = "restaurant_id") String restaurantId,
                                 @RequestParam(value = "user_id") String userId) {
         this.reservationService.doneReservation(reservationId, restaurantId, userId);
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/reservation/done-reservation");
+        return modelAndView;
     }
 
-    @RequestMapping(value = "/confirm/{reservationId}/{userId}", method = RequestMethod.PATCH)
+    @RequestMapping(value = "/confirm/{reservationId}/{userId}", method = RequestMethod.GET)
     public ModelAndView confirmReservation(@PathVariable String reservationId, @PathVariable String userId) {
-        //TODO validar que ya no sea un usuario confirmado (Osea que este en la lista confirmedUsers de la reserva).
-        //TODO mover al usuario de la list toConfirmUsers a confirmedUsers en la reserva, descontarle una visita y mandar mail con QR
-        //TODO si ya tenia las visitas en cero porque o acepto otra invitacion o hizo el otra reserva, mostrar error y pedirle que cancele alguna
-        this.reservationService.confirmReservation(reservationId, userId);
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("web de gracias por confirmar/error/ya confirmaste");
+        User user;
+
+        try {
+            this.reservationService.confirmReservation(reservationId, userId);
+            user = this.userService.findById(userId);
+            modelAndView.addObject("name", user.getName());
+            modelAndView.addObject("email", user.getEmail());
+            modelAndView.setViewName("/reservation/confirm-reservation");
+        } catch (NoMoreVisitsException e) {
+            modelAndView.addObject("msg", e.getMessage());
+            modelAndView.setViewName("/reservation/no-more-visits");
+        } catch (ReservationAlreadyConfirmedException e) {
+            user = this.userService.findById(userId);
+            modelAndView.addObject("name", user.getName());
+            modelAndView.setViewName("/reservation/already-confirmed-reservation");
+        } catch (ReservationCanceledException e) {
+            modelAndView.setViewName("/reservation/canceled-reservation");
+        } catch (Exception e) {
+            modelAndView.setViewName("/reservation/error-reservation");
+        }
+
         return modelAndView;
     }
 
