@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import restopass.dto.Reservation;
+import restopass.dto.response.ReservationResponse;
 import restopass.service.ReservationService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,14 +26,15 @@ public class ReservationController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public List<Reservation> getReservationByUser(HttpServletRequest request) {
+    public List<ReservationResponse> getReservationByUser(HttpServletRequest request) {
         String userId = request.getAttribute(USER_ID).toString();
         return this.reservationService.getReservationsForUser(userId);
     }
 
     @RequestMapping(value = "/cancel/{reservationId}", method = RequestMethod.PATCH)
-    public void cancelReservation(@PathVariable String reservationId) {
-        this.reservationService.cancelReservation(reservationId);
+    public List<ReservationResponse> cancelReservation(@PathVariable String reservationId, HttpServletRequest request) {
+        String userId = request.getAttribute(USER_ID).toString();
+        return this.reservationService.cancelReservation(reservationId, userId);
     }
 
 

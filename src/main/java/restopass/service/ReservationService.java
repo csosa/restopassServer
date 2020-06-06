@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import restopass.dto.*;
+import restopass.dto.response.ReservationResponse;
+import restopass.dto.response.UserReservation;
 import restopass.mongo.ReservationRepository;
 import restopass.utils.EmailSender;
 import restopass.utils.QRHelper;
@@ -16,6 +18,7 @@ import java.time.ZoneOffset;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
@@ -105,7 +108,7 @@ public class ReservationService {
         EmailSender.sendEmail(emailModel);
     }
 
-    public List<Reservation> getReservationsForUser(String userId) {
+    public List<ReservationResponse> getReservationsForUser(String userId) {
         Query query = new Query();
 
 
@@ -116,11 +119,16 @@ public class ReservationService {
 
         query.addCriteria(orCriteria);
 
-        return this.mongoTemplate.find(query, Reservation.class);
+        List<Reservation> reservations = this.mongoTemplate.find(query, Reservation.class);
+        reservations.sort(Comparator.comparing(Reservation::getDate,
+                Comparator.nullsLast(Comparator.naturalOrder())));
+
+        return reservations.stream().map(this::mapReservationToResponse).collect(Collectors.toList());
     }
 
-    public void cancelReservation(String reservationId) {
+    public List<ReservationResponse> cancelReservation(String reservationId, String userId) {
         this.updateReservationState(reservationId, ReservationState.CANCELED);
+        return this.getReservationsForUser(userId);
     }
 
     public void confirmReservation(String reservationId, String userId) {
@@ -229,6 +237,33 @@ public class ReservationService {
         }
 
         return dayName + " de " + monthName + "de " + dt.getYear() + " a las " + hour + "hs";
+    }
+
+    private ReservationResponse mapReservationToResponse(Reservation reservation) {
+        ReservationResponse response = new ReservationResponse();
+
+        response.setReservationId(reservation.getReservationId());
+        response.setRestaurantId(reservation.getRestaurantId());
+        response.setDate(reservation.getDate());
+        response.setQrBase64(reservation.getQrBase64());
+        response.setRestaurantAddress(reservation.getRestaurantAddress());
+        response.setState(reservation.getState());
+        response.setConfirmedUsers(reservation.getConfirmedUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
+        response.setToConfirmUsers(reservation.getToConfirmUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
+        response.setOwnerUser(mapEmailToUserReservation(reservation.getOwnerUser()));
+
+        return response;
+    }
+
+    private UserReservation mapEmailToUserReservation(String userId) {
+        User user = this.userService.findById(userId);
+        UserReservation response = new UserReservation();
+
+        response.setUserId(userId);
+        response.setName(user.getName());
+        response.setLastName(user.getLastName());
+
+        return response;
     }
 
 }
