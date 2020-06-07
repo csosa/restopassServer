@@ -110,10 +110,22 @@ public class RestaurantService {
     }
 
     public List<Restaurant> getByTags(List<String> tags, MembershipType topMembership, String freeText) {
+
+        if(tags == null) {
+            tags = new ArrayList<>();
+        }
+
         tags.addAll(Arrays.asList(Strings.delimitedListToStringArray(freeText, " ")));
+
         Query query = new Query();
-        query.addCriteria(Criteria.where(TAGS_FIELD).all(tags));
-        query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(TOP_MEMBERSHIP_FIELD).lte(topMembership.ordinal())));
+
+        if(!tags.isEmpty()) {
+            query.addCriteria(Criteria.where(TAGS_FIELD).all(tags));
+        }
+
+        if(topMembership != null) {
+            query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(TOP_MEMBERSHIP_FIELD).lte(topMembership.ordinal())));
+        }
 
         return this.mongoTemplate.find(query, Restaurant.class);
     }
