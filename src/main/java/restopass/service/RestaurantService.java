@@ -59,7 +59,7 @@ public class RestaurantService {
 
         restaurant.setAddress(restaurantCreation.getAddress());
         restaurant.setImg(restaurantCreation.getImg());
-        GeoJsonPoint point = new GeoJsonPoint(restaurantCreation.getLongitude(), restaurantCreation.getLatitude());
+        GeoJsonPoint point = new GeoJsonPoint(restaurantCreation.getLatitude(), restaurantCreation.getLongitude());
         restaurant.setLocation(point);
         restaurant.setName(restaurantCreation.getName());
         restaurant.setTimeTable(restaurantCreation.getTimeTable());
@@ -101,7 +101,7 @@ public class RestaurantService {
     public List<Restaurant> getInARadius(Double lat, Double lng) {
         Query query = new Query();
 
-        Point geoPoint = new Point(lng, lat);
+        Point geoPoint = new Point(lat, lng);
         Distance geoDistance = new Distance(KM_RADIUS, Metrics.KILOMETERS);
         Circle geoCircle = new Circle(geoPoint, geoDistance);
         query.addCriteria(Criteria.where(LOCATION_FIELD).withinSphere(geoCircle));
