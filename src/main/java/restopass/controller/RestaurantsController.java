@@ -3,18 +3,18 @@ package restopass.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import restopass.dto.Dish;
-import restopass.dto.EmailModel;
 import restopass.dto.Restaurant;
 import restopass.dto.RestaurantConfig;
+import restopass.dto.firebase.SimplePush;
+import restopass.dto.firebase.SimplePushData;
+import restopass.dto.firebase.SimplePushNotif;
 import restopass.dto.request.RestaurantCreationRequest;
 import restopass.dto.request.RestaurantTagsRequest;
 import restopass.dto.response.RestaurantTagsResponse;
+import restopass.service.FirebaseService;
 import restopass.service.ReservationService;
 import restopass.service.RestaurantService;
-import restopass.utils.EmailSender;
-import restopass.utils.QRHelper;
 
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -25,6 +25,8 @@ public class RestaurantsController {
     RestaurantService restaurantService;
     @Autowired
     ReservationService reservationService;
+    @Autowired
+    FirebaseService firebaseService;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public void createRestaurant(@RequestBody RestaurantCreationRequest restaurant) {
@@ -57,10 +59,19 @@ public class RestaurantsController {
     }
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public Restaurant test() {
-        Restaurant restaurant = new Restaurant();
-        restaurant.setImg(QRHelper.createQRBase64("prueba", "pruebita", "pruebota"));
-        return restaurant;
+    public void test() {
+        SimplePush simplePush = new SimplePush();
+        simplePush.setTopic("pruebaprueba.com");
+        SimplePushNotif simplePushNotif = new SimplePushNotif();
+        simplePushNotif.setBody("El body");
+        simplePushNotif.setTitle("El title");
+        simplePush.setNotification(simplePushNotif);
+        SimplePushData simplePushData = new SimplePushData();
+        simplePushData.setReservationId("unaReserva");
+        simplePushData.setType("RESERVATION");
+        simplePush.setData(simplePushData);
+
+        firebaseService.sendNotification(simplePush);
     }
 
 
