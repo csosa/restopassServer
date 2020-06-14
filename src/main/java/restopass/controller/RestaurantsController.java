@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import restopass.dto.Dish;
 import restopass.dto.Restaurant;
 import restopass.dto.RestaurantConfig;
-import restopass.dto.firebase.SimplePush;
+import restopass.dto.firebase.SimpleTopicPush;
 import restopass.dto.firebase.SimplePushData;
 import restopass.dto.firebase.SimplePushNotif;
 import restopass.dto.request.RestaurantCreationRequest;
@@ -60,18 +60,18 @@ public class RestaurantsController {
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     public void test() {
-        SimplePush simplePush = new SimplePush();
-        simplePush.setTopic("pruebaprueba.com");
+        SimpleTopicPush simpleTopicPush = new SimpleTopicPush();
+        simpleTopicPush.setTo("pruebaprueba.com");
         SimplePushNotif simplePushNotif = new SimplePushNotif();
         simplePushNotif.setBody("El body");
         simplePushNotif.setTitle("El title");
-        simplePush.setNotification(simplePushNotif);
+        simpleTopicPush.setNotification(simplePushNotif);
         SimplePushData simplePushData = new SimplePushData();
         simplePushData.setReservationId("unaReserva");
         simplePushData.setType("RESERVATION");
-        simplePush.setData(simplePushData);
+        simpleTopicPush.setData(simplePushData);
 
-        firebaseService.sendNotification(simplePush);
+        firebaseService.sendNotification(simpleTopicPush);
     }
 
 

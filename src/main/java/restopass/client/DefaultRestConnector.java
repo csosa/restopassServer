@@ -1,7 +1,6 @@
 package restopass.client;
 
 import com.google.gson.Gson;
-import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -26,11 +25,11 @@ public class DefaultRestConnector {
         try {
 
             HttpPost request = new HttpPost(url);
-
+            String json = null;
             if(body != null) {
 
                 Gson gson = new Gson();
-                String json = gson.toJson(body, requestType);
+                json = gson.toJson(body, requestType);
                 StringEntity input = new StringEntity(json);
                 input.setContentType("application/json");
                 request.setEntity(input);
@@ -41,7 +40,8 @@ public class DefaultRestConnector {
                     request.setHeader(entry.getKey(), entry.getValue());
             }
 
-            LOGGER.info("Sending request {} to url {}", request.toString(), url);
+            request.setHeader("Content-Type", "application/json");
+            LOGGER.info("Sending request {} to url {}", json, url);
 
             CloseableHttpResponse response = httpClient.execute(request);
 
@@ -53,14 +53,8 @@ public class DefaultRestConnector {
             } else if (response.getStatusLine().getStatusCode() == 200) {
                 LOGGER.info("response:" + EntityUtils.toString(response.getEntity()));
             }
-            HttpEntity entity = response.getEntity();
-            response.close();
 
-            if (entity != null) {
-                // return it as a String
-                String result = EntityUtils.toString(entity);
-                System.out.println(result);
-            }
+            response.close();
 
         } catch (IOException ex) {
             ex.printStackTrace();

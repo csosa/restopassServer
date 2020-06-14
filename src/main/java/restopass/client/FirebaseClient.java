@@ -3,7 +3,7 @@ package restopass.client;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import restopass.dto.firebase.SimplePush;
+import restopass.dto.firebase.SimpleTopicPush;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,8 +16,8 @@ public class FirebaseClient extends DefaultRestConnector {
     @Value("${firebase.api.key}")
     private String FIREBASE_API_KEY;
 
-    public void sendNotification(SimplePush notification) {
-        this.doPost(FCM_SEND_NOTIFICATION, this.buildHeaders(), notification, new TypeToken<SimplePush>() {}.getType());
+    public void sendNotification(SimpleTopicPush notification) {
+        this.doPost(FCM_SEND_NOTIFICATION, this.buildHeaders(), notification, new TypeToken<SimpleTopicPush>() {}.getType());
     }
 
     public Map<String, String> buildHeaders() {
