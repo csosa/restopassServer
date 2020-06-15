@@ -10,7 +10,7 @@ public class SimpleTopicPush<T> {
 
 
     public void setTo(String to) {
-        this.to = "/topics/" + to;
+        this.to = "/topics/" + to.replace("@", "");
     }
 
     public void setData(T data) {

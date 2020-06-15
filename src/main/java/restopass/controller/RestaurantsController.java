@@ -69,5 +69,5 @@ public class RestaurantsController {
     public void test() {
         firebaseService.sendScoreNotification(Arrays.asList("prueba@prueba.com"), "b200dcd7-dabd-4df2-9305-edaf90dad56b", "La Causa Nikkei");
     }
-    
+
 }

@@ -84,7 +84,7 @@ public class FirebaseService {
         SimpleTopicPush<ScorePushNotifData> simpleTopicPush = new SimpleTopicPush<>();
         simpleTopicPush.setTo(userId);
         ScorePushNotifData reservationPushNotifData = new ScorePushNotifData();
-        reservationPushNotifData.setDescription("Deja tu review");
+        reservationPushNotifData.setDescription("Podes dejar tu review. Ayuda a mejorar la experiencia para todos");
         reservationPushNotifData.setTitle("¿Como estuvo tu experiencia en " + restaurantName + "?");
         reservationPushNotifData.setRestaurantId(restaurantId);
         reservationPushNotifData.setType("SCORE_EXPERIENCE");
