@@ -31,6 +31,7 @@ public class ReservationService {
     private MongoTemplate mongoTemplate;
     private ReservationRepository reservationRepository;
     private UserService userService;
+    private FirebaseService firebaseService;
     private String RESTAURANT_ID = "restaurantId";
     private String OWNER_USER_ID = "ownerUser";
     private String RESERVATION_ID = "reservationId";
@@ -46,10 +47,11 @@ public class ReservationService {
     private RestaurantService restaurantService;
 
     @Autowired
-    public ReservationService(MongoTemplate mongoTemplate, ReservationRepository reservationRepository, UserService userService) {
+    public ReservationService(MongoTemplate mongoTemplate, ReservationRepository reservationRepository, UserService userService, FirebaseService firebaseService) {
         this.mongoTemplate = mongoTemplate;
         this.reservationRepository = reservationRepository;
         this.userService = userService;
+        this.firebaseService = firebaseService;
     }
 
     public void createReservation(Reservation reservation, String userId) {
@@ -66,9 +68,18 @@ public class ReservationService {
         reservation.setQrBase64(QRHelper.createQRBase64(reservationId, reservation.getRestaurantId(), userId));
 
         this.sendConfirmBookingEmail(reservation);
-        if(!CollectionUtils.isEmpty(reservation.getToConfirmUsers())) this.sendNewBookingEmail(reservation);
+        if(!CollectionUtils.isEmpty(reservation.getToConfirmUsers())) {
+            this.sendNewBookingEmail(reservation);
+            this.sendNewBookingNotif(reservation);
+        }
 
         this.reservationRepository.save(reservation);
+    }
+
+    private void sendNewBookingNotif(Reservation reservation) {
+        this.firebaseService.sendNewInvitationNotification(reservation.getToConfirmUsers(),
+                reservation.getReservationId(), reservation.getOwnerUser(), reservation.getRestaurantName(),
+                this.generateHumanDate(reservation.getDate()));
     }
 
     private void sendConfirmBookingEmail(Reservation reservation) {
@@ -137,7 +148,15 @@ public class ReservationService {
 
     public List<ReservationResponse> cancelReservation(String reservationId, String userId) {
         this.updateReservationState(reservationId, ReservationState.CANCELED);
-        return this.getReservationsForUser(userId);
+        List<ReservationResponse> reservations = this.getReservationsForUser(userId);
+
+        ReservationResponse reservation = reservations.stream().filter(r -> r.getReservationId().equalsIgnoreCase(reservationId)).findFirst().get();
+        this.firebaseService.sendCancelReservationNotification(
+                reservation.getConfirmedUsers().stream().map(UserReservation::getUserId).collect(Collectors.toList()),
+                reservationId, reservation.getOwnerUser().getName() + " " + reservation.getOwnerUser().getLastName(),
+                reservation.getRestaurantName(), generateHumanDate(reservation.getDate()));
+
+        return reservations;
     }
 
     public void confirmReservation(String reservationId, String userId) {
@@ -164,6 +183,9 @@ public class ReservationService {
 
         this.mongoTemplate.updateMulti(query, update, RESERVATION_COLLECTION);
 
+        this.firebaseService.sendConfirmedInvitationNotification(reservation.getOwnerUser(), reservationId,
+                user.getName() + " " + user.getLastName(), reservation.getRestaurantName(),
+                this.generateHumanDate(reservation.getDate()));
         this.userService.decrementUserVisits(userId);
 
     }
@@ -171,6 +193,12 @@ public class ReservationService {
     public void doneReservation(String reservationId, String restaurantId, String userId) {
         //TODO show web with plates
         this.updateReservationState(reservationId, ReservationState.DONE);
+
+        Reservation reservation = this.findById(reservationId);
+        List<String> userOwnerAndConfirmed = Arrays.asList(reservation.getOwnerUser());
+        if (reservation.getConfirmedUsers() != null) userOwnerAndConfirmed.addAll(reservation.getConfirmedUsers());
+
+        this.firebaseService.sendScoreNotification(userOwnerAndConfirmed, reservation.getRestaurantId(), reservation.getRestaurantName());
     }
 
     private void updateReservationState(String reservationId, ReservationState state) {

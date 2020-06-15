@@ -29,6 +29,7 @@ public class UserService {
     private static String PASSWORD_FIELD = "password";
     private static String VISITS_FIELD = "visits";
     private static String ACTUAL_MEMBERSHIP = "actualMembership";
+    private static String FAVORITE_RESTAURANTS_FIELD = "favoriteRestaurants";
     private static String USER_COLLECTION = "users";
     private static String ACCESS_TOKEN_HEADER = "X-Auth-Token";
     private static String REFRESH_TOKEN_HEADER = "X-Refresh-Token";
@@ -53,14 +54,14 @@ public class UserService {
             throw new InvalidUsernameOrPasswordException();
         }
 
-        return this.buildAuthAndRefreshToken(userDTO);
+        return this.buildUserLoginResponse(userDTO);
     }
 
     public UserLoginResponse createUser(UserCreationRequest user) {
         User userDTO = new User(user.getEmail(), user.getPassword(), user.getName(), user.getLastName());
         try {
             userRepository.save(userDTO);
-            return this.buildAuthAndRefreshToken(userDTO);
+            return this.buildUserLoginResponse(userDTO);
         } catch(DuplicateKeyException e) {
             throw new UserAlreadyExistsException();
         }
@@ -77,13 +78,13 @@ public class UserService {
         try {
             Claims claims = JWTHelper.decodeJWT(oldAccessToken);
             if(claims.getId().equalsIgnoreCase(emailRefresh)) {
-                return this.buildAuthAndRefreshToken(userDTO);
+                return this.buildUserLoginResponse(userDTO);
             } else {
                 throw new InvalidAccessOrRefreshTokenException();
             }
         } catch (ExpiredJwtException e) {
             if(e.getClaims().getId().equalsIgnoreCase(emailRefresh)) {
-                return this.buildAuthAndRefreshToken(userDTO);
+                return this.buildUserLoginResponse(userDTO);
             } else {
                 throw new InvalidAccessOrRefreshTokenException();
             }
@@ -112,18 +113,35 @@ public class UserService {
         Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
 
-        Update update = new Update().set(ACTUAL_MEMBERSHIP, membership);
+        Update update = new Update().set(ACTUAL_MEMBERSHIP, membership.ordinal());
 
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
 
-    private UserLoginResponse buildAuthAndRefreshToken(User user) {
+    private UserLoginResponse buildUserLoginResponse(User user) {
         UserLoginResponse userResponse = new UserLoginResponse();
         userResponse.setxAuthToken(JWTHelper.createAccessToken(user.getEmail()));
         userResponse.setxRefreshToken(JWTHelper.createRefreshToken(user.getEmail()));
         userResponse.setUser(user);
-
         return userResponse;
     }
 
+    public void addNewRestaurantFavorite(String restaurantId, String userId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+        Update update = new Update();
+        update.push(FAVORITE_RESTAURANTS_FIELD, restaurantId);
+
+        this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+    }
+
+
+    public void removeRestaurantFavorite(String restaurantId, String userId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+        Update update = new Update();
+        update.pull(FAVORITE_RESTAURANTS_FIELD, restaurantId);
+
+        this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+    }
 }

@@ -1,20 +1,27 @@
 package restopass.dto;
 
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
+
 public class Dish {
 
     private String name;
     private String description;
-    private MembershipType topMembership;
+    private String img;
+    private Integer topMembership;
+    private String topMembershipName;
     private Integer stars = 3;
+
 
     public Dish(){
 
     }
 
-    public Dish(String name, String description, MembershipType topMembership) {
+    public Dish(String name, String img, String description, MembershipType topMembership) {
         this.name = name;
+        this.img = img;
         this.description = description;
-        this.topMembership = topMembership;
+        this.topMembership = topMembership.ordinal();
+        this.topMembershipName = topMembership.getName();
     }
 
     public Integer getStars() {
@@ -41,11 +48,27 @@ public class Dish {
         this.description = description;
     }
 
-    public MembershipType getTopMembership() {
+    public Integer getTopMembership() {
         return topMembership;
     }
 
-    public void setTopMembership(MembershipType topMembership) {
+    public void setTopMembership(Integer topMembership) {
         this.topMembership = topMembership;
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
+    }
+
+    public String getTopMembershipName() {
+        return topMembershipName;
+    }
+
+    public void setTopMembershipName(String topMembershipName) {
+        this.topMembershipName = topMembershipName;
     }
 }

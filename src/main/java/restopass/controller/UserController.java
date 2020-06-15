@@ -1,10 +1,7 @@
 package restopass.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import restopass.dto.User;
 import restopass.dto.request.UserCreationRequest;
 import restopass.dto.request.UserLoginRequest;
@@ -22,6 +19,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    private String USER_ID_ATTR = "userId";
+
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public UserLoginResponse userLogin(@RequestBody UserLoginRequest user) {
         return userService.loginUser(user);
@@ -37,9 +36,15 @@ public class UserController {
         return this.userService.refreshToken(request);
     }
 
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public void isAccessTokenValid() {
+    @RequestMapping(value = "/favorite/{restaurantId}", method = RequestMethod.POST)
+    public void addRestaurantToFavorites(HttpServletRequest request, @PathVariable String restaurantId) {
+        String userId = request.getAttribute(USER_ID_ATTR).toString();
+        this.userService.addNewRestaurantFavorite(restaurantId, userId);
     }
 
-
+    @RequestMapping(value = "/unfavorite/{restaurantId}", method = RequestMethod.POST)
+    public void removeRestaurantFromFavorites(HttpServletRequest request, @PathVariable String restaurantId) {
+        String userId = request.getAttribute(USER_ID_ATTR).toString();
+        this.userService.removeRestaurantFavorite(restaurantId, userId);
+    }
 }

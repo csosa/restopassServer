@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "memberships")
 public class Membership {
 
-    private MembershipType membershipId;
+    private Integer membershipId;
     private String name;
     private String description;
     private String img;
@@ -36,11 +36,11 @@ public class Membership {
         this.img = img;
     }
 
-    public MembershipType getMembershipId() {
+    public Integer getMembershipId() {
         return membershipId;
     }
 
-    public void setMembershipId(MembershipType membershipId) {
+    public void setMembershipId(Integer membershipId) {
         this.membershipId = membershipId;
     }
 

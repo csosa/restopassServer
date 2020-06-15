@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import restopass.dto.*;
+import restopass.dto.request.DishRequest;
 import restopass.dto.request.RestaurantCreationRequest;
 import restopass.dto.response.RestaurantTagsResponse;
 import restopass.mongo.FiltersMapRepository;
@@ -21,6 +22,7 @@ import restopass.mongo.RestaurantRepository;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class RestaurantService {
@@ -29,8 +31,11 @@ public class RestaurantService {
     final RestaurantRepository restaurantRepository;
     final FiltersMapRepository filtersMapRepository;
     final RestaurantConfigRepository restaurantConfigRepository;
+
     @Autowired
     private MembershipService membershipService;
+    @Autowired
+    private UserService userService;
 
     private String RESTAURANT_ID = "restaurantId";
     private String DISHES_FIELD = "dishes";
@@ -64,7 +69,9 @@ public class RestaurantService {
         restaurant.setName(restaurantCreation.getName());
         restaurant.setTimeTable(restaurantCreation.getTimeTable());
         restaurant.setTags(restaurantCreation.getTags());
-        restaurant.setDishes(restaurantCreation.getDishes());
+        List<DishRequest> dishes = restaurantCreation.getDishes();
+        List<Dish> dishesToSave = dishes.stream().map(dr -> new Dish(dr.getName(), dr.getImg(), dr.getDescription(), dr.getTopMembership())).collect(Collectors.toList());
+        restaurant.setDishes(dishesToSave);
 
         this.restaurantRepository.save(restaurant);
     }
@@ -89,7 +96,8 @@ public class RestaurantService {
         return restaurantConfig.getSlots();
     }
 
-    public void addDish(Dish dish, String restaurantId) {
+    public void addDish(DishRequest dishRequest, String restaurantId) {
+        Dish dish = new Dish(dishRequest.getName(),dishRequest.getImg(), dishRequest.getDescription(), dishRequest.getTopMembership());
         Query query = new Query();
         query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
 
@@ -98,7 +106,7 @@ public class RestaurantService {
         this.mongoTemplate.updateMulti(query, update, RESTAURANTS_COLLECTION);
     }
 
-    public List<Restaurant> getInARadius(Double lat, Double lng) {
+    public List<Restaurant> getByTags(Double lat, Double lng, List<String> tags, MembershipType topMembership, String freeText) {
         Query query = new Query();
 
         Point geoPoint = new Point(lat, lng);
@@ -106,18 +114,11 @@ public class RestaurantService {
         Circle geoCircle = new Circle(geoPoint, geoDistance);
         query.addCriteria(Criteria.where(LOCATION_FIELD).withinSphere(geoCircle));
 
-        return this.mongoTemplate.find(query, Restaurant.class);
-    }
-
-    public List<Restaurant> getByTags(List<String> tags, MembershipType topMembership, String freeText) {
-
         if(tags == null) {
             tags = new ArrayList<>();
         }
 
         tags.addAll(Arrays.asList(Strings.delimitedListToStringArray(freeText, " ")));
-
-        Query query = new Query();
 
         if(!tags.isEmpty()) {
             query.addCriteria(Criteria.where(TAGS_FIELD).all(tags));
@@ -130,9 +131,9 @@ public class RestaurantService {
         return this.mongoTemplate.find(query, Restaurant.class);
     }
 
-    public List<Restaurant> getRestaurantInAMemberships(MembershipType membership) {
+    public List<Restaurant> getRestaurantInAMemberships(Integer membership) {
         Query query = new Query();
-        query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(TOP_MEMBERSHIP_FIELD).lte(membership.ordinal())));
+        query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(TOP_MEMBERSHIP_FIELD).lte(membership)));
 
         return this.mongoTemplate.find(query, Restaurant.class);
     }
@@ -144,12 +145,10 @@ public class RestaurantService {
         List<Membership> memberships = membershipService.findAll();
 
         HashMap<String, List<String>> tags = new HashMap<>();
-        List<MembershipType> membershipTypes = new ArrayList<>();
 
-        memberships.forEach(membership -> membershipTypes.add(membership.getMembershipId()));
         filtersMap.forEach(filter -> tags.put(filter.getName(), filter.getElements()));
 
-        response.setMemberships(membershipTypes);
+        response.setMemberships(memberships);
         response.setTags(tags);
 
         return response;
@@ -167,5 +166,11 @@ public class RestaurantService {
         Restaurant restaurant = this.findById(reservation.getRestaurantId());
         reservation.setRestaurantAddress(restaurant.getAddress());
         reservation.setRestaurantName(restaurant.getName());
+    }
+
+    public List<Restaurant> findAllFavoritesByUser(String userId) {
+        List<String> restaurantsIds = this.userService.findById(userId).getFavoriteRestaurants();
+
+        return restaurantsIds.stream().map(this::findById).collect(Collectors.toList());
     }
 }

@@ -1,6 +1,6 @@
 package restopass.dto.firebase;
 
-public class SimplePushData {
+public class ReservationPushNotifData extends SimpleNotifData{
     private String type;
     private String reservationId;
 

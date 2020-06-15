@@ -1,31 +1,24 @@
 package restopass.dto.firebase;
 
-public class SimpleTopicPush {
+public class SimpleTopicPush<T> {
     private String to;
-    private SimplePushData data;
-    private SimplePushNotif notification;
+    private T data;
 
     public String getTo() {
         return to;
     }
 
+
     public void setTo(String to) {
         this.to = "/topics/" + to;
     }
 
-    public void setData(SimplePushData data) {
+    public void setData(T data) {
         this.data = data;
     }
 
-    public SimplePushData getData() {
+    public T getData() {
         return data;
     }
 
-    public SimplePushNotif getNotification() {
-        return notification;
-    }
-
-    public void setNotification(SimplePushNotif notification) {
-        this.notification = notification;
-    }
 }

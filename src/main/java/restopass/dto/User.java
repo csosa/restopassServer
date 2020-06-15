@@ -15,14 +15,23 @@ public class User {
     private String lastName;
     private String creditCard;
     private Integer visits;
-    private MembershipType actualMembership;
+    private Integer actualMembership;
     private List<String> secondaryEmails;
+    private List<String> favoriteRestaurants;
 
     public User(String email, String password, String name, String lastName) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.lastName = lastName;
+    }
+
+    public List<String> getFavoriteRestaurants() {
+        return favoriteRestaurants;
+    }
+
+    public void setFavoriteRestaurants(List<String> favoriteRestaurants) {
+        this.favoriteRestaurants = favoriteRestaurants;
     }
 
     public List<String> getSecondaryEmails() {
@@ -49,11 +58,11 @@ public class User {
         this.creditCard = creditCard;
     }
 
-    public MembershipType getActualMembership() {
+    public Integer getActualMembership() {
         return actualMembership;
     }
 
-    public void setActualMembership(MembershipType actualMembership) {
+    public void setActualMembership(Integer actualMembership) {
         this.actualMembership = actualMembership;
     }
 

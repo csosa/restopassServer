@@ -1,5 +1,6 @@
 package restopass.dto.response;
 
+import restopass.dto.Membership;
 import restopass.dto.MembershipType;
 
 import java.util.HashMap;
@@ -7,14 +8,14 @@ import java.util.List;
 
 public class RestaurantTagsResponse {
 
-    List<MembershipType> memberships;
+    List<Membership> memberships;
     HashMap<String, List<String>> tags;
 
-    public List<MembershipType> getMemberships() {
+    public List<Membership> getMemberships() {
         return memberships;
     }
 
-    public void setMemberships(List<MembershipType> memberships) {
+    public void setMemberships(List<Membership> memberships) {
         this.memberships = memberships;
     }
 

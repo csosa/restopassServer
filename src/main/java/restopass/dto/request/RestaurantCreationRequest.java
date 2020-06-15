@@ -14,13 +14,13 @@ public class RestaurantCreationRequest {
     private double longitude;
     private List<RestaurantHours> timeTable;
     private List<String> tags;
-    private List<Dish> dishes;
+    private List<DishRequest> dishes;
 
-    public List<Dish> getDishes() {
+    public List<DishRequest> getDishes() {
         return dishes;
     }
 
-    public void setDishes(List<Dish> dishes) {
+    public void setDishes(List<DishRequest> dishes) {
         this.dishes = dishes;
     }
 
