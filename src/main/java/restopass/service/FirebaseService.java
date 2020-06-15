@@ -58,7 +58,7 @@ public class FirebaseService {
         SimpleTopicPush<ReservationPushNotifData> simpleTopicPush = new SimpleTopicPush<>();
         simpleTopicPush.setTo(userId);
         ReservationPushNotifData reservationPushNotifData = new ReservationPushNotifData();
-        reservationPushNotifData.setDescription("Chequea tu mail para aceptar la invitación");
+        reservationPushNotifData.setDescription("Chequeá tu mail para aceptar la invitación");
         reservationPushNotifData.setTitle("El usuario " + userOwnerName + "te ha invitado a " + restaurantName + "el " + date);
         reservationPushNotifData.setReservationId(reservationId);
         reservationPushNotifData.setType("INVITE_RESERVATION");
@@ -85,7 +85,7 @@ public class FirebaseService {
         simpleTopicPush.setTo(userId);
         ScorePushNotifData reservationPushNotifData = new ScorePushNotifData();
         reservationPushNotifData.setDescription("Dejanos tu opinión para poder mejorar nuestro servicio");
-        reservationPushNotifData.setTitle("¿Como estuvo tu experiencia en " + restaurantName + "?");
+        reservationPushNotifData.setTitle("¿Cómo estuvo tu experiencia en " + restaurantName + "?");
         reservationPushNotifData.setRestaurantId(restaurantId);
         reservationPushNotifData.setType("SCORE_EXPERIENCE");
         simpleTopicPush.setData(reservationPushNotifData);
