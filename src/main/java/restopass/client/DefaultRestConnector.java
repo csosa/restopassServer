@@ -18,12 +18,10 @@ public class DefaultRestConnector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultRestConnector.class);
 
-    CloseableHttpClient httpClient = HttpClients.createDefault();
-
     public void doPost(String url, Map<String, String> headers, Object body, Type requestType) {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
 
         try {
-
             HttpPost request = new HttpPost(url);
             String json = null;
             if(body != null) {
@@ -66,6 +64,8 @@ public class DefaultRestConnector {
             }
         }
     }
+
+
 
 
 }
