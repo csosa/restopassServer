@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.servlet.ModelAndView;
 import restopass.dto.*;
 import restopass.dto.response.ReservationResponse;
 import restopass.dto.response.UserReservation;
@@ -131,7 +132,6 @@ public class ReservationService {
     public List<ReservationResponse> getReservationsForUser(String userId) {
         Query query = new Query();
 
-
         Criteria orCriteria = new Criteria();
         orCriteria.orOperator(
                 Criteria.where(OWNER_USER_ID).is(userId),
@@ -190,15 +190,46 @@ public class ReservationService {
 
     }
 
-    public void doneReservation(String reservationId, String restaurantId, String userId) {
-        //TODO show web with plates
-        this.updateReservationState(reservationId, ReservationState.DONE);
+    public ModelAndView doneReservation(String reservationId, String restaurantId, String userId) {
 
         Reservation reservation = this.findById(reservationId);
-        List<String> userOwnerAndConfirmed = Arrays.asList(reservation.getOwnerUser());
-        if (reservation.getConfirmedUsers() != null) userOwnerAndConfirmed.addAll(reservation.getConfirmedUsers());
+        User user = this.userService.findById(userId);
+        Restaurant restaurant = this.restaurantService.findById(restaurantId);
 
+        List<Dish> dishes = restaurant.getDishes();
+        //TODO agregar validaciones futuras
+
+        Map<Integer, Dish> dishesMap = new HashMap<>();
+        Map<Integer, Integer> countUsersMemberships = new HashMap<>();
+        countUsersMemberships.put(user.getActualMembership(), 1);
+
+        List<String> userOwnerAndConfirmed = Arrays.asList(reservation.getOwnerUser());
+
+        if (reservation.getConfirmedUsers() != null) {
+            userOwnerAndConfirmed.addAll(reservation.getConfirmedUsers());
+            reservation.getConfirmedUsers().forEach(s -> {
+                User invitedUser = this.userService.findById(s);
+
+                if(countUsersMemberships.containsKey(invitedUser.getActualMembership())){
+                    Integer count = countUsersMemberships.get(invitedUser.getActualMembership());
+                    countUsersMemberships.replace(invitedUser.getActualMembership(), count +1);
+                }else{
+                    countUsersMemberships.put(invitedUser.getActualMembership(), 1);
+                }
+            });
+        }
+
+        this.updateReservationState(reservationId, ReservationState.DONE);
         this.firebaseService.sendScoreNotification(userOwnerAndConfirmed, reservation.getRestaurantId(), reservation.getRestaurantName());
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("restaurant_name", restaurant.getName());
+        modelAndView.addObject("name", user.getName());
+        modelAndView.addObject("lastname", user.getLastName());
+        modelAndView.addObject("dishes", dishes);
+        modelAndView.setViewName("/reservation/done-reservation");
+
+        return modelAndView;
     }
 
     private void updateReservationState(String reservationId, ReservationState state) {

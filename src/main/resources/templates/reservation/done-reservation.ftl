@@ -14,12 +14,21 @@
                         <div class="container">
                             <div class="row">
                                 <div class="col-12">
-                                    <h1>Hola, Nombre Generico de Restaurante!</h1>
-                                    <p class="lead">Esta es una reserva valida de alguien</p>
+                                    <h1>Hola, ${restaurant_name}!</h1>
+                                    <p class="lead">Esta es una reserva válida de ${name} ${lastname}</p>
                                     <hr class="my-4">
                                     <p>
                                         Los platos disponibles para esta reserva son:
                                     </p>
+                                    <#list dishes>
+                                    <ul>
+                                        <#items as dish>
+                                            <li>${dish.name} : ${dish.description}</li>
+                                        </#items>
+                                    </ul>
+                                    <#else>
+                                    <p>No hay ningún plato disponible
+                                        </#list>
                                 </div>
                             </div>
                         </div>
