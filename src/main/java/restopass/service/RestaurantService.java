@@ -39,7 +39,7 @@ public class RestaurantService {
 
     private String RESTAURANT_ID = "restaurantId";
     private String DISHES_FIELD = "dishes";
-    private String TOP_MEMBERSHIP_FIELD = "topMembership";
+    private String BASE_MEMBERSHIP_FIELD = "baseMembership";
     private String LOCATION_FIELD = "location";
     private String RESTAURANTS_COLLECTION = "restaurants";
     private String TAGS_FIELD = "tags";
@@ -125,7 +125,7 @@ public class RestaurantService {
         }
 
         if(topMembership != null) {
-            query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(TOP_MEMBERSHIP_FIELD).lte(topMembership.ordinal())));
+            query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(BASE_MEMBERSHIP_FIELD).lte(topMembership.ordinal())));
         }
 
         return this.mongoTemplate.find(query, Restaurant.class);
@@ -133,7 +133,7 @@ public class RestaurantService {
 
     public List<Restaurant> getRestaurantInAMemberships(Integer membership) {
         Query query = new Query();
-        query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(TOP_MEMBERSHIP_FIELD).lte(membership)));
+        query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(BASE_MEMBERSHIP_FIELD).lte(membership)));
 
         return this.mongoTemplate.find(query, Restaurant.class);
     }
