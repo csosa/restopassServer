@@ -70,7 +70,7 @@ public class RestaurantService {
         restaurant.setTimeTable(restaurantCreation.getTimeTable());
         restaurant.setTags(restaurantCreation.getTags());
         List<DishRequest> dishes = restaurantCreation.getDishes();
-        List<Dish> dishesToSave = dishes.stream().map(dr -> new Dish(dr.getName(), dr.getImg(), dr.getDescription(), dr.getTopMembership())).collect(Collectors.toList());
+        List<Dish> dishesToSave = dishes.stream().map(dr -> new Dish(dr.getName(), dr.getImg(), dr.getDescription(), dr.getBaseMembership())).collect(Collectors.toList());
         restaurant.setDishes(dishesToSave);
 
         this.restaurantRepository.save(restaurant);
@@ -97,7 +97,7 @@ public class RestaurantService {
     }
 
     public void addDish(DishRequest dishRequest, String restaurantId) {
-        Dish dish = new Dish(dishRequest.getName(),dishRequest.getImg(), dishRequest.getDescription(), dishRequest.getTopMembership());
+        Dish dish = new Dish(dishRequest.getName(),dishRequest.getImg(), dishRequest.getDescription(), dishRequest.getBaseMembership());
         Query query = new Query();
         query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
 
