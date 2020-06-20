@@ -1,16 +1,14 @@
 package restopass.dto.request;
 
-import restopass.dto.MembershipType;
-
 public class UpdateMembershipToUserRequest {
 
-    MembershipType membershipId;
+    Integer membershipId;
 
-    public MembershipType getMembershipId() {
+    public Integer getMembershipId() {
         return membershipId;
     }
 
-    public void setMembershipId(MembershipType membershipId) {
+    public void setMembershipId(Integer membershipId) {
         this.membershipId = membershipId;
     }
 }

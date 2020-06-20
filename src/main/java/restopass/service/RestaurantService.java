@@ -106,7 +106,7 @@ public class RestaurantService {
         this.mongoTemplate.updateMulti(query, update, RESTAURANTS_COLLECTION);
     }
 
-    public List<Restaurant> getByTags(Double lat, Double lng, List<String> tags, MembershipType topMembership, String freeText) {
+    public List<Restaurant> getByTags(Double lat, Double lng, List<String> tags, Integer topMembership, String freeText) {
         Query query = new Query();
 
         Point geoPoint = new Point(lat, lng);
@@ -125,7 +125,7 @@ public class RestaurantService {
         }
 
         if(topMembership != null) {
-            query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(BASE_MEMBERSHIP_FIELD).lte(topMembership.ordinal())));
+            query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(BASE_MEMBERSHIP_FIELD).lte(topMembership)));
         }
 
         return this.mongoTemplate.find(query, Restaurant.class);

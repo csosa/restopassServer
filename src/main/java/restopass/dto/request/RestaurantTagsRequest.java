@@ -1,7 +1,5 @@
 package restopass.dto.request;
 
-import restopass.dto.MembershipType;
-
 import java.util.List;
 
 public class RestaurantTagsRequest {
@@ -10,7 +8,7 @@ public class RestaurantTagsRequest {
     private Double lng;
     private String freeText;
     private List<String> tags;
-    private MembershipType topMembership;
+    private Integer topMembership;
 
     public String getFreeText() {
         return freeText;
@@ -28,11 +26,11 @@ public class RestaurantTagsRequest {
         this.tags = tags;
     }
 
-    public MembershipType getTopMembership() {
+    public Integer getTopMembership() {
         return topMembership;
     }
 
-    public void setTopMembership(MembershipType topMembership) {
+    public void setTopMembership(Integer topMembership) {
         this.topMembership = topMembership;
     }
 
