@@ -41,6 +41,7 @@ public class RestaurantService {
     private String DISHES_FIELD = "dishes";
     private String BASE_MEMBERSHIP_FIELD = "baseMembership";
     private String LOCATION_FIELD = "location";
+    private String RESTAURANT_NAME = "name";
     private String RESTAURANTS_COLLECTION = "restaurants";
     private String TAGS_FIELD = "tags";
     private Double KM_RADIUS = 10D;
@@ -107,6 +108,8 @@ public class RestaurantService {
     }
 
     public List<Restaurant> getByTags(Double lat, Double lng, List<String> tags, Integer topMembership, String freeText) {
+        List<String> freeTextList = Arrays.asList(Strings.delimitedListToStringArray(freeText, " "));
+
         Query query = new Query();
 
         Point geoPoint = new Point(lat, lng);
@@ -118,10 +121,14 @@ public class RestaurantService {
             tags = new ArrayList<>();
         }
 
-        tags.addAll(Arrays.asList(Strings.delimitedListToStringArray(freeText, " ")));
+        tags.addAll(freeTextList);
 
         if(!tags.isEmpty()) {
             query.addCriteria(Criteria.where(TAGS_FIELD).all(tags));
+        }
+
+        if(!freeText.isEmpty()) {
+            freeTextList.forEach(text -> query.addCriteria(Criteria.where(RESTAURANT_NAME).regex("."+Strings.capitalize(text)+".")));
         }
 
         if(topMembership != null) {
