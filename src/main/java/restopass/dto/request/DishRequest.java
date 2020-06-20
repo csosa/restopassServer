@@ -6,7 +6,7 @@ public class DishRequest {
     String name;
     String img;
     String description;
-    MembershipType topMembership;
+    MembershipType baseMembership;
 
     public String getName() {
         return name;
@@ -32,11 +32,11 @@ public class DishRequest {
         this.description = description;
     }
 
-    public MembershipType getTopMembership() {
-        return topMembership;
+    public MembershipType getBaseMembership() {
+        return baseMembership;
     }
 
-    public void setTopMembership(MembershipType topMembership) {
-        this.topMembership = topMembership;
+    public void setBaseMembership(MembershipType baseMembership) {
+        this.baseMembership = baseMembership;
     }
 }

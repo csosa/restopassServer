@@ -39,7 +39,7 @@ public class RestaurantService {
 
     private String RESTAURANT_ID = "restaurantId";
     private String DISHES_FIELD = "dishes";
-    private String TOP_MEMBERSHIP_FIELD = "topMembership";
+    private String BASE_MEMBERSHIP_FIELD = "baseMembership";
     private String LOCATION_FIELD = "location";
     private String RESTAURANTS_COLLECTION = "restaurants";
     private String TAGS_FIELD = "tags";
@@ -70,7 +70,7 @@ public class RestaurantService {
         restaurant.setTimeTable(restaurantCreation.getTimeTable());
         restaurant.setTags(restaurantCreation.getTags());
         List<DishRequest> dishes = restaurantCreation.getDishes();
-        List<Dish> dishesToSave = dishes.stream().map(dr -> new Dish(dr.getName(), dr.getImg(), dr.getDescription(), dr.getTopMembership())).collect(Collectors.toList());
+        List<Dish> dishesToSave = dishes.stream().map(dr -> new Dish(dr.getName(), dr.getImg(), dr.getDescription(), dr.getBaseMembership())).collect(Collectors.toList());
         restaurant.setDishes(dishesToSave);
 
         this.restaurantRepository.save(restaurant);
@@ -97,7 +97,7 @@ public class RestaurantService {
     }
 
     public void addDish(DishRequest dishRequest, String restaurantId) {
-        Dish dish = new Dish(dishRequest.getName(),dishRequest.getImg(), dishRequest.getDescription(), dishRequest.getTopMembership());
+        Dish dish = new Dish(dishRequest.getName(),dishRequest.getImg(), dishRequest.getDescription(), dishRequest.getBaseMembership());
         Query query = new Query();
         query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
 
@@ -125,7 +125,7 @@ public class RestaurantService {
         }
 
         if(topMembership != null) {
-            query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(TOP_MEMBERSHIP_FIELD).lte(topMembership.ordinal())));
+            query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(BASE_MEMBERSHIP_FIELD).lte(topMembership.ordinal())));
         }
 
         return this.mongoTemplate.find(query, Restaurant.class);
@@ -133,7 +133,7 @@ public class RestaurantService {
 
     public List<Restaurant> getRestaurantInAMemberships(Integer membership) {
         Query query = new Query();
-        query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(TOP_MEMBERSHIP_FIELD).lte(membership)));
+        query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(BASE_MEMBERSHIP_FIELD).lte(membership)));
 
         return this.mongoTemplate.find(query, Restaurant.class);
     }
