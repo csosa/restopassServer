@@ -21,8 +21,10 @@ import restopass.mongo.RestaurantConfigRepository;
 import restopass.mongo.RestaurantRepository;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class RestaurantService {
@@ -45,6 +47,9 @@ public class RestaurantService {
     private String RESTAURANTS_COLLECTION = "restaurants";
     private String TAGS_FIELD = "tags";
     private Double KM_RADIUS = 10D;
+    private Integer SIZE_CALENDAR = 45;
+    private String RESTAURANT_CONFIG_COLLECTION = "restaurant_configs";
+    private String SLOTS_FIELD = "slots";
 
 
     @Autowired
@@ -78,7 +83,99 @@ public class RestaurantService {
     }
 
     public void createRestaurantConfig(RestaurantConfig restaurantConfig) {
-        this.restaurantConfigRepository.save(restaurantConfig);
+        RestaurantConfig restaurantConfigBD = this.findConfigurationByRestaurantId(restaurantConfig.getRestaurantId());
+
+        if(restaurantConfigBD == null) {
+            this.restaurantConfigRepository.save(restaurantConfig);
+        }
+
+        this.generateSlotsByRestaurantConfig(restaurantConfig.getRestaurantId());
+    }
+
+    public RestaurantConfig generateSlotsByRestaurantConfig(String restaurantId) {
+        RestaurantConfig restaurantConfig = this.findConfigurationByRestaurantId(restaurantId);
+        List<RestaurantHours> restaurantHours = restaurantConfig.getDateTimeAvailable();
+        LocalDateTime today = LocalDateTime.now();
+
+        List<RestaurantSlot> slots = new ArrayList<>();
+
+        //Genero el calendario de 45 dias
+        IntStream.rangeClosed(0, SIZE_CALENDAR).forEach(i -> {
+                    LocalDateTime date = today.plusDays(i);
+
+                    //Busco la configuracion de horas que incluye el dia que estoy queriendo generar.
+                    //Si esta cerrado el local, no va a existir esa configuracion por eso Optional
+                    Optional<RestaurantHours> optionalDay = restaurantHours.stream().filter(rh -> rh.getOpeningDays().stream().anyMatch(op -> op.equals(date.getDayOfWeek()))).findFirst();
+
+                    if (optionalDay.isPresent()) {
+                        RestaurantHours day = optionalDay.get();
+                        RestaurantSlot slot = new RestaurantSlot();
+                        List<List<DateTimeWithTables>> allDateTimeWithTables = new ArrayList<>();
+
+                        List<PairHour> pairHours = day.getPairHours();
+
+                        //Por cada par hora inicio hora fin genero los distintos horarios con sus mesas
+                        pairHours.forEach(pair -> {
+                            LocalDateTime startHour = date.withHour(pair.getOpeningHour()).withMinute(pair.getOpeningMinute()).truncatedTo(ChronoUnit.MINUTES);;
+                            LocalDateTime endHour = date.withHour(pair.getClosingHour()).withMinute(pair.getClosingMinute()).truncatedTo(ChronoUnit.MINUTES);;
+                            List<DateTimeWithTables> dateTimeWithTables = new ArrayList<>();
+
+                            Integer minutes = restaurantConfig.getMinutesGap();
+                            int minutesCount = 0;
+                            long minutesUntilEndHour = startHour.until(endHour, ChronoUnit.MINUTES);
+
+                            //Empiezo a generar las distintas horas con sus mesas
+                            while (minutesCount < minutesUntilEndHour) {
+                                DateTimeWithTables dt = new DateTimeWithTables();
+                                dt.setDateTime(startHour.plusMinutes(minutesCount));
+                                dt.setTablesAvailable(restaurantConfig.getTablesPerShift());
+                                dateTimeWithTables.add(dt);
+                                minutesCount = minutesCount + minutes;
+                            }
+                            //Cuando termino de generar todos los horarios para un par inicio fin lo agrego al conjunto de todos los pares inicio fin
+                            allDateTimeWithTables.add(dateTimeWithTables);
+                        });
+                        //Cuando tengo todos los pares inicio fin los agrego al dia
+                        slot.setDateTime(allDateTimeWithTables);
+                        slots.add(slot);
+                    }
+                }
+        );
+
+        this.updateSlotsInDB(restaurantId, slots);
+        restaurantConfig.setSlots(slots);
+        return restaurantConfig;
+    }
+
+    public RestaurantConfig buildRestaurantConfig(String restaurantId) {
+        RestaurantConfig restaurantConfig = this.findConfigurationByRestaurantId(restaurantId);
+
+        if(restaurantConfig != null) {
+            restaurantConfig.getSlots().forEach(slot -> {
+                slot.getDateTime().forEach(dates -> {
+                    if(dates.stream().allMatch(date -> date.getTablesAvailable() <= 0)) slot.setDayFull(true);
+                });
+            });
+        }
+
+        return restaurantConfig;
+    }
+
+    public RestaurantConfig findConfigurationByRestaurantId(String restaurantId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
+
+        return this.mongoTemplate.findOne(query, RestaurantConfig.class);
+    }
+
+    public void updateSlotsInDB(String restaurantId, List<RestaurantSlot> slots) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
+
+        Update update = new Update();
+        update.set(SLOTS_FIELD, slots);
+
+        this.mongoTemplate.updateMulti(query, update, RESTAURANT_CONFIG_COLLECTION);
     }
 
     public List<RestaurantSlot> decrementTableInSlot(RestaurantConfig restaurantConfig, LocalDateTime dateTime) {
@@ -127,7 +224,7 @@ public class RestaurantService {
             query.addCriteria(Criteria.where(TAGS_FIELD).all(tags));
         }
 
-        if(!freeText.isEmpty()) {
+        if(freeText != null) {
             freeTextList.forEach(text -> query.addCriteria(Criteria.where(RESTAURANT_NAME).regex("."+Strings.capitalize(text)+".")));
         }
 

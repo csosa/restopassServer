@@ -50,6 +50,10 @@ public class RestaurantsController {
         this.restaurantService.createRestaurantConfig(restaurant);
     }
 
+    @RequestMapping(value = "config/{restaurantId}", method = RequestMethod.GET)
+    public RestaurantConfig getRestaurantConfig(@PathVariable String restaurantId) {
+        return this.restaurantService.buildRestaurantConfig(restaurantId);
+    }
     @RequestMapping(value = "/dishes/{restaurantId}", method = RequestMethod.PATCH)
     public void addPlate(@RequestBody DishRequest dish, @PathVariable String restaurantId) {
         this.restaurantService.addDish(dish, restaurantId);
