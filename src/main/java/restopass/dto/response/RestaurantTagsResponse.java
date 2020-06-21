@@ -1,7 +1,6 @@
 package restopass.dto.response;
 
 import restopass.dto.Membership;
-import restopass.dto.MembershipType;
 
 import java.util.HashMap;
 import java.util.List;

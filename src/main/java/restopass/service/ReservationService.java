@@ -21,10 +21,8 @@ import restopass.utils.QRHelper;
 
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 public class ReservationService {
@@ -39,10 +37,7 @@ public class ReservationService {
     private String RESERVATION_STATE = "state";
     private String CONFIRMED_USERS = "confirmedUsers";
     private String TO_CONFIRM_USERS = "toConfirmUsers";
-    private String SLOTS_FIELD = "slots";
     private String RESERVATION_COLLECTION = "reservations";
-    private String RESTAURANT_CONFIG_COLLECTION = "restaurant_configs";
-    private Integer SIZE_CALENDAR = 45;
 
     @Autowired
     private RestaurantService restaurantService;
@@ -59,17 +54,17 @@ public class ReservationService {
         String reservationId = UUID.randomUUID().toString();
         reservation.setReservationId(reservationId);
 
-        RestaurantConfig restaurantConfig = this.findConfigurationByRestaurantId(reservation.getRestaurantId());
+        RestaurantConfig restaurantConfig = this.restaurantService.findConfigurationByRestaurantId(reservation.getRestaurantId());
         List<RestaurantSlot> slots = this.restaurantService.decrementTableInSlot(restaurantConfig, reservation.getDate());
         this.restaurantService.fillRestaurantData(reservation);
-        this.updateSlotsInDB(reservation.getRestaurantId(), slots);
+        this.restaurantService.updateSlotsInDB(reservation.getRestaurantId(), slots);
 
         this.userService.decrementUserVisits(userId);
 
         reservation.setQrBase64(QRHelper.createQRBase64(reservationId, reservation.getRestaurantId(), userId));
 
         this.sendConfirmBookingEmail(reservation);
-        if(!CollectionUtils.isEmpty(reservation.getToConfirmUsers())) {
+        if (!CollectionUtils.isEmpty(reservation.getToConfirmUsers())) {
             this.sendNewBookingEmail(reservation);
             this.sendNewBookingNotif(reservation);
         }
@@ -163,14 +158,14 @@ public class ReservationService {
         User user = this.userService.findById(userId);
         Reservation reservation = this.findById(reservationId);
 
-        if(reservation.getState().equals(ReservationState.CANCELED)) {
+        if (reservation.getState().equals(ReservationState.CANCELED)) {
             throw new ReservationCanceledException();
         }
         if (user.getVisits() == null || (user.getVisits() != null && user.getVisits() == 0)) {
             throw new NoMoreVisitsException();
         }
 
-        if(reservation.getConfirmedUsers() != null && reservation.getConfirmedUsers().stream().anyMatch(u -> u.equalsIgnoreCase(userId))) {
+        if (reservation.getConfirmedUsers() != null && reservation.getConfirmedUsers().stream().anyMatch(u -> u.equalsIgnoreCase(userId))) {
             throw new ReservationAlreadyConfirmedException();
         }
 
@@ -242,78 +237,6 @@ public class ReservationService {
         this.mongoTemplate.updateMulti(query, update, RESERVATION_COLLECTION);
     }
 
-    public RestaurantConfig generateSlotsByRestaurantConfig(String restaurantId) {
-        RestaurantConfig restaurantConfig = this.findConfigurationByRestaurantId(restaurantId);
-        List<RestaurantHours> restaurantHours = restaurantConfig.getDateTimeAvailable();
-        LocalDateTime today = LocalDateTime.now();
-
-        List<RestaurantSlot> slots = new ArrayList<>();
-
-        //Genero el calendario de 45 dias
-        IntStream.rangeClosed(0, SIZE_CALENDAR).forEach(i -> {
-                    LocalDateTime date = today.plusDays(i);
-
-                    //Busco la configuracion de horas que incluye el dia que estoy queriendo generar.
-                    //Si esta cerrado el local, no va a existir esa configuracion por eso Optional
-                    Optional<RestaurantHours> optionalDay = restaurantHours.stream().filter(rh -> rh.getOpeningDays().stream().anyMatch(op -> op.equals(date.getDayOfWeek()))).findFirst();
-
-                    if (optionalDay.isPresent()) {
-                        RestaurantHours day = optionalDay.get();
-                        RestaurantSlot slot = new RestaurantSlot();
-                        List<List<DateTimeWithTables>> allDateTimeWithTables = new ArrayList<>();
-
-                        List<PairHour> pairHours = day.getPairHours();
-
-                        //Por cada par hora inicio hora fin genero los distintos horarios con sus mesas
-                        pairHours.forEach(pair -> {
-                            LocalDateTime startHour = date.withHour(pair.getOpeningHour()).withMinute(pair.getOpeningMinute()).truncatedTo(ChronoUnit.MINUTES);;
-                            LocalDateTime endHour = date.withHour(pair.getClosingHour()).withMinute(pair.getClosingMinute()).truncatedTo(ChronoUnit.MINUTES);;
-                            List<DateTimeWithTables> dateTimeWithTables = new ArrayList<>();
-
-                            Integer minutes = restaurantConfig.getMinutesGap();
-                            int minutesCount = 0;
-                            long minutesUntilEndHour = startHour.until(endHour, ChronoUnit.MINUTES);
-
-                            //Empiezo a generar las distintas horas con sus mesas
-                            while (minutesCount < minutesUntilEndHour) {
-                                DateTimeWithTables dt = new DateTimeWithTables();
-                                dt.setDateTime(startHour.plusMinutes(minutesCount));
-                                dt.setTablesAvailable(restaurantConfig.getTablesPerShift());
-                                dateTimeWithTables.add(dt);
-                                minutesCount = minutesCount + minutes;
-                            }
-                            //Cuando termino de generar todos los horarios para un par inicio fin lo agrego al conjunto de todos los pares inicio fin
-                            allDateTimeWithTables.add(dateTimeWithTables);
-                        });
-                        //Cuando tengo todos los pares inicio fin los agrego al dia
-                        slot.setDateTime(allDateTimeWithTables);
-                        slots.add(slot);
-                    }
-                }
-        );
-
-        this.updateSlotsInDB(restaurantId, slots);
-        restaurantConfig.setSlots(slots);
-        return restaurantConfig;
-    }
-
-    public RestaurantConfig findConfigurationByRestaurantId(String restaurantId) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
-
-        return this.mongoTemplate.findOne(query, RestaurantConfig.class);
-    }
-
-    private void updateSlotsInDB(String restaurantId, List<RestaurantSlot> slots) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
-
-        Update update = new Update();
-        update.set(SLOTS_FIELD, slots);
-
-        this.mongoTemplate.updateMulti(query, update, RESTAURANT_CONFIG_COLLECTION);
-    }
-
     private String generateHumanDate(LocalDateTime dt) {
         String dayName = dt.getDayOfWeek().getDisplayName(TextStyle.FULL,
                 new Locale("es"));
@@ -321,10 +244,10 @@ public class ReservationService {
         String monthName = dt.getMonth().getDisplayName(TextStyle.FULL, new Locale("es"));
 
         String hour;
-        if(dt.getMinute() == 0) {
+        if (dt.getMinute() == 0) {
             hour = dt.getHour() + ":00";
         } else {
-           hour = dt.getHour() + ":" + dt.getMinute();
+            hour = dt.getHour() + ":" + dt.getMinute();
         }
 
         return Strings.capitalize(dayName) + " " + dt.getDayOfMonth() + " de " + Strings.capitalize(monthName) + " de " + dt.getYear() + " a las " + hour + "hs";
@@ -344,10 +267,12 @@ public class ReservationService {
         response.setRestaurantAddress(reservation.getRestaurantAddress());
         response.setRestaurantName(reservation.getRestaurantName());
         response.setState(reservation.getState());
-        if (reservation.getConfirmedUsers() != null) response.setConfirmedUsers(reservation.getConfirmedUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
-        if (reservation.getToConfirmUsers() != null) response.setToConfirmUsers(reservation.getToConfirmUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
+        if (reservation.getConfirmedUsers() != null)
+            response.setConfirmedUsers(reservation.getConfirmedUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
+        if (reservation.getToConfirmUsers() != null)
+            response.setToConfirmUsers(reservation.getToConfirmUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
         response.setOwnerUser(mapEmailToUserReservation(reservation.getOwnerUser()));
-        if(!reservation.getOwnerUser().equalsIgnoreCase(userId))response.setIsInvitation(true);
+        if (!reservation.getOwnerUser().equalsIgnoreCase(userId)) response.setIsInvitation(true);
 
         return response;
     }

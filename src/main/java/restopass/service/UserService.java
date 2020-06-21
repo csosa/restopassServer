@@ -109,11 +109,11 @@ public class UserService {
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
 
-    public void updateMembership(String userId, MembershipType membership)  {
+    public void updateMembership(String userId, Integer membership)  {
         Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
 
-        Update update = new Update().set(ACTUAL_MEMBERSHIP, membership.ordinal());
+        Update update = new Update().set(ACTUAL_MEMBERSHIP, membership);
 
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
