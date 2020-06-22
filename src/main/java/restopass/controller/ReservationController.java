@@ -49,10 +49,7 @@ public class ReservationController {
     public ModelAndView doneReservation(@PathVariable String reservationId,
                                 @RequestParam(value = "restaurant_id") String restaurantId,
                                 @RequestParam(value = "user_id") String userId) {
-        this.reservationService.doneReservation(reservationId, restaurantId, userId);
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("/reservation/done-reservation");
-        return modelAndView;
+         return this.reservationService.doneReservation(reservationId, restaurantId, userId);
     }
 
     @RequestMapping(value = "/confirm/{reservationId}/{userId}", method = RequestMethod.GET)
