@@ -2,24 +2,43 @@ package restopass.dto;
 
 public class Dish {
 
+    private String dishId;
     private String name;
     private String description;
     private String img;
     private Integer baseMembership;
     private String baseMembershipName;
-    private Integer stars = 3;
+    private Integer stars = 0;
+    private Integer countStars = 0;
 
 
     public Dish(){
 
     }
 
-    public Dish(String name, String img, String description, MembershipType baseMembership) {
+    public Dish(String dishId, String name, String img, String description, MembershipType baseMembership) {
+        this.dishId = dishId;
         this.name = name;
         this.img = img;
         this.description = description;
         this.baseMembership = baseMembership.ordinal();
         this.baseMembershipName = baseMembership.getName();
+    }
+
+    public Integer getCountStars() {
+        return countStars;
+    }
+
+    public void setCountStars(Integer countStars) {
+        this.countStars = countStars;
+    }
+
+    public String getDishId() {
+        return dishId;
+    }
+
+    public void setDishId(String dishId) {
+        this.dishId = dishId;
     }
 
     public Integer getStars() {

@@ -19,10 +19,20 @@ public class Restaurant {
     private List<RestaurantHours> timeTable;
     private List<String> tags;
     private List<Dish> dishes;
-    private Integer stars = 3;
+    private Integer stars = 0;
+    private Integer countStars = 0;
     private Integer hoursToCancel;
 
     public Restaurant() {
+    }
+
+
+    public Integer getCountStars() {
+        return countStars;
+    }
+
+    public void setCountStars(Integer countStars) {
+        this.countStars = countStars;
     }
 
     public Integer getHoursToCancel() {

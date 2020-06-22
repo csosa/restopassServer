@@ -7,9 +7,9 @@ import restopass.dto.RestaurantConfig;
 import restopass.dto.request.DishRequest;
 import restopass.dto.request.RestaurantCreationRequest;
 import restopass.dto.request.RestaurantTagsRequest;
+import restopass.dto.request.ScoreRequest;
 import restopass.dto.response.RestaurantTagsResponse;
 import restopass.service.FirebaseService;
-import restopass.service.ReservationService;
 import restopass.service.RestaurantService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,12 +18,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/restaurants")
-public class RestaurantsController {
+public class RestaurantController {
 
     @Autowired
     RestaurantService restaurantService;
-    @Autowired
-    ReservationService reservationService;
     @Autowired
     FirebaseService firebaseService;
 
@@ -67,6 +65,11 @@ public class RestaurantsController {
     @RequestMapping(value = "/tags", method = RequestMethod.GET)
     public RestaurantTagsResponse getRestaurantsTags() {
         return this.restaurantService.getRestaurantsTags();
+    }
+
+    @RequestMapping(value = "/score", method = RequestMethod.POST)
+    public void scoreRestaurantAndDish(@RequestBody ScoreRequest scoreRequest) {
+        this.restaurantService.scoreRestaurantAndDish(scoreRequest);
     }
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import restopass.dto.*;
 import restopass.dto.request.DishRequest;
 import restopass.dto.request.RestaurantCreationRequest;
+import restopass.dto.request.ScoreRequest;
 import restopass.dto.response.RestaurantTagsResponse;
 import restopass.mongo.FiltersMapRepository;
 import restopass.mongo.RestaurantConfigRepository;
@@ -45,6 +46,8 @@ public class RestaurantService {
     private String LOCATION_FIELD = "location";
     private String RESTAURANT_NAME = "name";
     private String RESTAURANTS_COLLECTION = "restaurants";
+    private String STARS_FIELD = "stars";
+    private String COUNT_STARS_FIELD = "countStars";
     private String TAGS_FIELD = "tags";
     private Double KM_RADIUS = 10D;
     private Integer SIZE_CALENDAR = 45;
@@ -76,7 +79,7 @@ public class RestaurantService {
         restaurant.setTimeTable(restaurantCreation.getTimeTable());
         restaurant.setTags(restaurantCreation.getTags());
         List<DishRequest> dishes = restaurantCreation.getDishes();
-        List<Dish> dishesToSave = dishes.stream().map(dr -> new Dish(dr.getName(), dr.getImg(), dr.getDescription(), dr.getBaseMembership())).collect(Collectors.toList());
+        List<Dish> dishesToSave = dishes.stream().map(dr -> new Dish(UUID.randomUUID().toString(), dr.getName(), dr.getImg(), dr.getDescription(), dr.getBaseMembership())).collect(Collectors.toList());
         restaurant.setDishes(dishesToSave);
 
         this.restaurantRepository.save(restaurant);
@@ -195,7 +198,8 @@ public class RestaurantService {
     }
 
     public void addDish(DishRequest dishRequest, String restaurantId) {
-        Dish dish = new Dish(dishRequest.getName(),dishRequest.getImg(), dishRequest.getDescription(), dishRequest.getBaseMembership());
+        String dishId = UUID.randomUUID().toString();
+        Dish dish = new Dish(dishId, dishRequest.getName(),dishRequest.getImg(), dishRequest.getDescription(), dishRequest.getBaseMembership());
         Query query = new Query();
         query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
 
@@ -276,5 +280,31 @@ public class RestaurantService {
         List<String> restaurantsIds = this.userService.findById(userId).getFavoriteRestaurants();
 
         return restaurantsIds.stream().map(this::findById).collect(Collectors.toList());
+    }
+
+    public void scoreRestaurantAndDish(ScoreRequest scoreRequest) {
+        Restaurant restaurant = this.findById(scoreRequest.getRestaurantId());
+        restaurant.setCountStars(restaurant.getCountStars() + 1);
+        restaurant.setStars((restaurant.getStars() + scoreRequest.getStarsRestaurant()) / restaurant.getCountStars());
+
+        restaurant.getDishes().forEach(d -> {
+            if(d.getDishId().equalsIgnoreCase(scoreRequest.getDishId())) {
+                d.setCountStars(d.getCountStars() + 1);
+                d.setStars((d.getStars() + scoreRequest.getStarsDish()) / d.getCountStars());
+
+
+            }
+        });
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where(RESTAURANT_ID).is(scoreRequest.getRestaurantId()));
+
+        Update update = new Update();
+        update.set(STARS_FIELD, restaurant.getStars());
+        update.set(COUNT_STARS_FIELD, restaurant.getCountStars());
+        update.set(DISHES_FIELD, restaurant.getDishes());
+
+        this.mongoTemplate.updateMulti(query, update, RESTAURANTS_COLLECTION);
+
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import restopass.dto.Reservation;
 import restopass.dto.User;
+import restopass.dto.request.ScoreRequest;
 import restopass.dto.response.ReservationResponse;
 import restopass.exception.NoMoreVisitsException;
 import restopass.exception.ReservationAlreadyConfirmedException;
