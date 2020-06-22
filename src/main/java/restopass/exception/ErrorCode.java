@@ -7,6 +7,7 @@ public enum ErrorCode {
     USER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST.value(), 2, "El email ya se encuentra registrado en nuestro sistema"),
     ACCESS_TOKEN_REQUIRED(HttpStatus.BAD_REQUEST.value(), 3, "Access token is required for this request"),
     ACCESS_REFRESH_TOKEN_INVALID(HttpStatus.BAD_REQUEST.value(), 4, "Invalid access or refresh token"),
+    EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST.value(), 5, "El email secundario debe ser diferente al principal"),
 
     USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 1, "El usuario no existe"),
     URL_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 2, "Url doesnt exist. Please check our wiki for more info"),

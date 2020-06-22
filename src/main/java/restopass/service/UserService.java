@@ -9,11 +9,12 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import restopass.dto.MembershipType;
 import restopass.dto.User;
 import restopass.dto.request.UserCreationRequest;
 import restopass.dto.request.UserLoginRequest;
+import restopass.dto.request.UserUpdateRequest;
 import restopass.dto.response.UserLoginResponse;
+import restopass.exception.EmalAlreadyExistsException;
 import restopass.exception.InvalidAccessOrRefreshTokenException;
 import restopass.exception.InvalidUsernameOrPasswordException;
 import restopass.exception.UserAlreadyExistsException;
@@ -27,6 +28,9 @@ public class UserService {
 
     private static String EMAIL_FIELD = "email";
     private static String PASSWORD_FIELD = "password";
+    private static String NAME_FIELD = "name";
+    private static String LAST_NAME_FIELD = "lastName";
+    private static String SECONDARY_EMAILS_FIELD= "secondaryEmails";
     private static String VISITS_FIELD = "visits";
     private static String ACTUAL_MEMBERSHIP = "actualMembership";
     private static String FAVORITE_RESTAURANTS_FIELD = "favoriteRestaurants";
@@ -135,7 +139,6 @@ public class UserService {
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
 
-
     public void removeRestaurantFavorite(String restaurantId, String userId) {
         Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
@@ -144,4 +147,35 @@ public class UserService {
 
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
+
+    public void updateUserInfo(UserUpdateRequest request, String userId){
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+
+        Update update = new Update();
+        this.setIfNotEmpty(NAME_FIELD, request.getName(), update);
+        this.setIfNotEmpty(LAST_NAME_FIELD, request.getLastName(), update);
+        //TODO Quizas en algun futuro chequear el formato
+        this.setIfNotEmpty(PASSWORD_FIELD, request.getPassword(), update);
+        this.pushSecondaryEmailIfNotEmpty(request.getSecondaryEmail(), userId, update);
+
+        this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+    }
+
+    private void pushSecondaryEmailIfNotEmpty(String email, String userId, Update update) {
+        if(email != null) {
+            if(userId.equalsIgnoreCase(email)){
+                throw new EmalAlreadyExistsException();
+            }
+            update.push(SECONDARY_EMAILS_FIELD, email);
+        }
+    }
+
+    private void setIfNotEmpty(String propertyName, String value, Update update){
+        if(value != null) {
+            update.set(propertyName, value);
+        }
+    }
+
 }
