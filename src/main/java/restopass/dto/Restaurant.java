@@ -19,7 +19,7 @@ public class Restaurant {
     private List<RestaurantHours> timeTable;
     private List<String> tags;
     private List<Dish> dishes;
-    private Integer stars = 0;
+    private Float stars = 0f;
     private Integer countStars = 0;
     private Integer hoursToCancel;
 
@@ -43,11 +43,11 @@ public class Restaurant {
         this.hoursToCancel = hoursToCancel;
     }
 
-    public Integer getStars() {
+    public Float getStars() {
         return stars;
     }
 
-    public void setStars(Integer stars) {
+    public void setStars(Float stars) {
         this.stars = stars;
     }
 

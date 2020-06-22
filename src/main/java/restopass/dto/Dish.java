@@ -8,7 +8,7 @@ public class Dish {
     private String img;
     private Integer baseMembership;
     private String baseMembershipName;
-    private Integer stars = 0;
+    private Float stars = 0f;
     private Integer countStars = 0;
 
 
@@ -41,11 +41,11 @@ public class Dish {
         this.dishId = dishId;
     }
 
-    public Integer getStars() {
+    public Float getStars() {
         return stars;
     }
 
-    public void setStars(Integer stars) {
+    public void setStars(Float stars) {
         this.stars = stars;
     }
 
