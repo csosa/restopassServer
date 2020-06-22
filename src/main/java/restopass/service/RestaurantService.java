@@ -70,7 +70,7 @@ public class RestaurantService {
 
         restaurant.setAddress(restaurantCreation.getAddress());
         restaurant.setImg(restaurantCreation.getImg());
-        GeoJsonPoint point = new GeoJsonPoint(restaurantCreation.getLatitude(), restaurantCreation.getLongitude());
+        GeoJsonPoint point = new GeoJsonPoint(restaurantCreation.getLongitude(), restaurantCreation.getLatitude());
         restaurant.setLocation(point);
         restaurant.setName(restaurantCreation.getName());
         restaurant.setTimeTable(restaurantCreation.getTimeTable());
@@ -209,7 +209,7 @@ public class RestaurantService {
 
         Query query = new Query();
 
-        Point geoPoint = new Point(lat, lng);
+        Point geoPoint = new Point(lng, lat);
         Distance geoDistance = new Distance(KM_RADIUS, Metrics.KILOMETERS);
         Circle geoCircle = new Circle(geoPoint, geoDistance);
         query.addCriteria(Criteria.where(LOCATION_FIELD).withinSphere(geoCircle));
