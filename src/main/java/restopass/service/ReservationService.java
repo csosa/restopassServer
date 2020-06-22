@@ -8,26 +8,36 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.servlet.ModelAndView;
 import restopass.dto.*;
 import restopass.dto.response.ReservationResponse;
 import restopass.dto.response.UserReservation;
 import restopass.exception.NoMoreVisitsException;
 import restopass.exception.ReservationAlreadyConfirmedException;
 import restopass.exception.ReservationCanceledException;
+import restopass.exception.ReservationNofFoundException;
+import restopass.mongo.MembershipRepository;
 import restopass.mongo.ReservationRepository;
 import restopass.utils.EmailSender;
 import restopass.utils.QRHelper;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.summingInt;
 
 @Service
 public class ReservationService {
 
     private MongoTemplate mongoTemplate;
     private ReservationRepository reservationRepository;
+    private MembershipRepository membershipRepository;
     private UserService userService;
     private FirebaseService firebaseService;
     private String RESTAURANT_ID = "restaurantId";
@@ -42,9 +52,11 @@ public class ReservationService {
     private RestaurantService restaurantService;
 
     @Autowired
-    public ReservationService(MongoTemplate mongoTemplate, ReservationRepository reservationRepository, UserService userService, FirebaseService firebaseService) {
+    public ReservationService(MongoTemplate mongoTemplate, ReservationRepository reservationRepository, UserService userService, FirebaseService firebaseService,
+                              MembershipRepository membershipRepository) {
         this.mongoTemplate = mongoTemplate;
         this.reservationRepository = reservationRepository;
+        this.membershipRepository = membershipRepository;
         this.userService = userService;
         this.firebaseService = firebaseService;
     }
@@ -126,7 +138,6 @@ public class ReservationService {
     public List<ReservationResponse> getReservationsForUser(String userId) {
         Query query = new Query();
 
-
         Criteria orCriteria = new Criteria();
         orCriteria.orOperator(
                 Criteria.where(OWNER_USER_ID).is(userId),
@@ -185,15 +196,51 @@ public class ReservationService {
 
     }
 
-    public void doneReservation(String reservationId, String restaurantId, String userId) {
-        //TODO show web with plates
-        this.updateReservationState(reservationId, ReservationState.DONE);
+    public ModelAndView doneReservation(String reservationId, String restaurantId, String userId) {
 
         Reservation reservation = this.findById(reservationId);
-        List<String> userOwnerAndConfirmed = Arrays.asList(reservation.getOwnerUser());
-        if (reservation.getConfirmedUsers() != null) userOwnerAndConfirmed.addAll(reservation.getConfirmedUsers());
 
-        this.firebaseService.sendScoreNotification(userOwnerAndConfirmed, reservation.getRestaurantId(), reservation.getRestaurantName());
+        if(reservation == null){
+            throw new ReservationNofFoundException();
+        }
+
+        User user = this.userService.findById(userId);
+        Restaurant restaurant = this.restaurantService.findById(restaurantId);
+
+        List<String> userOwnerAndConfirmed = new LinkedList<>(Arrays.asList(reservation.getOwnerUser()));
+
+        if (reservation.getConfirmedUsers() != null) {
+            userOwnerAndConfirmed.addAll(reservation.getConfirmedUsers());
+        }
+
+        List<Integer> membershipIds = userOwnerAndConfirmed.stream().map(id -> {
+            User oneUser = this.userService.findById(id);
+            return oneUser.getActualMembership();
+        }).collect(Collectors.toList());
+
+        Map<String, List<Dish>> dishesMap = restaurant.getDishes().stream()
+                .filter(dish -> membershipIds.contains(dish.getBaseMembership()))
+                .collect(Collectors.groupingBy(dish -> dish.getBaseMembershipName().toUpperCase(),
+                        Collectors.toList()));
+
+        List<Membership> allMemberships = this.membershipRepository.findAll();
+
+        Map<String, Long> membershipMap =  allMemberships.stream()
+                .collect(Collectors.toMap(Membership::getName,
+                        membership -> membershipIds.stream().filter(integer -> membership.getMembershipId().equals(integer)).count()));
+
+       this.updateReservationState(reservationId, ReservationState.DONE);
+       this.firebaseService.sendScoreNotification(userOwnerAndConfirmed, reservation.getRestaurantId(), reservation.getRestaurantName());
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("restaurant_name", restaurant.getName());
+        modelAndView.addObject("name", user.getName());
+        modelAndView.addObject("lastname", user.getLastName());
+        modelAndView.addObject("membershipMap", membershipMap);
+        modelAndView.addObject("dishesMap", dishesMap);
+        modelAndView.setViewName("/reservation/done-reservation");
+
+        return modelAndView;
     }
 
     private void updateReservationState(String reservationId, ReservationState state) {

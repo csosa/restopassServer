@@ -10,6 +10,7 @@ public enum ErrorCode {
 
     USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 1, "El usuario no existe"),
     URL_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 2, "Url doesnt exist. Please check our wiki for more info"),
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 3, "La reserva no existe"),
 
     ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED.value(), 1, "Expired access token"),
     EMPTY_VISITS(HttpStatus.UNAUTHORIZED.value(), 2, "¿Quieres seguir visitando tus restaurantes favoritos? Porque no pruebas un mejor plan"),
