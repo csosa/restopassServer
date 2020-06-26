@@ -7,10 +7,8 @@ import restopass.dto.request.UserCreationRequest;
 import restopass.dto.request.UserLoginRequest;
 import restopass.dto.response.UserLoginResponse;
 import restopass.service.UserService;
-import restopass.utils.JWTHelper;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/users")
@@ -46,5 +44,10 @@ public class UserController {
     public void removeRestaurantFromFavorites(HttpServletRequest request, @PathVariable String restaurantId) {
         String userId = request.getAttribute(USER_ID_ATTR).toString();
         this.userService.removeRestaurantFavorite(restaurantId, userId);
+    }
+
+    @RequestMapping(value = "/check/{userId}/{baseMembership}", method = RequestMethod.POST)
+    public User checkCanAddToReservation(@PathVariable String userId, @PathVariable Integer baseMembership) {
+        return this.userService.checkCanAddToReservation(userId, baseMembership);
     }
 }
