@@ -11,12 +11,12 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 1, "El usuario no esta registrado en RestoPass"),
     URL_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 2, "Url doesnt exist. Please check our wiki for more info"),
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 3, "La reserva no existe"),
+    RESTAURANT_NOT_IN_MEMBERSHIP(HttpStatus.NOT_FOUND.value(), 4, "El restaurante no tiene platos disponibles en la membresía de este usuario"),
 
     ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED.value(), 1, "Expired access token"),
     EMPTY_VISITS(HttpStatus.UNAUTHORIZED.value(), 2, "¿Quieres seguir visitando tus restaurantes favoritos? Porque no pruebas un mejor plan"),
     RESERVATION_ALREADY_CONFIRMED(HttpStatus.UNAUTHORIZED.value(), 3, "Reserva ya confirmada"),
     RESERVATION_CANCELED(HttpStatus.UNAUTHORIZED.value(), 4, "Reserva cancelada por el dueño"),
-    RESTAURANT_NOT_IN_MEMBERSHIP(HttpStatus.UNAUTHORIZED.value(), 5, "El restaurante no tiene platos disponibles en la membresía de este usuario"),
 
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), 0, "Ups, server exploded. Contact Yami");
 
