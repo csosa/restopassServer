@@ -9,6 +9,7 @@ import java.util.List;
 public class Reservation {
 
     private String reservationId;
+    private String img;
     private String restaurantId;
     private LocalDateTime date;
     private ReservationState state = ReservationState.CONFIRMED;
@@ -18,6 +19,14 @@ public class Reservation {
     private List<String> toConfirmUsers;
     private String restaurantName;
     private String restaurantAddress;
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
+    }
 
     public String getRestaurantName() {
         return restaurantName;
