@@ -28,7 +28,6 @@ public class UserService {
     private static String PASSWORD_FIELD = "password";
     private static String NAME_FIELD = "name";
     private static String LAST_NAME_FIELD = "lastName";
-    private static String SECONDARY_EMAILS_FIELD= "secondaryEmails";
     private static String VISITS_FIELD = "visits";
     private static String ACTUAL_MEMBERSHIP = "actualMembership";
     private static String FAVORITE_RESTAURANTS_FIELD = "favoriteRestaurants";
