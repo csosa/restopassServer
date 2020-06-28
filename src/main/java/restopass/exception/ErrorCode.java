@@ -9,9 +9,10 @@ public enum ErrorCode {
     ACCESS_REFRESH_TOKEN_INVALID(HttpStatus.BAD_REQUEST.value(), 4, "Invalid access or refresh token"),
     EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST.value(), 5, "El email secundario debe ser diferente al principal"),
 
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 1, "El usuario no existe"),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 1, "El usuario no esta registrado en RestoPass"),
     URL_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 2, "Url doesnt exist. Please check our wiki for more info"),
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 3, "La reserva no existe"),
+    RESTAURANT_NOT_IN_MEMBERSHIP(HttpStatus.UNAUTHORIZED.value(), 5, "El restaurante no tiene platos disponibles en la membresía de este usuario"),
 
     ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED.value(), 1, "Expired access token"),
     EMPTY_VISITS(HttpStatus.UNAUTHORIZED.value(), 2, "¿Quieres seguir visitando tus restaurantes favoritos? Porque no pruebas un mejor plan"),

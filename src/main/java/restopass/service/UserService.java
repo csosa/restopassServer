@@ -14,10 +14,7 @@ import restopass.dto.request.UserCreationRequest;
 import restopass.dto.request.UserLoginRequest;
 import restopass.dto.request.UserUpdateRequest;
 import restopass.dto.response.UserLoginResponse;
-import restopass.exception.EmalAlreadyExistsException;
-import restopass.exception.InvalidAccessOrRefreshTokenException;
-import restopass.exception.InvalidUsernameOrPasswordException;
-import restopass.exception.UserAlreadyExistsException;
+import restopass.exception.*;
 import restopass.mongo.UserRepository;
 import restopass.utils.JWTHelper;
 
@@ -27,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 public class UserService {
 
     private static String EMAIL_FIELD = "email";
+    private static String SECONDARY_EMAILS_FIELD = "secondaryEmails";
     private static String PASSWORD_FIELD = "password";
     private static String NAME_FIELD = "name";
     private static String LAST_NAME_FIELD = "lastName";
@@ -146,6 +144,30 @@ public class UserService {
         update.pull(FAVORITE_RESTAURANTS_FIELD, restaurantId);
 
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+    }
+
+    public User checkCanAddToReservation(String userId, Integer baseMembership) {
+        Query query = new Query();
+
+        Criteria orCriteria = new Criteria();
+        orCriteria.orOperator(
+                Criteria.where(EMAIL_FIELD).is(userId),
+                Criteria.where(SECONDARY_EMAILS_FIELD).in(userId));
+
+        query.addCriteria(orCriteria);
+
+        User user = this.mongoTemplate.findOne(query, User.class);
+
+
+        if(user == null) {
+            throw new UserNotFoundException();
+        }
+
+        if(user.getActualMembership() >= baseMembership) {
+            return user;
+        } else {
+            throw new RestaurantNotInMembershipException();
+        }
     }
 
     public void updateUserInfo(UserUpdateRequest request, String userId){
