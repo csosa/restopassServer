@@ -272,6 +272,7 @@ public class RestaurantService {
 
     public void fillRestaurantData(Reservation reservation) {
         Restaurant restaurant = this.findById(reservation.getRestaurantId());
+        reservation.setImg(restaurant.getImg());
         reservation.setRestaurantAddress(restaurant.getAddress());
         reservation.setRestaurantName(restaurant.getName());
     }
