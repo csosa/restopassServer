@@ -17,7 +17,24 @@ public class ReservationResponse {
     private List<UserReservation> toConfirmUsers;
     private String restaurantName;
     private String restaurantAddress;
+    private String img;
     private Boolean isInvitation = false;
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
+    }
+
+    public Boolean getInvitation() {
+        return isInvitation;
+    }
+
+    public void setInvitation(Boolean invitation) {
+        isInvitation = invitation;
+    }
 
     public String getReservationId() {
         return reservationId;
@@ -99,11 +116,4 @@ public class ReservationResponse {
         this.restaurantAddress = restaurantAddress;
     }
 
-    public Boolean getIsInvitation() {
-        return isInvitation;
-    }
-
-    public void setIsInvitation(Boolean reservation) {
-        isInvitation = reservation;
-    }
 }

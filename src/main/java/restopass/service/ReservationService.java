@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.ModelAndView;
 import restopass.dto.*;
+import restopass.dto.request.CreateReservationRequest;
 import restopass.dto.response.ReservationResponse;
 import restopass.dto.response.UserReservation;
 import restopass.exception.NoMoreVisitsException;
@@ -21,16 +22,10 @@ import restopass.mongo.ReservationRepository;
 import restopass.utils.EmailSender;
 import restopass.utils.QRHelper;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.summingInt;
 
 @Service
 public class ReservationService {
@@ -61,8 +56,13 @@ public class ReservationService {
         this.firebaseService = firebaseService;
     }
 
-    public void createReservation(Reservation reservation, String userId) {
+    public void createReservation(CreateReservationRequest reservationRequest, String userId) {
         String reservationId = UUID.randomUUID().toString();
+        Reservation reservation = new Reservation();
+        reservation.setRestaurantId(reservationRequest.getRestaurantId());
+        reservation.setToConfirmUsers(reservationRequest.getToConfirmUsers());
+        reservation.setDate(LocalDateTime.parse(reservationRequest.getDate()));
+
         reservation.setReservationId(reservationId);
         reservation.setOwnerUser(userId);
 
@@ -97,7 +97,7 @@ public class ReservationService {
         HashMap<String, Object> modelEmail = new HashMap<>();
         modelEmail.put("userName", user.getName());
         modelEmail.put("restaurantName", restaurant.getName());
-        if(reservation.getToConfirmUsers() != null) {
+        if (reservation.getToConfirmUsers() != null) {
             modelEmail.put("totalDiners", reservation.getToConfirmUsers().size() + 1);
         } else {
             modelEmail.put("totalDiners", 1);
@@ -205,7 +205,7 @@ public class ReservationService {
 
         Reservation reservation = this.findById(reservationId);
 
-        if(reservation == null){
+        if (reservation == null) {
             throw new ReservationNofFoundException();
         }
 
@@ -230,12 +230,12 @@ public class ReservationService {
 
         List<Membership> allMemberships = this.membershipRepository.findAll();
 
-        Map<String, Long> membershipMap =  allMemberships.stream()
+        Map<String, Long> membershipMap = allMemberships.stream()
                 .collect(Collectors.toMap(Membership::getName,
                         membership -> membershipIds.stream().filter(integer -> membership.getMembershipId().equals(integer)).count()));
 
-       this.updateReservationState(reservationId, ReservationState.DONE);
-       this.firebaseService.sendScoreNotification(userOwnerAndConfirmed, reservation.getRestaurantId(), reservation.getRestaurantName());
+        this.updateReservationState(reservationId, ReservationState.DONE);
+        this.firebaseService.sendScoreNotification(userOwnerAndConfirmed, reservation.getRestaurantId(), reservation.getRestaurantName());
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("restaurant_name", restaurant.getName());
@@ -288,12 +288,13 @@ public class ReservationService {
         response.setRestaurantAddress(reservation.getRestaurantAddress());
         response.setRestaurantName(reservation.getRestaurantName());
         response.setState(reservation.getState());
-        if (reservation.getConfirmedUsers() != null)
+        response.setImg(reservation.getImg());
+        if (reservation.getConfirmedUsers() != null && !reservation.getConfirmedUsers().isEmpty())
             response.setConfirmedUsers(reservation.getConfirmedUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
-        if (reservation.getToConfirmUsers() != null)
+        if (reservation.getToConfirmUsers() != null && !reservation.getToConfirmUsers().isEmpty())
             response.setToConfirmUsers(reservation.getToConfirmUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
         response.setOwnerUser(mapEmailToUserReservation(reservation.getOwnerUser()));
-        if (!reservation.getOwnerUser().equalsIgnoreCase(userId)) response.setIsInvitation(true);
+        if (!reservation.getOwnerUser().equalsIgnoreCase(userId)) response.setInvitation(true);
 
         return response;
     }
