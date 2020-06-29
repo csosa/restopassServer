@@ -64,6 +64,7 @@ public class ReservationService {
     public void createReservation(Reservation reservation, String userId) {
         String reservationId = UUID.randomUUID().toString();
         reservation.setReservationId(reservationId);
+        reservation.setOwnerUser(userId);
 
         RestaurantConfig restaurantConfig = this.restaurantService.findConfigurationByRestaurantId(reservation.getRestaurantId());
         List<RestaurantSlot> slots = this.restaurantService.decrementTableInSlot(restaurantConfig, reservation.getDate());
