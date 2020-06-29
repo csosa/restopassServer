@@ -96,7 +96,11 @@ public class ReservationService {
         HashMap<String, Object> modelEmail = new HashMap<>();
         modelEmail.put("userName", user.getName());
         modelEmail.put("restaurantName", restaurant.getName());
-        modelEmail.put("totalDiners", reservation.getToConfirmUsers().size() + 1);
+        if(reservation.getToConfirmUsers() != null) {
+            modelEmail.put("totalDiners", reservation.getToConfirmUsers().size() + 1);
+        } else {
+            modelEmail.put("totalDiners", 1);
+        }
         modelEmail.put("date", this.generateHumanDate(reservation.getDate()));
         modelEmail.put("restaurantAddress", restaurant.getAddress());
         modelEmail.put("qrCode", reservation.getQrBase64());
