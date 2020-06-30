@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import restopass.dto.User;
 import restopass.dto.request.UserCreationRequest;
 import restopass.dto.request.UserLoginRequest;
+import restopass.dto.request.UserUpdateRequest;
 import restopass.dto.response.UserLoginResponse;
 import restopass.service.UserService;
 
@@ -27,6 +28,12 @@ public class UserController {
     @RequestMapping(value = "", method = RequestMethod.POST)
     public UserLoginResponse createUser(@RequestBody UserCreationRequest user) {
         return this.userService.createUser(user);
+    }
+
+    @RequestMapping(value = "", method = RequestMethod.PATCH)
+    public void updateUser(HttpServletRequest request, @RequestBody UserUpdateRequest userUpdateRequest) {
+        String userId = request.getAttribute(USER_ID_ATTR).toString();
+        this.userService.updateUserInfo(userUpdateRequest, userId);
     }
 
     @RequestMapping(value = "/refresh", method = RequestMethod.GET)
