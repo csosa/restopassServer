@@ -105,7 +105,7 @@ public class ReservationService {
         modelEmail.put("date", this.generateHumanDate(reservation.getDate()));
         modelEmail.put("restaurantAddress", restaurant.getAddress());
         modelEmail.put("qrCode", reservation.getQrBase64());
-        modelEmail.put("cancelDate", reservation.getDate().minusHours(restaurant.getHoursToCancel()));
+        modelEmail.put("cancelDate", this.generateHumanDate(reservation.getDate().minusHours(restaurant.getHoursToCancel())));
 
 
         EmailModel emailModel = new EmailModel();
