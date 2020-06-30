@@ -162,11 +162,13 @@ public class ReservationService {
         List<ReservationResponse> reservations = this.getReservationsForUser(userId);
 
         ReservationResponse reservation = reservations.stream().filter(r -> r.getReservationId().equalsIgnoreCase(reservationId)).findFirst().get();
-        this.firebaseService.sendCancelReservationNotification(
-                reservation.getConfirmedUsers().stream().map(UserReservation::getUserId).collect(Collectors.toList()),
-                reservationId, reservation.getOwnerUser().getName() + " " + reservation.getOwnerUser().getLastName(),
-                reservation.getRestaurantName(), generateHumanDate(reservation.getDate()));
-
+        if(reservation.getConfirmedUsers() != null) {
+            this.firebaseService.sendCancelReservationNotification(
+                    reservation.getConfirmedUsers().stream().map(UserReservation::getUserId).collect(Collectors.toList()),
+                    reservationId, reservation.getOwnerUser().getName() + " " + reservation.getOwnerUser().getLastName(),
+                    reservation.getRestaurantName(), generateHumanDate(reservation.getDate()));
+        }
+        
         return reservations;
     }
 
