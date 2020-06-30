@@ -160,6 +160,7 @@ public class ReservationService {
     public List<ReservationResponse> cancelReservation(String reservationId, String userId) {
         this.updateReservationState(reservationId, ReservationState.CANCELED);
         List<ReservationResponse> reservations = this.getReservationsForUser(userId);
+        this.userService.incrementUserVisits(userId);
 
         ReservationResponse reservation = reservations.stream().filter(r -> r.getReservationId().equalsIgnoreCase(reservationId)).findFirst().get();
         if(reservation.getConfirmedUsers() != null) {
@@ -167,8 +168,10 @@ public class ReservationService {
                     reservation.getConfirmedUsers().stream().map(UserReservation::getUserId).collect(Collectors.toList()),
                     reservationId, reservation.getOwnerUser().getName() + " " + reservation.getOwnerUser().getLastName(),
                     reservation.getRestaurantName(), generateHumanDate(reservation.getDate()));
+
+            reservation.getConfirmedUsers().forEach(u -> this.userService.incrementUserVisits(u.getUserId()));
         }
-        
+
         return reservations;
     }
 
