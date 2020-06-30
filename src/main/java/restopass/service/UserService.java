@@ -110,6 +110,15 @@ public class UserService {
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
 
+    public void incrementUserVisits(String userId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+
+        Update update = new Update().inc(VISITS_FIELD, 1);
+
+        this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+    }
+
     public void updateMembership(String userId, Integer membership)  {
         Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
