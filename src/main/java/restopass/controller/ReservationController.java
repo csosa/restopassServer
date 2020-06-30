@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import restopass.dto.Reservation;
 import restopass.dto.User;
+import restopass.dto.request.CreateReservationRequest;
 import restopass.dto.request.ScoreRequest;
 import restopass.dto.response.ReservationResponse;
 import restopass.exception.NoMoreVisitsException;
@@ -28,7 +29,7 @@ public class ReservationController {
     private String USER_ID = "userId";
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public void createReservation(@RequestBody Reservation reservation, HttpServletRequest request) {
+    public void createReservation(@RequestBody CreateReservationRequest reservation, HttpServletRequest request) {
         String userId = request.getAttribute(USER_ID).toString();
         this.reservationService.createReservation(reservation, userId);
     }

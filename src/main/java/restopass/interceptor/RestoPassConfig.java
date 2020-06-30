@@ -27,8 +27,8 @@ public class RestoPassConfig extends WebMvcConfigurerAdapter {
     @Bean
     public CustomConversions customConversions() {
         List<Converter<?, ?>> converterList = new ArrayList<>();
-        converterList.add(new DateTimeToUTC());
-        converterList.add(new DateTimeWithZone());
+        //converterList.add(new DateTimeToUTC());
+        //converterList.add(new DateTimeWithZone());
         return new CustomConversions(converterList);
     }
 }
