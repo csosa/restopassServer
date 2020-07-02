@@ -128,6 +128,15 @@ public class UserService {
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
 
+    public void removeMembership(String userId)  {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+
+        Update update = new Update().unset(ACTUAL_MEMBERSHIP);
+
+        this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+    }
+
     private UserLoginResponse buildUserLoginResponse(User user) {
         UserLoginResponse userResponse = new UserLoginResponse();
         userResponse.setxAuthToken(JWTHelper.createAccessToken(user.getEmail()));

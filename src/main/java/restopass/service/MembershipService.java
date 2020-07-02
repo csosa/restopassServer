@@ -73,6 +73,16 @@ public class MembershipService {
         this.userService.updateMembership(userId, request.getMembershipId());
     }
 
+    public void removeMembershipToUser(String userId){
+        User user = this.userService.findById(userId);
+
+        if(user == null) {
+            throw new UserNotFoundException();
+        }
+
+        this.userService.removeMembership(userId);
+    }
+
     public List<Membership> findAll() {
         return this.membershipRepository.findAll();
     }

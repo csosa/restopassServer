@@ -37,4 +37,10 @@ public class MembershipController {
         this.membershipService.updateMembershipToUser(userId, updateMembershipToUserRequest);
     }
 
+    @RequestMapping(value = "/users", method = RequestMethod.DELETE)
+    public void removeMembershipToUser(HttpServletRequest request) {
+        String userId = request.getAttribute(USER_ID_ATTR).toString();
+        this.membershipService.removeMembershipToUser(userId);
+    }
+
 }
