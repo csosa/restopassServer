@@ -1,11 +1,20 @@
 package restopass.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import javax.activation.DataHandler;
+import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.PreencodedMimeBodyPart;
+import javax.mail.util.ByteArrayDataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -32,13 +41,32 @@ public class EmailSender {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
 
         try {
-
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
 
             mimeMessageHelper.setSubject(mail.getSubject());
             mimeMessageHelper.setTo(mail.getEmailTo());
-            mail.setMailContent(geContentFromTemplate(mail.getMailTempate(), mail.getModel()));
-            mimeMessageHelper.setText(mail.getMailContent(), true);
+
+            MimeMessage message = mimeMessageHelper.getMimeMessage();
+
+            MimeMultipart multipart = new MimeMultipart();
+
+            BodyPart messageBodyPart = new MimeBodyPart();
+            String htmlText = geContentFromTemplate(mail.getMailTempate(), mail.getModel());
+            messageBodyPart.setContent(htmlText, "text/html");
+            multipart.addBodyPart(messageBodyPart);
+
+            MimeBodyPart qrBodyPart = new MimeBodyPart();
+
+            String body = mail.getModel().get("qrCode").toString().replace("data:image/jpeg;base64","");
+            MimeBodyPart filePart = new PreencodedMimeBodyPart("base64");
+            filePart.setFileName("imageQr.jpeg");
+            filePart.setText(body);
+            filePart.setHeader("Content-ID", "<imageQr>");
+
+            multipart.addBodyPart(messageBodyPart);
+            multipart.addBodyPart(filePart);
+
+            message.setContent(multipart);
 
             mailSender.send(mimeMessageHelper.getMimeMessage());
         } catch (MessagingException e) {
@@ -49,15 +77,37 @@ public class EmailSender {
     public static void sendMultipleEmails(EmailModel mail, String addresses) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         try {
+
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
 
             mimeMessageHelper.setSubject(mail.getSubject());
             mimeMessage.setRecipients(Message.RecipientType.CC, addresses);
-            mail.setMailContent(geContentFromTemplate(mail.getMailTempate(), mail.getModel()));
-            mimeMessageHelper.setText(mail.getMailContent(), true);
+
+            MimeMessage message = mimeMessageHelper.getMimeMessage();
+
+            MimeMultipart multipart = new MimeMultipart();
+
+            BodyPart messageBodyPart = new MimeBodyPart();
+            String htmlText = geContentFromTemplate(mail.getMailTempate(), mail.getModel());
+            messageBodyPart.setContent(htmlText, "text/html");
+            multipart.addBodyPart(messageBodyPart);
+
+            MimeBodyPart qrBodyPart = new MimeBodyPart();
+
+            String body = mail.getModel().get("qrCode").toString().replace("data:image/jpeg;base64","");
+            MimeBodyPart filePart = new PreencodedMimeBodyPart("base64");
+            filePart.setFileName("imageQr.jpeg");
+            filePart.setText(body);
+            filePart.setHeader("Content-ID", "<imageQr>");
+
+            multipart.addBodyPart(messageBodyPart);
+            multipart.addBodyPart(filePart);
+
+            message.setContent(multipart);
 
             mailSender.send(mimeMessageHelper.getMimeMessage());
-        } catch (MessagingException e) {
+
+        } catch (MessagingException e ) {
             e.printStackTrace();
         }
     }

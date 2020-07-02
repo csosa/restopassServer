@@ -11,6 +11,7 @@ import sun.misc.BASE64Encoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 public class QRHelper {
 
@@ -38,6 +39,10 @@ public class QRHelper {
         ByteArrayOutputStream jpgOutputStream = new ByteArrayOutputStream();
         MatrixToImageWriter.writeToStream(bitMatrix, imgFormat, jpgOutputStream);
         return jpgOutputStream;
+    }
+
+    public static byte[] decodeBase64ToByteArray(String qr) {
+        return Base64.getEncoder().encode(qr.getBytes());
     }
 
     private static String generateUrl(String reservationId, String restaurantId, String userId) {
