@@ -79,8 +79,11 @@ public class RestaurantService {
         restaurant.setTimeTable(restaurantCreation.getTimeTable());
         restaurant.setTags(restaurantCreation.getTags());
         List<DishRequest> dishes = restaurantCreation.getDishes();
-        List<Dish> dishesToSave = dishes.stream().map(dr -> new Dish(UUID.randomUUID().toString(), dr.getName(), dr.getImg(), dr.getDescription(), dr.getBaseMembership())).collect(Collectors.toList());
-        restaurant.setDishes(dishesToSave);
+        List<Dish> dishesToSave;
+        if(dishes != null) {
+            dishesToSave = dishes.stream().map(dr -> new Dish(UUID.randomUUID().toString(), dr.getName(), dr.getImg(), dr.getDescription(), dr.getBaseMembership())).collect(Collectors.toList());
+            restaurant.setDishes(dishesToSave);
+        }
 
         this.restaurantRepository.save(restaurant);
     }
