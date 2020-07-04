@@ -227,12 +227,21 @@ public class RestaurantService {
 
         tags.addAll(freeTextList);
 
+        Criteria orTagFreeTextCriteria = new Criteria();
+        List<Criteria> criterias = new ArrayList<>();
+
         if(!tags.isEmpty()) {
-            query.addCriteria(Criteria.where(TAGS_FIELD).all(tags));
+            criterias.add(Criteria.where(TAGS_FIELD).all(tags));
         }
 
         if(freeText != null) {
-            freeTextList.forEach(text -> query.addCriteria(Criteria.where(RESTAURANT_NAME).regex("."+Strings.capitalize(text)+".")));
+            String freeTextRegex = freeTextList.stream().map(s -> "."+Strings.capitalize(s)+".").collect(Collectors.joining("|"));
+            criterias.add(Criteria.where(RESTAURANT_NAME).regex(freeTextRegex));
+        }
+
+        if(!criterias.isEmpty()) {
+            orTagFreeTextCriteria.orOperator(criterias.toArray(new Criteria[criterias.size()]));
+            query.addCriteria(orTagFreeTextCriteria);
         }
 
         if(topMembership != null) {
