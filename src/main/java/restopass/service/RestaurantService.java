@@ -321,4 +321,15 @@ public class RestaurantService {
         this.mongoTemplate.updateMulti(query, update, RESTAURANTS_COLLECTION);
 
     }
+
+    public void updateTimeTable(String restaurantId, Restaurant restaurant) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
+
+        Update update = new Update();
+        update.set("timeTable", restaurant.getTimeTable());
+
+        this.mongoTemplate.updateMulti(query, update, RESTAURANTS_COLLECTION);
+
+    }
 }
