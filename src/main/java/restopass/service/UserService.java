@@ -11,11 +11,13 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import restopass.dto.User;
 import restopass.dto.request.UserCreationRequest;
+import restopass.dto.request.UserLoginGoogleRequest;
 import restopass.dto.request.UserLoginRequest;
 import restopass.dto.request.UserUpdateRequest;
 import restopass.dto.response.UserLoginResponse;
 import restopass.exception.*;
 import restopass.mongo.UserRepository;
+import restopass.utils.GoogleLoginUtils;
 import restopass.utils.JWTHelper;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,6 +58,11 @@ public class UserService {
         }
 
         return this.buildUserLoginResponse(userDTO);
+    }
+
+    public UserLoginResponse loginGoogleUser(UserLoginGoogleRequest user) {
+        GoogleLoginUtils.verifyGoogleToken(user.getGoogleToken());
+        return new UserLoginResponse();
     }
 
     public UserLoginResponse createUser(UserCreationRequest user) {

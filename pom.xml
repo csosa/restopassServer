@@ -162,6 +162,13 @@
             <version>6.13.0</version>
         </dependency>
 
+        <!-- Google Login -->
+        <dependency>
+        <groupId>com.google.api-client</groupId>
+        <artifactId>google-api-client</artifactId>
+        <version>1.30.9</version>
+        </dependency>
+
     </dependencies>
 
 

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import restopass.dto.User;
 import restopass.dto.request.UserCreationRequest;
+import restopass.dto.request.UserLoginGoogleRequest;
 import restopass.dto.request.UserLoginRequest;
 import restopass.dto.request.UserUpdateRequest;
 import restopass.dto.response.UserLoginResponse;
@@ -23,6 +24,11 @@ public class UserController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public UserLoginResponse userLogin(@RequestBody UserLoginRequest user) {
         return userService.loginUser(user);
+    }
+
+    @RequestMapping(value = "/login/google", method = RequestMethod.POST)
+    public UserLoginResponse userLoginGoogle(@RequestBody UserLoginGoogleRequest user) {
+        return userService.loginGoogleUser(user);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
