@@ -9,7 +9,6 @@ public class RestaurantConfig {
 
     private String restaurantId;
     private Integer tablesPerShift;
-    private List<RestaurantHours> dateTimeAvailable;
     private Integer minutesGap;
     private Integer maxDiners;
     private List<RestaurantSlot> slots;
@@ -29,14 +28,6 @@ public class RestaurantConfig {
 
     public void setTablesPerShift(Integer tablesPerShift) {
         this.tablesPerShift = tablesPerShift;
-    }
-
-    public List<RestaurantHours> getDateTimeAvailable() {
-        return dateTimeAvailable;
-    }
-
-    public void setDateTimeAvailable(List<RestaurantHours> dateTimeAvailable) {
-        this.dateTimeAvailable = dateTimeAvailable;
     }
 
     public Integer getMinutesGap() {

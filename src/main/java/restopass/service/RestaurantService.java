@@ -100,7 +100,8 @@ public class RestaurantService {
 
     public RestaurantConfig generateSlotsByRestaurantConfig(String restaurantId) {
         RestaurantConfig restaurantConfig = this.findConfigurationByRestaurantId(restaurantId);
-        List<RestaurantHours> restaurantHours = restaurantConfig.getDateTimeAvailable();
+        Restaurant restaurant = this.findById(restaurantId);
+        List<RestaurantHours> restaurantHours = restaurant.getTimeTable();
         LocalDateTime today = LocalDateTime.now();
 
         List<RestaurantSlot> slots = new ArrayList<>();
