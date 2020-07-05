@@ -187,7 +187,7 @@ public class UserService {
 
         Criteria orCriteria = new Criteria();
         orCriteria.orOperator(
-                Criteria.where(EMAIL_FIELD).is(userId),
+                Criteria.where(EMAIL_FIELD).is(userId.trim()),
                 Criteria.where(SECONDARY_EMAILS_FIELD).in(userId));
 
         query.addCriteria(orCriteria);
