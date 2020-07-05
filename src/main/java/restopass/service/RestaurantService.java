@@ -236,7 +236,7 @@ public class RestaurantService {
         }
 
         if(freeText != null) {
-            String freeTextRegex = freeTextList.stream().map(s -> "."+Strings.capitalize(s)+".").collect(Collectors.joining("|"));
+            String freeTextRegex = freeTextList.stream().map(s -> ".*"+Strings.capitalize(s)+".*").collect(Collectors.joining("|"));
             criterias.add(Criteria.where(RESTAURANT_NAME).regex(freeTextRegex));
         }
 
