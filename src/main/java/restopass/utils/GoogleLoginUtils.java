@@ -31,7 +31,7 @@ public class GoogleLoginUtils {
 
             if (idToken != null) {
                 GoogleIdToken.Payload payload = idToken.getPayload();
-            
+
                 String email = payload.getEmail();
                 String familyName = (String) payload.get("family_name");
                 String givenName = (String) payload.get("given_name");
