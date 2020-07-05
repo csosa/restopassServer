@@ -58,8 +58,8 @@ public class FirebaseService {
         SimpleTopicPush<ReservationPushNotifData> simpleTopicPush = new SimpleTopicPush<>();
         simpleTopicPush.setTo(userId);
         ReservationPushNotifData reservationPushNotifData = new ReservationPushNotifData();
-        reservationPushNotifData.setDescription("Chequeá tu mail para aceptar la invitación");
-        reservationPushNotifData.setTitle("El usuario " + userOwnerName + "te ha invitado a " + restaurantName + "el " + date);
+        reservationPushNotifData.setDescription("Chequea tu mail para aceptar la invitacion");
+        reservationPushNotifData.setTitle("El usuario " + userOwnerName + " te invito a " + restaurantName + " el " + date);
         reservationPushNotifData.setReservationId(reservationId);
         reservationPushNotifData.setType("INVITE_RESERVATION");
         simpleTopicPush.setData(reservationPushNotifData);
@@ -71,8 +71,8 @@ public class FirebaseService {
         SimpleTopicPush<ReservationPushNotifData> simpleTopicPush = new SimpleTopicPush<>();
         simpleTopicPush.setTo(userOwner);
         ReservationPushNotifData reservationPushNotifData = new ReservationPushNotifData();
-        reservationPushNotifData.setTitle("Confirmaron tu invitación");
-        reservationPushNotifData.setDescription("El usuario " + userInviteName + "ha confirmado su asistencia a " + restaurantName + "el " + date);
+        reservationPushNotifData.setTitle("Confirmaron tu invitacion");
+        reservationPushNotifData.setDescription("El usuario " + userInviteName + " confirmo su asistencia a " + restaurantName + " el " + date);
         reservationPushNotifData.setReservationId(reservationId);
         reservationPushNotifData.setType("CONFIRMED_RESERVATION");
         simpleTopicPush.setData(reservationPushNotifData);
@@ -84,8 +84,8 @@ public class FirebaseService {
         SimpleTopicPush<ScorePushNotifData> simpleTopicPush = new SimpleTopicPush<>();
         simpleTopicPush.setTo(userId);
         ScorePushNotifData reservationPushNotifData = new ScorePushNotifData();
-        reservationPushNotifData.setDescription("Dejanos tu opinión para poder mejorar nuestro servicio");
-        reservationPushNotifData.setTitle("¿Cómo estuvo tu experiencia en " + restaurantName + "?");
+        reservationPushNotifData.setDescription("Dejanos tu opinion para poder mejorar nuestro servicio");
+        reservationPushNotifData.setTitle("¿Como estuvo tu experiencia en " + restaurantName + "?");
         reservationPushNotifData.setRestaurantId(restaurantId);
         reservationPushNotifData.setType("SCORE_EXPERIENCE");
         simpleTopicPush.setData(reservationPushNotifData);
