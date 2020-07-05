@@ -49,7 +49,7 @@ public class RestaurantService {
     private String STARS_FIELD = "stars";
     private String COUNT_STARS_FIELD = "countStars";
     private String TAGS_FIELD = "tags";
-    private Double KM_RADIUS = 10D;
+    private Double KM_RADIUS = 30D;
     private Integer SIZE_CALENDAR = 45;
     private String RESTAURANT_CONFIG_COLLECTION = "restaurant_configs";
     private String SLOTS_FIELD = "slots";
