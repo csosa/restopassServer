@@ -55,17 +55,17 @@ public class EmailSender {
             messageBodyPart.setContent(htmlText, "text/html");
             multipart.addBodyPart(messageBodyPart);
 
-            MimeBodyPart qrBodyPart = new MimeBodyPart();
+            if(mail.getModel().get("qrCode") != null) {
+                String body = mail.getModel().get("qrCode").toString().replace("data:image/jpeg;base64", "");
+                MimeBodyPart filePart = new PreencodedMimeBodyPart("base64");
+                filePart.setFileName("imageQr.jpeg");
+                filePart.setText(body);
+                filePart.setHeader("Content-ID", "<imageQr>");
 
-            String body = mail.getModel().get("qrCode").toString().replace("data:image/jpeg;base64","");
-            MimeBodyPart filePart = new PreencodedMimeBodyPart("base64");
-            filePart.setFileName("imageQr.jpeg");
-            filePart.setText(body);
-            filePart.setHeader("Content-ID", "<imageQr>");
+                multipart.addBodyPart(filePart);
+            }
 
             multipart.addBodyPart(messageBodyPart);
-            multipart.addBodyPart(filePart);
-
             message.setContent(multipart);
 
             mailSender.send(mimeMessageHelper.getMimeMessage());
