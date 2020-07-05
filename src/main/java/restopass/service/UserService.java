@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import restopass.dto.Membership;
 import restopass.dto.User;
 import restopass.dto.request.UserCreationRequest;
 import restopass.dto.request.UserLoginGoogleRequest;
@@ -135,11 +136,12 @@ public class UserService {
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
 
-    public void updateMembership(String userId, Integer membership)  {
+    public void updateMembership(String userId, Membership membership)  {
         Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
 
-        Update update = new Update().set(ACTUAL_MEMBERSHIP, membership);
+        Update update = new Update().set(ACTUAL_MEMBERSHIP, membership.getMembershipId())
+                .set(VISITS_FIELD, membership.getVisits());
 
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }

@@ -2,6 +2,8 @@ package restopass.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import restopass.dto.Membership;
 import restopass.dto.response.MembershipResponse;
@@ -70,7 +72,16 @@ public class MembershipService {
             throw new UserNotFoundException();
         }
 
-        this.userService.updateMembership(userId, request.getMembershipId());
+        Query query = new Query();
+
+        Criteria orCriteria = new Criteria();
+        orCriteria.orOperator(
+                Criteria.where("membershipId").is(request.getMembershipId()));
+
+        query.addCriteria(orCriteria);
+        Membership membership = this.mongoTemplate.findOne(query, Membership.class);
+
+        this.userService.updateMembership(userId, membership);
     }
 
     public void removeMembershipToUser(String userId){
