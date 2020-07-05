@@ -1,53 +1,55 @@
 package restopass.utils;
 
-import com.google.api.client.extensions.appengine.http.UrlFetchTransport;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import org.springframework.beans.factory.annotation.Value;
-import restopass.exception.InvalidUsernameOrPasswordException;
+import org.springframework.stereotype.Service;
+import restopass.dto.User;
+import restopass.exception.NotValidGoogleLoginException;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 
+@Service
 public class GoogleLoginUtils {
 
     @Value("${google.api.key}")
-    private static String googleApiKey;
+    private String googleApiKey;
 
-
-    public static void verifyGoogleToken(String token) {
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(UrlFetchTransport.getDefaultInstance(), new JacksonFactory())
+    public User verifyGoogleToken(String token) {
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
                 .setAudience(Collections.singletonList(googleApiKey))
+                .setIssuer("https://accounts.google.com")
                 .build();
 
         GoogleIdToken idToken = null;
         try {
             idToken = verifier.verify(token);
 
-        if (idToken != null) {
-            GoogleIdToken.Payload payload = idToken.getPayload();
+            if (idToken != null) {
+                GoogleIdToken.Payload payload = idToken.getPayload();
+            
+                String email = payload.getEmail();
+                String familyName = (String) payload.get("family_name");
+                String givenName = (String) payload.get("given_name");
 
-            // Print user identifier
-            String userId = payload.getSubject();
-            System.out.println("User ID: " + userId);
+                User user = new User();
+                user.setName(givenName);
+                user.setLastName(familyName);
+                user.setEmail(email);
 
-            // Get profile information from payload
-            String email = payload.getEmail();
-            boolean emailVerified = payload.getEmailVerified();
-            String name = (String) payload.get("name");
-            String pictureUrl = (String) payload.get("picture");
-            String locale = (String) payload.get("locale");
-            String familyName = (String) payload.get("family_name");
-            String givenName = (String) payload.get("given_name");
-        } else {
-            throw new InvalidUsernameOrPasswordException();
-        }
+                return user;
+
+            } else {
+                throw new NotValidGoogleLoginException();
+            }
 
         } catch (GeneralSecurityException | IOException e) {
-                throw new InvalidUsernameOrPasswordException();
-            }
+            throw new NotValidGoogleLoginException();
+        }
 
 
     }

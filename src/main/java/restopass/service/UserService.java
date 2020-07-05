@@ -39,11 +39,13 @@ public class UserService {
 
     MongoTemplate mongoTemplate;
     UserRepository userRepository;
+    GoogleLoginUtils googleLoginUtils;
 
     @Autowired
-    public UserService(MongoTemplate mongoTemplate, UserRepository userRepository) {
+    public UserService(MongoTemplate mongoTemplate, UserRepository userRepository, GoogleLoginUtils googleLoginUtils) {
         this.mongoTemplate = mongoTemplate;
         this.userRepository = userRepository;
+        this.googleLoginUtils = googleLoginUtils;
     }
 
     public UserLoginResponse loginUser(UserLoginRequest user) {
@@ -57,19 +59,26 @@ public class UserService {
             throw new InvalidUsernameOrPasswordException();
         }
 
-        return this.buildUserLoginResponse(userDTO);
+        return this.buildUserLoginResponse(userDTO, false);
     }
 
-    public UserLoginResponse loginGoogleUser(UserLoginGoogleRequest user) {
-        GoogleLoginUtils.verifyGoogleToken(user.getGoogleToken());
-        return new UserLoginResponse();
+    public UserLoginResponse loginGoogleUser(UserLoginGoogleRequest userRequest) {
+        User newUser = googleLoginUtils.verifyGoogleToken(userRequest.getGoogleToken());
+        User userDB = this.findById(newUser.getEmail());
+
+        if(userDB == null) {
+            userRepository.save(newUser);
+            return this.buildUserLoginResponse(newUser, true);
+        } else {
+            return this.buildUserLoginResponse(userDB, false);
+        }
     }
 
     public UserLoginResponse createUser(UserCreationRequest user) {
         User userDTO = new User(user.getEmail(), user.getPassword(), user.getName(), user.getLastName());
         try {
             userRepository.save(userDTO);
-            return this.buildUserLoginResponse(userDTO);
+            return this.buildUserLoginResponse(userDTO, true);
         } catch(DuplicateKeyException e) {
             throw new UserAlreadyExistsException();
         }
@@ -86,13 +95,13 @@ public class UserService {
         try {
             Claims claims = JWTHelper.decodeJWT(oldAccessToken);
             if(claims.getId().equalsIgnoreCase(emailRefresh)) {
-                return this.buildUserLoginResponse(userDTO);
+                return this.buildUserLoginResponse(userDTO, false);
             } else {
                 throw new InvalidAccessOrRefreshTokenException();
             }
         } catch (ExpiredJwtException e) {
             if(e.getClaims().getId().equalsIgnoreCase(emailRefresh)) {
-                return this.buildUserLoginResponse(userDTO);
+                return this.buildUserLoginResponse(userDTO, false);
             } else {
                 throw new InvalidAccessOrRefreshTokenException();
             }
@@ -144,11 +153,12 @@ public class UserService {
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
 
-    private UserLoginResponse buildUserLoginResponse(User user) {
+    private UserLoginResponse buildUserLoginResponse(User user, Boolean isCreation) {
         UserLoginResponse userResponse = new UserLoginResponse();
         userResponse.setxAuthToken(JWTHelper.createAccessToken(user.getEmail()));
         userResponse.setxRefreshToken(JWTHelper.createRefreshToken(user.getEmail()));
         userResponse.setUser(user);
+        userResponse.setCreation(isCreation);
         return userResponse;
     }
 

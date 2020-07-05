@@ -19,6 +19,9 @@ public class User {
     private List<String> secondaryEmails;
     private List<String> favoriteRestaurants;
 
+    public User() {
+    }
+
     public User(String email, String password, String name, String lastName) {
         this.email = email;
         this.password = password;

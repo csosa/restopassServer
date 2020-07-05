@@ -7,6 +7,15 @@ public class UserLoginResponse {
     private String xAuthToken;
     private String xRefreshToken;
     private User user;
+    private boolean isCreation;
+
+    public boolean isCreation() {
+        return isCreation;
+    }
+
+    public void setCreation(boolean creation) {
+        isCreation = creation;
+    }
 
     public String getxAuthToken() {
         return xAuthToken;
