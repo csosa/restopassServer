@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 @Service
 public class MembershipService {
 
+    private final String ID = "membershipId";
+
     private final MembershipRepository membershipRepository;
     private final MongoTemplate mongoTemplate;
 
@@ -74,11 +76,7 @@ public class MembershipService {
 
         Query query = new Query();
 
-        Criteria orCriteria = new Criteria();
-        orCriteria.orOperator(
-                Criteria.where("membershipId").is(request.getMembershipId()));
-
-        query.addCriteria(orCriteria);
+        query.addCriteria(Criteria.where(ID).is(request.getMembershipId()));
         Membership membership = this.mongoTemplate.findOne(query, Membership.class);
 
         this.userService.updateMembership(userId, membership);
