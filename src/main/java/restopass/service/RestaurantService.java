@@ -305,8 +305,6 @@ public class RestaurantService {
             if(d.getDishId().equalsIgnoreCase(scoreRequest.getDishId())) {
                 d.setCountStars(d.getCountStars() + 1);
                 d.setStars((d.getStars() + scoreRequest.getStarsDish()) / d.getCountStars());
-
-
             }
         });
 

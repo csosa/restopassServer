@@ -53,7 +53,6 @@ public class EmailSender {
             BodyPart messageBodyPart = new MimeBodyPart();
             String htmlText = geContentFromTemplate(mail.getMailTempate(), mail.getModel());
             messageBodyPart.setContent(htmlText, "text/html");
-            multipart.addBodyPart(messageBodyPart);
 
             if(mail.getModel().get("qrCode") != null) {
                 String body = mail.getModel().get("qrCode").toString().replace("data:image/jpeg;base64", "");
@@ -90,7 +89,6 @@ public class EmailSender {
             BodyPart messageBodyPart = new MimeBodyPart();
             String htmlText = geContentFromTemplate(mail.getMailTempate(), mail.getModel());
             messageBodyPart.setContent(htmlText, "text/html");
-            multipart.addBodyPart(messageBodyPart);
 
             MimeBodyPart qrBodyPart = new MimeBodyPart();
 
