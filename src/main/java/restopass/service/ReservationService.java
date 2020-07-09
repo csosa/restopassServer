@@ -68,10 +68,8 @@ public class ReservationService {
 
         RestaurantConfig restaurantConfig = this.restaurantService.findConfigurationByRestaurantId(reservation.getRestaurantId());
         List<RestaurantSlot> slots = this.restaurantService.decrementTableInSlot(restaurantConfig, reservation.getDate());
-        this.restaurantService.fillRestaurantData(reservation);
         this.restaurantService.updateSlotsInDB(reservation.getRestaurantId(), slots);
-
-        this.userService.decrementUserVisits(userId);
+        this.restaurantService.fillRestaurantData(reservation);
 
         reservation.setQrBase64(QRHelper.createQRBase64(reservationId, reservation.getRestaurantId(), userId));
 
@@ -81,6 +79,7 @@ public class ReservationService {
             this.sendNewBookingNotif(reservation);
         }
 
+        this.userService.decrementUserVisits(userId);
         this.reservationRepository.save(reservation);
     }
 

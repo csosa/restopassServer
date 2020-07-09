@@ -17,6 +17,7 @@ import restopass.dto.request.DishRequest;
 import restopass.dto.request.RestaurantCreationRequest;
 import restopass.dto.request.ScoreRequest;
 import restopass.dto.response.RestaurantTagsResponse;
+import restopass.exception.LastTableAlreadyBookedException;
 import restopass.mongo.FiltersMapRepository;
 import restopass.mongo.RestaurantConfigRepository;
 import restopass.mongo.RestaurantRepository;
@@ -39,6 +40,8 @@ public class RestaurantService {
     private MembershipService membershipService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private FirebaseService firebaseService;
 
     private String RESTAURANT_ID = "restaurantId";
     private String DISHES_FIELD = "dishes";
@@ -191,6 +194,7 @@ public class RestaurantService {
                         slot.getDateTime().forEach(dt ->
                                 dt.forEach(date -> {
                                             if (date.getDateTime().equals(dateTime)) {
+                                                if(date.getTablesAvailable() <= 0) throw new LastTableAlreadyBookedException();
                                                 date.setTablesAvailable(date.getTablesAvailable() - 1);
                                             }
                                         }

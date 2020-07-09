@@ -9,6 +9,11 @@ public class RestoPassException extends RuntimeException {
         this.code = error.getValue();
     }
 
+    public RestoPassException(ErrorCode error, String msg) {
+        super(error.getMessage().replace("{}", msg));
+        this.code = error.getValue();
+    }
+
     public Integer getCode() {
         return code;
     }

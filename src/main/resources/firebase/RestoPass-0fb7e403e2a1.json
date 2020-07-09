@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "restopass-d70b2",
+  "private_key_id": "0fb7e403e2a1b571ffe5e0acb99e6a1c95eb71b8",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCmZgZcBSgKVP7C\noypAlREyw5MGt84ukgJwJD6DN3jrY9/Z/z90jQo9kLQcMwzgEMYZ9fHbP+s+Toux\nXGBUe9wAfqY8vKOETlcDv09yxS970MmEU06nwvMuSKexGUmeZONScUhlIxmYOzoD\nGg2YSg6BneX5qAEdmf42nfGBOP44psxt1cph2U0ULd5t503jcVM82hLmWmiC9eZy\nHDomRZalmsW1P5FQQci+aPwJvZrfAAT35Af2LYkh4c2NLwbwiuSwGUL6OleEvAwy\nMynZDVSV6ayuCLiUgxSNTy1YY5s1n8aqLjZ9t2NsR314xumA7qmGaQw+Fm+XvIY8\nSWEbigGzAgMBAAECggEADxcumXbQQEugBRfWE6BRPHjXIyNVPAz60p++2ZiUy0g1\n+2e2IgROevHeG7aXgtSSmrUe14Lu+yoVaiLWC6Nl+teBjP2QmMWgB5N4iZCPc1um\ngu0pM3avJjHpn1qLPiWpJgdnCOELh65LXw+kTvzcXu3qdt9BJqWaE+r0BYOdLpbw\naw62v2V6GAXCKIDqTyJiWx+XzEWWhaxaZSCQlYhdOUOCistaOerOBNFW/0dkIUiL\n9hyBHOAHip0DfNL4r5rnUqbHUjQWGR5iyhtWO6Wq/PlsPlhe0WEGbWLiU/SZ5KvH\ntYDhZC6fLxFBXMxqBwkufUZ1I8zYzwH6YV7nC/BQIQKBgQDcu32ORSH197TVH0E4\nl243pILzYI/HlpERd8OlwO1/Gj8uJBZRKFjF7ulPXyn57zksJCFWc6F3k6ro7PzQ\nLaMGDyCAD2MkoCBXE0kPYXiCQPtmaAtsKOZVdSY5IBrd/bqlQtZm3p1kn5by8Kcl\n4u0FYoG4z54t0e9q49ZV8rvjEwKBgQDA/CSvioTss4MWAJO+Es3I5WCUtN/ZvvrD\neEqB6ea2+IkxQd6ghLrGkZaj1NXbLzFrM5OFBYCSZmnM1dgrwMqVZ1CsTiBNDPIz\nWCbtpq9kMJpnRtiSiADw3kHnttrjzKM8LrL6XjZtxGEY7SNeP7DQosDzwcWnMUwW\ns0FMdrqa4QKBgAsgyKurgJLN8ifsc3VO7ReRC6kJbTY6uQWQbCSnHVITGKxS1W0y\nA4e3C7wcqBkZnmBDUgrxuWo135/ukrBMHLPpf1H1dKIcEIVTS5Oi7lhivknjZPAG\n/9W/GjY3ECOw7v/15qk4/+ZaxVlqGIModZqX5MJUdT0KIG/bHKsomaBRAoGBAId5\nums867ma/2AXwZ/CZZItbFKYczjR+An2zR9MSzmRWgYpPpci9ldlZwHV7Nc01xVx\nnJLaXPrpSEaSrHFyowSlBZ4gLk7I0tI2hQV6aVAFSq9LrceYEEkHTe7Tj/Aw/TrH\ncb+PGdiO7rbn6ldEkOS2DIxSMGYBlm+tIR8DjlYhAoGASxisIlL7UbV+yeYGJvBZ\nFgad1gEIA2vCFD38MSm197H99MObBHQsgk2xDeHIcgFzH0PCFoHQbqglKsCysZPn\nV6tYbiNAD2/2IpoUKy0AXAkA6OFT4BZETQJxZI+24+hO+CzyCY8VOWHbdlHu75rt\nbZRPWPygbNomMQUunmh+zic=\n-----END PRIVATE KEY-----\n",
+  "client_email": "restopass-images@restopass-d70b2.iam.gserviceaccount.com",
+  "client_id": "115898999647026582393",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/restopass-images%40restopass-d70b2.iam.gserviceaccount.com"
+}

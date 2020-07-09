@@ -41,6 +41,10 @@ public class FirebaseService {
         });
     }
 
+    public String createImageFromURL(String url, String fileName, String folderName) {
+        return this.firebaseClient.createImageFromURL(url, fileName, folderName);
+    }
+
     public SimpleTopicPush<ReservationPushNotifData> buildCancelReservationNotification(String userId, String reservationId, String userOwnerName, String restaurantName, String date) {
         SimpleTopicPush<ReservationPushNotifData> simpleTopicPush = new SimpleTopicPush<>();
         simpleTopicPush.setTo(userId);

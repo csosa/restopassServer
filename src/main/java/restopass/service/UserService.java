@@ -214,7 +214,6 @@ public class UserService {
         Update update = new Update();
         this.setIfNotEmpty(NAME_FIELD, request.getName(), update);
         this.setIfNotEmpty(LAST_NAME_FIELD, request.getLastName(), update);
-        //TODO Quizas en algun futuro chequear el formato
         this.setIfNotEmpty(PASSWORD_FIELD, request.getPassword(), update);
         this.pushSecondaryEmailIfNotEmpty(request.getSecondaryEmail(), userId, update);
 
