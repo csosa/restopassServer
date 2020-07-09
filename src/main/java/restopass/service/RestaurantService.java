@@ -299,10 +299,10 @@ public class RestaurantService {
         reservation.setRestaurantName(restaurant.getName());
     }
 
-    public List<Restaurant> findAllFavoritesByUser(String userId) {
-        List<String> restaurantsIds = this.userService.findById(userId).getFavoriteRestaurants();
+    public Set<Restaurant> findAllFavoritesByUser(String userId) {
+        Set<String> restaurantsIds = this.userService.findById(userId).getFavoriteRestaurants();
 
-        return restaurantsIds.stream().map(this::findById).collect(Collectors.toList());
+        return restaurantsIds.stream().map(this::findById).collect(Collectors.toSet());
     }
 
     public void scoreRestaurantAndDish(ScoreRequest scoreRequest) {

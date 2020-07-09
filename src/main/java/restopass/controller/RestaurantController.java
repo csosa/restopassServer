@@ -15,6 +15,7 @@ import restopass.service.RestaurantService;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/restaurants")
@@ -38,7 +39,7 @@ public class RestaurantController {
     }
 
     @RequestMapping(value = "/favorites", method = RequestMethod.GET)
-    public List<Restaurant> getAllFavoritesByUser(HttpServletRequest request) {
+    public Set<Restaurant> getAllFavoritesByUser(HttpServletRequest request) {
         String userId = request.getAttribute(USER_ID_ATTR).toString();
         return this.restaurantService.findAllFavoritesByUser(userId);
     }
