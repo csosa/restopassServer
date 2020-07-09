@@ -75,7 +75,7 @@ public class RestaurantService {
         restaurant.setRestaurantId(restaurantId);
 
         restaurant.setAddress(restaurantCreation.getAddress());
-        restaurant.setImg(restaurantCreation.getImg());
+        restaurant.setImg(this.firebaseService.createImageFromURL(restaurantCreation.getImg(), restaurantId, restaurantId));
         GeoJsonPoint point = new GeoJsonPoint(restaurantCreation.getLongitude(), restaurantCreation.getLatitude());
         restaurant.setLocation(point);
         restaurant.setName(restaurantCreation.getName());
@@ -84,7 +84,11 @@ public class RestaurantService {
         List<DishRequest> dishes = restaurantCreation.getDishes();
         List<Dish> dishesToSave;
         if(dishes != null) {
-            dishesToSave = dishes.stream().map(dr -> new Dish(UUID.randomUUID().toString(), dr.getName(), dr.getImg(), dr.getDescription(), dr.getBaseMembership())).collect(Collectors.toList());
+            dishesToSave = dishes.stream().map(dr -> {
+                String dishId = UUID.randomUUID().toString();
+                return new Dish(dishId, dr.getName(), this.firebaseService.createImageFromURL(dr.getImg(),dishId, restaurantId),
+                            dr.getDescription(), dr.getBaseMembership());
+            }).collect(Collectors.toList());
             restaurant.setDishes(dishesToSave);
         }
 
@@ -207,7 +211,8 @@ public class RestaurantService {
 
     public void addDish(DishRequest dishRequest, String restaurantId) {
         String dishId = UUID.randomUUID().toString();
-        Dish dish = new Dish(dishId, dishRequest.getName(),dishRequest.getImg(), dishRequest.getDescription(), dishRequest.getBaseMembership());
+        Dish dish = new Dish(dishId, dishRequest.getName(),this.firebaseService.createImageFromURL(dishRequest.getImg(),dishId,restaurantId),
+                dishRequest.getDescription(), dishRequest.getBaseMembership());
         Query query = new Query();
         query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
 
