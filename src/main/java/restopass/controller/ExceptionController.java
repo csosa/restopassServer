@@ -27,6 +27,16 @@ public class ExceptionController {
         return new ResponseEntity<>(apiException, httpStatus);
     }
 
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<RestoPassException> handleNotFound() {
+        RestoPassException restoPassException = new RestoPassException(ErrorCode.URL_NOT_FOUND);
+        HttpStatus httpStatus = HttpStatus.valueOf(restoPassException.getHttpStatusCode());
+
+        LOGGER.info(restoPassException.getMessage(), restoPassException);
+
+        return new ResponseEntity<>(restoPassException, httpStatus);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<RestoPassException> handleApiException(Exception runtimeException) {
         RestoPassException restoPassException = new RestoPassException(ErrorCode.SERVER_ERROR);
@@ -40,13 +50,4 @@ public class ExceptionController {
         return new ResponseEntity<>(restoPassException, httpStatus);
     }
 
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<RestoPassException> handleNotFound() {
-        RestoPassException restoPassException = new RestoPassException(ErrorCode.URL_NOT_FOUND);
-        HttpStatus httpStatus = HttpStatus.valueOf(restoPassException.getHttpStatusCode());
-
-        LOGGER.info(restoPassException.getMessage(), restoPassException);
-
-        return new ResponseEntity<>(restoPassException, httpStatus);
-    }
 }

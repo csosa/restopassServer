@@ -7,11 +7,13 @@ public class RestoPassException extends RuntimeException {
     public RestoPassException(ErrorCode error) {
         super(error.getMessage());
         this.code = error.getValue();
+        this.setStackTrace(new StackTraceElement[0]);
     }
 
     public RestoPassException(ErrorCode error, String msg) {
         super(error.getMessage().replace("{}", msg));
         this.code = error.getValue();
+        this.setStackTrace(new StackTraceElement[0]);
     }
 
     public Integer getCode() {
