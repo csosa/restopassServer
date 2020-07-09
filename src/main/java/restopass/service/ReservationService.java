@@ -145,7 +145,8 @@ public class ReservationService {
         Criteria orCriteria = new Criteria();
         orCriteria.orOperator(
                 Criteria.where(OWNER_USER_ID).is(userId),
-                Criteria.where(CONFIRMED_USERS).in(userId));
+                Criteria.where(CONFIRMED_USERS).in(userId),
+                Criteria.where(TO_CONFIRM_USERS).in(userId));
 
         query.addCriteria(orCriteria);
 
