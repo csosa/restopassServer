@@ -4,6 +4,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Set;
 
 @Document(collection = "users")
 public class User {
@@ -17,7 +18,7 @@ public class User {
     private Integer visits;
     private Integer actualMembership;
     private List<String> secondaryEmails;
-    private List<String> favoriteRestaurants;
+    private Set<String> favoriteRestaurants;
 
     public User() {
     }
@@ -29,11 +30,11 @@ public class User {
         this.lastName = lastName;
     }
 
-    public List<String> getFavoriteRestaurants() {
+    public Set<String> getFavoriteRestaurants() {
         return favoriteRestaurants;
     }
 
-    public void setFavoriteRestaurants(List<String> favoriteRestaurants) {
+    public void setFavoriteRestaurants(Set<String> favoriteRestaurants) {
         this.favoriteRestaurants = favoriteRestaurants;
     }
 
