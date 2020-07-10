@@ -10,6 +10,9 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST.value(), 5, "El email secundario debe ser diferente al principal"),
     INVALID_USER_GOOGLE_LOGIN(HttpStatus.BAD_REQUEST.value(), 6, "No se pudo validar el usuario con Google"),
     BAD_IMG_REQUEST_TO_FIREBASE(HttpStatus.BAD_REQUEST.value(), 7, "No se pudo obtener la imagen para subir a firebase para {}, pruebe con otra"),
+    EMPTY_VISITS(HttpStatus.BAD_REQUEST.value(), 8, "¿Quieres seguir visitando tus restaurantes favoritos? Porque no pruebas un mejor plan"),
+    RESERVATION_ALREADY_CONFIRMED(HttpStatus.BAD_REQUEST.value(), 9, "Reserva ya confirmada"),
+    RESERVATION_CANCELED(HttpStatus.BAD_REQUEST.value(), 10, "Reserva cancelada por el dueño"),
 
     USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 1, "El usuario no esta registrado en RestoPass"),
     URL_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 2, "Url doesnt exist. Please check our wiki for more info"),
@@ -17,10 +20,7 @@ public enum ErrorCode {
     LAST_TABLE_ALREADY_BOOKED(HttpStatus.NOT_FOUND.value(), 4, "Ups, Se reservó la última mesa para este día y horario"),
 
     ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED.value(), 1, "Expired access token"),
-    EMPTY_VISITS(HttpStatus.UNAUTHORIZED.value(), 2, "¿Quieres seguir visitando tus restaurantes favoritos? Porque no pruebas un mejor plan"),
-    RESERVATION_ALREADY_CONFIRMED(HttpStatus.UNAUTHORIZED.value(), 3, "Reserva ya confirmada"),
-    RESERVATION_CANCELED(HttpStatus.UNAUTHORIZED.value(), 4, "Reserva cancelada por el dueño"),
-    RESTAURANT_NOT_IN_MEMBERSHIP(HttpStatus.UNAUTHORIZED.value(), 5, "El restaurante no tiene platos disponibles en la membresía de este usuario"),
+    RESTAURANT_NOT_IN_MEMBERSHIP(HttpStatus.UNAUTHORIZED.value(), 2, "El restaurante no tiene platos disponibles en la membresía de este usuario"),
 
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), 0, "Ups, server exploded. Contact Yami");
 
