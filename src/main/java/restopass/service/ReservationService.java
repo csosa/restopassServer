@@ -176,6 +176,16 @@ public class ReservationService {
         return reservations;
     }
 
+    public void rejectReservation(String reservationId, String userId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(RESERVATION_ID).is(reservationId));
+
+        Update update = new Update();
+        update.pull(TO_CONFIRM_USERS, userId);
+
+        this.mongoTemplate.updateMulti(query, update, RESERVATION_COLLECTION);
+    }
+
     public void confirmReservation(String reservationId, String userId) {
         User user = this.userService.findById(userId);
         Reservation reservation = this.findById(reservationId);

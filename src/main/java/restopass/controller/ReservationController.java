@@ -54,10 +54,17 @@ public class ReservationController {
          return this.reservationService.doneReservation(reservationId, restaurantId, userId);
     }
 
-    @RequestMapping(value = "/confirm/{reservationId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/confirm/{reservationId}", method = RequestMethod.PATCH)
     public List<ReservationResponse> confirmReservationFromMobile(@PathVariable String reservationId, HttpServletRequest request) {
         String userId = request.getAttribute(USER_ID).toString();
         this.reservationService.confirmReservation(reservationId, userId);
+        return this.reservationService.getReservationsForUser(userId);
+    }
+
+    @RequestMapping(value = "/reject/{reservationId}", method = RequestMethod.PATCH)
+    public List<ReservationResponse> rejectReservationFromMobile(@PathVariable String reservationId, HttpServletRequest request) {
+        String userId = request.getAttribute(USER_ID).toString();
+        this.reservationService.rejectReservation(reservationId, userId);
         return this.reservationService.getReservationsForUser(userId);
     }
 
