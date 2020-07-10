@@ -15,7 +15,7 @@
                             <div class="row align-items-center">
                                 <img style="width:100px" class="mr-2" src="https://i.ibb.co/9gLnkbq/1200px-Flat-cross-icon-svg.png"
                                      alt="cancel-1174809-1280" border="10">
-                                <h1>     Ups! Parece que ya no te quedan mas visitas</h1>
+                                <h1>     Ups! No se pudo confirmar la reserva</h1>
                             </div>
                             <div class="row">
                                 <div class="col-12">

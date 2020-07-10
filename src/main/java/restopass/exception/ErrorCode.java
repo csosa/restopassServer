@@ -10,7 +10,7 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST.value(), 5, "El email secundario debe ser diferente al principal"),
     INVALID_USER_GOOGLE_LOGIN(HttpStatus.BAD_REQUEST.value(), 6, "No se pudo validar el usuario con Google"),
     BAD_IMG_REQUEST_TO_FIREBASE(HttpStatus.BAD_REQUEST.value(), 7, "No se pudo obtener la imagen para subir a firebase para {}, pruebe con otra"),
-    EMPTY_VISITS(HttpStatus.BAD_REQUEST.value(), 8, "¿Quieres seguir visitando tus restaurantes favoritos? Porque no pruebas un mejor plan"),
+    EMPTY_VISITS(HttpStatus.BAD_REQUEST.value(), 8, "No tienes suficientes visitas ¿Quieres seguir visitando tus restaurantes favoritos? Porque no pruebas un mejor plan"),
     RESERVATION_ALREADY_CONFIRMED(HttpStatus.BAD_REQUEST.value(), 9, "Reserva ya confirmada"),
     RESERVATION_CANCELED(HttpStatus.BAD_REQUEST.value(), 10, "Reserva cancelada por el dueño"),
 

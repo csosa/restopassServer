@@ -6,6 +6,7 @@ public class CreateReservationRequest {
     private String restaurantId;
     private String date;
     private List<String> toConfirmUsers;
+    private Integer dinners;
 
     public String getRestaurantId() {
         return restaurantId;
@@ -29,5 +30,13 @@ public class CreateReservationRequest {
 
     public void setToConfirmUsers(List<String> toConfirmUsers) {
         this.toConfirmUsers = toConfirmUsers;
+    }
+
+    public Integer getDinners() {
+        return dinners;
+    }
+
+    public void setDinners(Integer dinners) {
+        this.dinners = dinners;
     }
 }

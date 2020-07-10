@@ -62,7 +62,7 @@ public class ReservationService {
         reservation.setRestaurantId(reservationRequest.getRestaurantId());
         reservation.setToConfirmUsers(reservationRequest.getToConfirmUsers());
         reservation.setDate(LocalDateTime.parse(reservationRequest.getDate()));
-
+        reservation.setDinners(reservationRequest.getDinners());
         reservation.setReservationId(reservationId);
         reservation.setOwnerUser(userId);
 

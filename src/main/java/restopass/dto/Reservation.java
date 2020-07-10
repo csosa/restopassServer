@@ -15,10 +15,19 @@ public class Reservation {
     private ReservationState state = ReservationState.CONFIRMED;
     private String ownerUser;
     private String qrBase64;
+    private Integer dinners;
     private List<String> confirmedUsers;
     private List<String> toConfirmUsers;
     private String restaurantName;
     private String restaurantAddress;
+
+    public Integer getDinners() {
+        return dinners;
+    }
+
+    public void setDinners(Integer dinners) {
+        this.dinners = dinners;
+    }
 
     public String getImg() {
         return img;
