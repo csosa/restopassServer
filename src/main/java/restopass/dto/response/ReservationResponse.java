@@ -18,7 +18,16 @@ public class ReservationResponse {
     private String restaurantName;
     private String restaurantAddress;
     private String img;
+    private Integer dinners;
     private Boolean isInvitation = false;
+
+    public Integer getDinners() {
+        return dinners;
+    }
+
+    public void setDinners(Integer dinners) {
+        this.dinners = dinners;
+    }
 
     public String getImg() {
         return img;

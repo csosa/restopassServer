@@ -308,6 +308,7 @@ public class ReservationService {
             response.setToConfirmUsers(reservation.getToConfirmUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
         response.setOwnerUser(mapEmailToUserReservation(reservation.getOwnerUser()));
         if (!reservation.getOwnerUser().equalsIgnoreCase(userId)) response.setInvitation(true);
+        response.setDinners(reservation.getDinners());
 
         return response;
     }
