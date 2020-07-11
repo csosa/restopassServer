@@ -96,11 +96,7 @@ public class ReservationService {
         HashMap<String, Object> modelEmail = new HashMap<>();
         modelEmail.put("userName", user.getName());
         modelEmail.put("restaurantName", restaurant.getName());
-        if (reservation.getToConfirmUsers() != null) {
-            modelEmail.put("totalDiners", reservation.getToConfirmUsers().size() + 1);
-        } else {
-            modelEmail.put("totalDiners", 1);
-        }
+        modelEmail.put("totalDiners", reservation.getDinners());
         modelEmail.put("date", this.generateHumanDate(reservation.getDate()));
         modelEmail.put("restaurantAddress", restaurant.getAddress());
         modelEmail.put("qrCode", reservation.getQrBase64());
@@ -123,7 +119,7 @@ public class ReservationService {
         HashMap<String, Object> modelEmail = new HashMap<>();
         modelEmail.put("ownerUser", ownerUser.getName() + " " + ownerUser.getLastName());
         modelEmail.put("restaurantName", restaurant.getName());
-        modelEmail.put("totalDiners", reservation.getToConfirmUsers().size() + 1);
+        modelEmail.put("totalDiners", reservation.getDinners());
         modelEmail.put("date", this.generateHumanDate(reservation.getDate()));
         modelEmail.put("restaurantAddress", restaurant.getAddress());
 
