@@ -14,7 +14,7 @@ public class User {
     private String password;
     private String name;
     private String lastName;
-    private String creditCard;
+    private CreditCard creditCard;
     private Integer visits;
     private Integer actualMembership;
     private List<String> secondaryEmails;
@@ -54,11 +54,11 @@ public class User {
         this.visits = visits;
     }
 
-    public String getCreditCard() {
+    public CreditCard getCreditCard() {
         return creditCard;
     }
 
-    public void setCreditCard(String creditCard) {
+    public void setCreditCard(CreditCard creditCard) {
         this.creditCard = creditCard;
     }
 
