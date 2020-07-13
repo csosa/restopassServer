@@ -18,6 +18,7 @@ public enum ErrorCode {
     URL_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 2, "Url doesnt exist. Please check our wiki for more info"),
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 3, "La reserva no existe"),
     LAST_TABLE_ALREADY_BOOKED(HttpStatus.NOT_FOUND.value(), 4, "Ups, Se reservó la última mesa para este día y horario"),
+    CREDIT_CARD_NOT_FOND(HttpStatus.NOT_FOUND.value(), 5, "No tienes tarjetas de crédito"),
 
     ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED.value(), 1, "Expired access token"),
     RESTAURANT_NOT_IN_MEMBERSHIP(HttpStatus.UNAUTHORIZED.value(), 2, "El restaurante no tiene platos disponibles en la membresía de este usuario"),
