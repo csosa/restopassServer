@@ -8,7 +8,7 @@ import restopass.service.UserService;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping(value = "/payment/users")
+@RequestMapping(value = "/users/payment")
 public class PaymentController {
 
     @Autowired
