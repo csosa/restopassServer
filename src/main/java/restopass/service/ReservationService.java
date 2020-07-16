@@ -35,7 +35,6 @@ public class ReservationService {
     private MembershipRepository membershipRepository;
     private UserService userService;
     private FirebaseService firebaseService;
-    private String RESTAURANT_ID = "restaurantId";
     private String OWNER_USER_ID = "ownerUser";
     private String RESERVATION_ID = "reservationId";
     private String RESERVATION_STATE = "state";
@@ -69,7 +68,6 @@ public class ReservationService {
         RestaurantConfig restaurantConfig = this.restaurantService.findConfigurationByRestaurantId(reservation.getRestaurantId());
         List<RestaurantSlot> slots = this.restaurantService.decrementTableInSlot(restaurantConfig, reservation.getDate());
         this.restaurantService.updateSlotsInDB(reservation.getRestaurantId(), slots);
-        this.restaurantService.fillRestaurantData(reservation);
 
         reservation.setQrBase64(QRHelper.createQRBase64(reservationId, reservation.getRestaurantId(), userId));
 
@@ -298,14 +296,14 @@ public class ReservationService {
         response.setRestaurantId(reservation.getRestaurantId());
         response.setDate(reservation.getDate());
         response.setQrBase64(reservation.getQrBase64());
-        response.setRestaurantAddress(reservation.getRestaurantAddress());
-        response.setRestaurantName(reservation.getRestaurantName());
         response.setState(reservation.getState());
-        response.setImg(reservation.getImg());
-        if (reservation.getConfirmedUsers() != null && !reservation.getConfirmedUsers().isEmpty())
+        this.restaurantService.fillRestaurantData(reservation);
+        if (reservation.getConfirmedUsers() != null && !reservation.getConfirmedUsers().isEmpty()) {
             response.setConfirmedUsers(reservation.getConfirmedUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
-        if (reservation.getToConfirmUsers() != null && !reservation.getToConfirmUsers().isEmpty())
+        }
+        if (reservation.getToConfirmUsers() != null && !reservation.getToConfirmUsers().isEmpty()) {
             response.setToConfirmUsers(reservation.getToConfirmUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
+        }
         response.setOwnerUser(mapEmailToUserReservation(reservation.getOwnerUser()));
         if (!reservation.getOwnerUser().equalsIgnoreCase(userId)) response.setInvitation(true);
         response.setDinners(reservation.getDinners());
