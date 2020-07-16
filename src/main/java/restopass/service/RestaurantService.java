@@ -16,6 +16,7 @@ import restopass.dto.*;
 import restopass.dto.request.DishRequest;
 import restopass.dto.request.RestaurantCreationRequest;
 import restopass.dto.request.ScoreRequest;
+import restopass.dto.response.ReservationResponse;
 import restopass.dto.response.RestaurantTagsResponse;
 import restopass.exception.LastTableAlreadyBookedException;
 import restopass.mongo.FiltersMapRepository;
@@ -292,7 +293,7 @@ public class RestaurantService {
     }
 
 
-    public void fillRestaurantData(Reservation reservation) {
+    public void fillRestaurantData(ReservationResponse reservation) {
         Restaurant restaurant = this.findById(reservation.getRestaurantId());
         reservation.setImg(restaurant.getImg());
         reservation.setRestaurantAddress(restaurant.getAddress());

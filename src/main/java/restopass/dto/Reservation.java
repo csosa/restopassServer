@@ -9,7 +9,6 @@ import java.util.List;
 public class Reservation {
 
     private String reservationId;
-    private String img;
     private String restaurantId;
     private LocalDateTime date;
     private ReservationState state = ReservationState.CONFIRMED;
@@ -18,8 +17,6 @@ public class Reservation {
     private Integer dinners;
     private List<String> confirmedUsers;
     private List<String> toConfirmUsers;
-    private String restaurantName;
-    private String restaurantAddress;
 
     public Integer getDinners() {
         return dinners;
@@ -27,30 +24,6 @@ public class Reservation {
 
     public void setDinners(Integer dinners) {
         this.dinners = dinners;
-    }
-
-    public String getImg() {
-        return img;
-    }
-
-    public void setImg(String img) {
-        this.img = img;
-    }
-
-    public String getRestaurantName() {
-        return restaurantName;
-    }
-
-    public void setRestaurantName(String restaurantName) {
-        this.restaurantName = restaurantName;
-    }
-
-    public String getRestaurantAddress() {
-        return restaurantAddress;
-    }
-
-    public void setRestaurantAddress(String restaurantAddress) {
-        this.restaurantAddress = restaurantAddress;
     }
 
     public String getQrBase64() {

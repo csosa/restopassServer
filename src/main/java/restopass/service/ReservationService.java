@@ -297,7 +297,7 @@ public class ReservationService {
         response.setDate(reservation.getDate());
         response.setQrBase64(reservation.getQrBase64());
         response.setState(reservation.getState());
-        this.restaurantService.fillRestaurantData(reservation);
+        this.restaurantService.fillRestaurantData(response);
         if (reservation.getConfirmedUsers() != null && !reservation.getConfirmedUsers().isEmpty()) {
             response.setConfirmedUsers(reservation.getConfirmedUsers().stream().map(this::mapEmailToUserReservation).collect(Collectors.toList()));
         }
