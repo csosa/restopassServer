@@ -82,8 +82,9 @@ public class ReservationService {
     }
 
     private void sendNewBookingNotif(Reservation reservation) {
+        Restaurant restaurant = this.restaurantService.findById(reservation.getRestaurantId());
         this.firebaseService.sendNewInvitationNotification(reservation.getToConfirmUsers(),
-                reservation.getReservationId(), reservation.getOwnerUser(), reservation.getRestaurantName(),
+                reservation.getReservationId(), reservation.getOwnerUser(), restaurant.getName(),
                 this.generateHumanDate(reservation.getDate()));
     }
 
@@ -184,6 +185,7 @@ public class ReservationService {
     public void confirmReservation(String reservationId, String userId) {
         User user = this.userService.findById(userId);
         Reservation reservation = this.findById(reservationId);
+        Restaurant restaurant = this.restaurantService.findById(reservation.getRestaurantId());
 
         if (reservation.getState().equals(ReservationState.CANCELED)) {
             throw new ReservationCanceledException();
@@ -206,7 +208,7 @@ public class ReservationService {
         this.mongoTemplate.updateMulti(query, update, RESERVATION_COLLECTION);
 
         this.firebaseService.sendConfirmedInvitationNotification(reservation.getOwnerUser(), reservationId,
-                user.getName() + " " + user.getLastName(), reservation.getRestaurantName(),
+                user.getName() + " " + user.getLastName(), restaurant.getName(),
                 this.generateHumanDate(reservation.getDate()));
         this.userService.decrementUserVisits(userId);
 
@@ -223,7 +225,7 @@ public class ReservationService {
         User user = this.userService.findById(userId);
         Restaurant restaurant = this.restaurantService.findById(restaurantId);
 
-        List<String> userOwnerAndConfirmed = new LinkedList<>(Arrays.asList(reservation.getOwnerUser()));
+        List<String> userOwnerAndConfirmed = new LinkedList<>(Collections.singletonList(reservation.getOwnerUser()));
 
         if (reservation.getConfirmedUsers() != null) {
             userOwnerAndConfirmed.addAll(reservation.getConfirmedUsers());
@@ -246,7 +248,7 @@ public class ReservationService {
                         membership -> membershipIds.stream().filter(integer -> membership.getMembershipId().equals(integer)).count()));
 
         this.updateReservationState(reservationId, ReservationState.DONE);
-        this.firebaseService.sendScoreNotification(userOwnerAndConfirmed, reservation.getRestaurantId(), reservation.getRestaurantName());
+        this.firebaseService.sendScoreNotification(userOwnerAndConfirmed, reservation.getRestaurantId(), restaurant.getName());
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("restaurant_name", restaurant.getName());
