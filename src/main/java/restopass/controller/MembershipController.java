@@ -31,13 +31,13 @@ public class MembershipController {
         return this.membershipService.getMemberships(request.getAttribute(USER_ID_ATTR).toString());
     }
 
-    @RequestMapping(value = "/users", method = RequestMethod.PATCH)
+    @RequestMapping(value = "", method = RequestMethod.PATCH)
     public void updateMembershipToUser(HttpServletRequest request, @RequestBody UpdateMembershipToUserRequest updateMembershipToUserRequest) {
         String userId = request.getAttribute(USER_ID_ATTR).toString();
         this.membershipService.updateMembershipToUser(userId, updateMembershipToUserRequest);
     }
 
-    @RequestMapping(value = "/users", method = RequestMethod.DELETE)
+    @RequestMapping(value = "", method = RequestMethod.DELETE)
     public void removeMembershipToUser(HttpServletRequest request) {
         String userId = request.getAttribute(USER_ID_ATTR).toString();
         this.membershipService.removeMembershipToUser(userId);

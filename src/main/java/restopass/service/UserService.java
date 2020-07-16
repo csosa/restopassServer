@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import restopass.dto.CreditCard;
 import restopass.dto.Membership;
 import restopass.dto.User;
 import restopass.dto.request.UserCreationRequest;
@@ -34,6 +35,7 @@ public class UserService {
     private static String VISITS_FIELD = "visits";
     private static String ACTUAL_MEMBERSHIP = "actualMembership";
     private static String FAVORITE_RESTAURANTS_FIELD = "favoriteRestaurants";
+    private static String CREDIT_CARD_FIELD = "creditCard";
     private static String USER_COLLECTION = "users";
     private static String ACCESS_TOKEN_HEADER = "X-Auth-Token";
     private static String REFRESH_TOKEN_HEADER = "X-Refresh-Token";
@@ -216,6 +218,42 @@ public class UserService {
         this.setIfNotEmpty(LAST_NAME_FIELD, request.getLastName(), update);
         this.setIfNotEmpty(PASSWORD_FIELD, request.getPassword(), update);
         this.pushSecondaryEmailIfNotEmpty(request.getSecondaryEmail(), userId, update);
+
+        this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+    }
+
+    public CreditCard getPayment(String userId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+
+        User user = this.mongoTemplate.findOne(query, User.class);
+
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+
+        if (user.getCreditCard() == null) {
+            throw new NoCreditCardException();
+        }
+
+        return user.getCreditCard();
+    }
+
+    public void updatePayment(CreditCard creditCard, String userId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+
+        Update update = new Update().set(CREDIT_CARD_FIELD, creditCard);
+
+        this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+
+    }
+
+    public void removePayment(String userId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+
+        Update update = new Update().unset(CREDIT_CARD_FIELD);
 
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
