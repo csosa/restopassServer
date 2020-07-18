@@ -9,9 +9,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import restopass.dto.CreditCard;
-import restopass.dto.Membership;
-import restopass.dto.User;
+import restopass.dto.*;
 import restopass.dto.request.UserCreationRequest;
 import restopass.dto.request.UserLoginGoogleRequest;
 import restopass.dto.request.UserLoginRequest;
@@ -43,12 +41,15 @@ public class UserService {
     MongoTemplate mongoTemplate;
     UserRepository userRepository;
     GoogleLoginUtils googleLoginUtils;
+    B2CUserService b2CUserService;
 
     @Autowired
-    public UserService(MongoTemplate mongoTemplate, UserRepository userRepository, GoogleLoginUtils googleLoginUtils) {
+    public UserService(MongoTemplate mongoTemplate, UserRepository userRepository, GoogleLoginUtils googleLoginUtils,
+                       B2CUserService b2CUserService) {
         this.mongoTemplate = mongoTemplate;
         this.userRepository = userRepository;
         this.googleLoginUtils = googleLoginUtils;
+        this.b2CUserService = b2CUserService;
     }
 
     public UserLoginResponse loginUser(UserLoginRequest user) {
@@ -58,7 +59,7 @@ public class UserService {
 
         User userDTO = this.mongoTemplate.findOne(query, User.class);
 
-        if(userDTO == null) {
+        if (userDTO == null) {
             throw new InvalidUsernameOrPasswordException();
         }
 
@@ -69,7 +70,7 @@ public class UserService {
         User newUser = googleLoginUtils.verifyGoogleToken(userRequest.getGoogleToken());
         User userDB = this.findById(newUser.getEmail());
 
-        if(userDB == null) {
+        if (userDB == null) {
             userRepository.save(newUser);
             return this.buildUserLoginResponse(newUser, true);
         } else {
@@ -79,10 +80,16 @@ public class UserService {
 
     public UserLoginResponse createUser(UserCreationRequest user) {
         User userDTO = new User(user.getEmail(), user.getPassword(), user.getName(), user.getLastName());
+        B2CUserEmployer b2CUserEmployer = this.b2CUserService.checkIfB2CUser(user.getEmail());
+
+        if (b2CUserEmployer != null) {
+            userDTO.setB2CUserEmployee(new B2CUserEmployee(b2CUserEmployer.getPercentageDiscountPerMembership()));
+        }
+
         try {
             userRepository.save(userDTO);
             return this.buildUserLoginResponse(userDTO, true);
-        } catch(DuplicateKeyException e) {
+        } catch (DuplicateKeyException e) {
             throw new UserAlreadyExistsException();
         }
     }
@@ -97,13 +104,13 @@ public class UserService {
 
         try {
             Claims claims = JWTHelper.decodeJWT(oldAccessToken);
-            if(claims.getId().equalsIgnoreCase(emailRefresh)) {
+            if (claims.getId().equalsIgnoreCase(emailRefresh)) {
                 return this.buildUserLoginResponse(userDTO, false);
             } else {
                 throw new InvalidAccessOrRefreshTokenException();
             }
         } catch (ExpiredJwtException e) {
-            if(e.getClaims().getId().equalsIgnoreCase(emailRefresh)) {
+            if (e.getClaims().getId().equalsIgnoreCase(emailRefresh)) {
                 return this.buildUserLoginResponse(userDTO, false);
             } else {
                 throw new InvalidAccessOrRefreshTokenException();
@@ -138,7 +145,7 @@ public class UserService {
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
 
-    public void updateMembership(String userId, Membership membership)  {
+    public void updateMembership(String userId, Membership membership) {
         Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
 
@@ -148,7 +155,7 @@ public class UserService {
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
 
-    public void removeMembership(String userId)  {
+    public void removeMembership(String userId) {
         Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
 
@@ -197,18 +204,18 @@ public class UserService {
         User user = this.mongoTemplate.findOne(query, User.class);
 
 
-        if(user == null) {
+        if (user == null) {
             throw new UserNotFoundException();
         }
 
-        if(user.getActualMembership() >= baseMembership) {
+        if (user.getActualMembership() >= baseMembership) {
             return user;
         } else {
             throw new RestaurantNotInMembershipException();
         }
     }
 
-    public void updateUserInfo(UserUpdateRequest request, String userId){
+    public void updateUserInfo(UserUpdateRequest request, String userId) {
 
         Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
@@ -259,16 +266,16 @@ public class UserService {
     }
 
     private void pushSecondaryEmailIfNotEmpty(String email, String userId, Update update) {
-        if(email != null) {
-            if(userId.equalsIgnoreCase(email)){
+        if (email != null) {
+            if (userId.equalsIgnoreCase(email)) {
                 throw new EmalAlreadyExistsException();
             }
             update.push(SECONDARY_EMAILS_FIELD, email);
         }
     }
 
-    private void setIfNotEmpty(String propertyName, String value, Update update){
-        if(value != null) {
+    private void setIfNotEmpty(String propertyName, String value, Update update) {
+        if (value != null) {
             update.set(propertyName, value);
         }
     }

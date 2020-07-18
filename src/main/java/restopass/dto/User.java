@@ -9,7 +9,7 @@ import java.util.Set;
 @Document(collection = "users")
 public class User {
 
-    @Indexed(unique=true)
+    @Indexed(unique = true)
     private String email;
     private String password;
     private String name;
@@ -19,6 +19,7 @@ public class User {
     private Integer actualMembership;
     private List<String> secondaryEmails;
     private Set<String> favoriteRestaurants;
+    private B2CUserEmployee b2CUserEmployee;
 
     public User() {
     }
@@ -96,5 +97,13 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public B2CUserEmployee getB2CUserEmployee() {
+        return b2CUserEmployee;
+    }
+
+    public void setB2CUserEmployee(B2CUserEmployee b2CUserEmployee) {
+        this.b2CUserEmployee = b2CUserEmployee;
     }
 }
