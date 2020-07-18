@@ -1,5 +1,6 @@
 package restopass.dto;
 
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashMap;
@@ -9,8 +10,9 @@ import java.util.List;
 public class B2CUserEmployer {
 
     private String companyId;
+    @Indexed(unique = true)
     private String companyName;
-    private HashMap<Integer, Float> percentageDiscountPerMembership;
+    private List<Float> percentageDiscountPerMembership;
     private List<String> employeesEmails;
 
     public String getCompanyId() {
@@ -29,11 +31,11 @@ public class B2CUserEmployer {
         this.companyName = companyName;
     }
 
-    public HashMap<Integer, Float> getPercentageDiscountPerMembership() {
+    public List<Float> getPercentageDiscountPerMembership() {
         return percentageDiscountPerMembership;
     }
 
-    public void setPercentageDiscountPerMembership(HashMap<Integer, Float> percentageDiscountPerMembership) {
+    public void setPercentageDiscountPerMembership(List<Float> percentageDiscountPerMembership) {
         this.percentageDiscountPerMembership = percentageDiscountPerMembership;
     }
 

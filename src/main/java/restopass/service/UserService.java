@@ -21,6 +21,7 @@ import restopass.utils.GoogleLoginUtils;
 import restopass.utils.JWTHelper;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -31,6 +32,7 @@ public class UserService {
     private static String NAME_FIELD = "name";
     private static String LAST_NAME_FIELD = "lastName";
     private static String VISITS_FIELD = "visits";
+    private static String B2C_FIELD = "b2CUserEmployee";
     private static String ACTUAL_MEMBERSHIP = "actualMembership";
     private static String FAVORITE_RESTAURANTS_FIELD = "favoriteRestaurants";
     private static String CREDIT_CARD_FIELD = "creditCard";
@@ -280,4 +282,15 @@ public class UserService {
         }
     }
 
+    public void setB2CUserToEmployees(String employee, List<Float> percentageDiscountPerMembership) {
+        User user = this.findById(employee);
+
+        if(user != null) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where(EMAIL_FIELD).is(employee));
+            Update update = new Update().set(B2C_FIELD, new B2CUserEmployee(percentageDiscountPerMembership));
+
+            this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+        }
+    }
 }

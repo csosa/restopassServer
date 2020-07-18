@@ -20,4 +20,9 @@ public class B2CUserController {
         this.b2CUserService.createUser(user);
     }
 
+    @RequestMapping(value = "", method = RequestMethod.PATCH)
+    public void updateDiscounts(@RequestBody B2CUserEmployer user) {
+        this.b2CUserService.updateDiscounts(user);
+    }
+
 }
