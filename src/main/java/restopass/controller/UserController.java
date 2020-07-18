@@ -36,6 +36,12 @@ public class UserController {
         return this.userService.createUser(user);
     }
 
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public User getUser(HttpServletRequest request) {
+        String userId = request.getAttribute(USER_ID_ATTR).toString();
+        return this.userService.findById(userId);
+    }
+
     @RequestMapping(value = "", method = RequestMethod.PATCH)
     public void updateUser(HttpServletRequest request, @RequestBody UserUpdateRequest userUpdateRequest) {
         String userId = request.getAttribute(USER_ID_ATTR).toString();
