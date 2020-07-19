@@ -282,13 +282,13 @@ public class UserService {
         }
     }
 
-    public void setB2CUserToEmployees(String employee, List<Float> percentageDiscountPerMembership) {
+    public void setB2CUserToEmployees(String employee, List<Float> percentageDiscountPerMembership., String companyName) {
         User user = this.findById(employee);
 
         if(user != null) {
             Query query = new Query();
             query.addCriteria(Criteria.where(EMAIL_FIELD).is(employee));
-            Update update = new Update().set(B2C_FIELD, new B2CUserEmployee(percentageDiscountPerMembership));
+            Update update = new Update().set(B2C_FIELD, new B2CUserEmployee(percentageDiscountPerMembership, companyName));
 
             this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
         }

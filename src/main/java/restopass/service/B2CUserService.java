@@ -42,7 +42,7 @@ public class B2CUserService {
         this.b2CUserRepository.save(user);
 
         user.getEmployeesEmails().forEach(
-                employee -> this.userService.setB2CUserToEmployees(employee, user.getPercentageDiscountPerMembership()));
+                employee -> this.userService.setB2CUserToEmployees(employee, user.getPercentageDiscountPerMembership(), user.getCompanyName()));
     }
 
     public void updateDiscounts(B2CUserEmployer user) {
@@ -56,7 +56,7 @@ public class B2CUserService {
         B2CUserEmployer employer = this.findById(user.getCompanyId());
 
         employer.getEmployeesEmails().forEach(
-                employee -> this.userService.setB2CUserToEmployees(employee, user.getPercentageDiscountPerMembership())
+                employee -> this.userService.setB2CUserToEmployees(employee, user.getPercentageDiscountPerMembership(), user.getCompanyName())
         );
     }
 
