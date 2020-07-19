@@ -43,15 +43,15 @@ public class UserService {
     MongoTemplate mongoTemplate;
     UserRepository userRepository;
     GoogleLoginUtils googleLoginUtils;
+    
+    @Autowired
     B2BUserService b2bUserService;
 
     @Autowired
-    public UserService(MongoTemplate mongoTemplate, UserRepository userRepository, GoogleLoginUtils googleLoginUtils,
-                       B2BUserService b2bUserService) {
+    public UserService(MongoTemplate mongoTemplate, UserRepository userRepository, GoogleLoginUtils googleLoginUtils) {
         this.mongoTemplate = mongoTemplate;
         this.userRepository = userRepository;
         this.googleLoginUtils = googleLoginUtils;
-        this.b2bUserService = b2bUserService;
     }
 
     public UserLoginResponse loginUser(UserLoginRequest user) {
