@@ -85,7 +85,7 @@ public class UserService {
         B2CUserEmployer b2CUserEmployer = this.b2CUserService.checkIfB2CUser(user.getEmail());
 
         if (b2CUserEmployer != null) {
-            userDTO.setB2CUserEmployee(new B2CUserEmployee(b2CUserEmployer.getPercentageDiscountPerMembership()));
+            userDTO.setB2CUserEmployee(new B2CUserEmployee(b2CUserEmployer.getPercentageDiscountPerMembership(), b2CUserEmployer.getCompanyName()));
         }
 
         try {
@@ -282,7 +282,7 @@ public class UserService {
         }
     }
 
-    public void setB2CUserToEmployees(String employee, List<Float> percentageDiscountPerMembership., String companyName) {
+    public void setB2CUserToEmployees(String employee, List<Float> percentageDiscountPerMembership, String companyName) {
         User user = this.findById(employee);
 
         if(user != null) {
