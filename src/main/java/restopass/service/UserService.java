@@ -43,7 +43,7 @@ public class UserService {
     MongoTemplate mongoTemplate;
     UserRepository userRepository;
     GoogleLoginUtils googleLoginUtils;
-    
+
     @Autowired
     B2BUserService b2bUserService;
 

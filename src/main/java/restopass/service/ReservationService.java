@@ -148,6 +148,28 @@ public class ReservationService {
         query.addCriteria(orCriteria);
 
         List<Reservation> reservations = this.mongoTemplate.find(query, Reservation.class);
+
+        return this.orderAndMapReservations(reservations, userId);
+    }
+
+    public List<ReservationResponse> getReservationsHistoryForUser(String userId) {
+        Query query = new Query();
+
+        Criteria orCriteria = new Criteria();
+        query.addCriteria(Criteria.where(RESERVATION_STATE).ne(ReservationState.CONFIRMED));
+
+        orCriteria.orOperator(
+                Criteria.where(OWNER_USER_ID).is(userId),
+                Criteria.where(CONFIRMED_USERS).in(userId));
+
+        query.addCriteria(orCriteria);
+
+        List<Reservation> reservations = this.mongoTemplate.find(query, Reservation.class);
+
+        return this.orderAndMapReservations(reservations, userId);
+    }
+
+    private List<ReservationResponse> orderAndMapReservations(List<Reservation> reservations, String userId) {
         reservations.sort(Comparator.comparing(Reservation::getDate,
                 Comparator.nullsLast(Comparator.reverseOrder())));
 
@@ -160,7 +182,7 @@ public class ReservationService {
         this.userService.incrementUserVisits(userId);
 
         ReservationResponse reservation = reservations.stream().filter(r -> r.getReservationId().equalsIgnoreCase(reservationId)).findFirst().get();
-        if(reservation.getConfirmedUsers() != null) {
+        if (reservation.getConfirmedUsers() != null) {
             this.firebaseService.sendCancelReservationNotification(
                     reservation.getConfirmedUsers().stream().map(UserReservation::getUserId).collect(Collectors.toList()),
                     reservationId, reservation.getOwnerUser().getName() + " " + reservation.getOwnerUser().getLastName(),
@@ -237,8 +259,8 @@ public class ReservationService {
         }).collect(Collectors.toList());
 
         Map<String, List<Dish>> dishesMap = restaurant.getDishes().stream()
-                    .filter(dish -> membershipIds.stream().max(Comparator.naturalOrder()).get() >= dish.getBaseMembership())
-                    .collect(Collectors.groupingBy(dish -> dish.getBaseMembershipName().toUpperCase(),
+                .filter(dish -> membershipIds.stream().max(Comparator.naturalOrder()).get() >= dish.getBaseMembership())
+                .collect(Collectors.groupingBy(dish -> dish.getBaseMembershipName().toUpperCase(),
                         Collectors.toList()));
 
         List<Membership> allMemberships = this.membershipRepository.findAll();
