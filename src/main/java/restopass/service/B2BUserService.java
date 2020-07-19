@@ -6,64 +6,64 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import restopass.dto.B2CUserEmployer;
-import restopass.mongo.B2CUserRepository;
+import restopass.dto.B2BUserEmployer;
+import restopass.mongo.B2BUserRepository;
 
 import java.util.UUID;
 
 @Service
-public class B2CUserService {
+public class B2BUserService {
 
     private String EMPLOYEES_EMAILS_FIELD = "employeesEmails";
     private String DISCOUNTS_FIELD = "percentageDiscountPerMembership";
     private String ID_FIELD = "companyId";
-    private String B2C_USERS_COLLECTION = "b2c_users";
+    private String B2B_USERS_COLLECTION = "b2b_users";
 
     @Autowired
     private UserService userService;
-    private B2CUserRepository b2CUserRepository;
+    private B2BUserRepository b2BUserRepository;
     private MongoTemplate mongoTemplate;
 
     @Autowired
-    public B2CUserService(B2CUserRepository b2CUserRepository, MongoTemplate mongoTemplate) {
-        this.b2CUserRepository = b2CUserRepository;
+    public B2BUserService(B2BUserRepository b2BUserRepository, MongoTemplate mongoTemplate) {
+        this.b2BUserRepository = b2BUserRepository;
         this.mongoTemplate = mongoTemplate;
     }
 
-    public B2CUserEmployer checkIfB2CUser(String userId) {
+    public B2BUserEmployer checkIfB2BUser(String userId) {
         Query query = new Query();
         query.addCriteria(Criteria.where(EMPLOYEES_EMAILS_FIELD).in(userId));
 
-        return this.mongoTemplate.findOne(query, B2CUserEmployer.class);
+        return this.mongoTemplate.findOne(query, B2BUserEmployer.class);
     }
 
-    public void createUser(B2CUserEmployer user) {
+    public void createUser(B2BUserEmployer user) {
         user.setCompanyId(UUID.randomUUID().toString());
-        this.b2CUserRepository.save(user);
+        this.b2BUserRepository.save(user);
 
         user.getEmployeesEmails().forEach(
-                employee -> this.userService.setB2CUserToEmployees(employee, user.getPercentageDiscountPerMembership(), user.getCompanyName()));
+                employee -> this.userService.setB2BUserToEmployees(employee, user.getPercentageDiscountPerMembership(), user.getCompanyName()));
     }
 
-    public void updateDiscounts(B2CUserEmployer user) {
+    public void updateDiscounts(B2BUserEmployer user) {
         Query query = new Query();
         query.addCriteria(Criteria.where(ID_FIELD).in(user.getCompanyId()));
 
         Update update = new Update().set(DISCOUNTS_FIELD, user.getPercentageDiscountPerMembership());
 
-        this.mongoTemplate.updateMulti(query, update, B2C_USERS_COLLECTION);
+        this.mongoTemplate.updateMulti(query, update, B2B_USERS_COLLECTION);
 
-        B2CUserEmployer employer = this.findById(user.getCompanyId());
+        B2BUserEmployer employer = this.findById(user.getCompanyId());
 
         employer.getEmployeesEmails().forEach(
-                employee -> this.userService.setB2CUserToEmployees(employee, user.getPercentageDiscountPerMembership(), user.getCompanyName())
+                employee -> this.userService.setB2BUserToEmployees(employee, user.getPercentageDiscountPerMembership(), user.getCompanyName())
         );
     }
 
-    private B2CUserEmployer findById(String id) {
+    private B2BUserEmployer findById(String id) {
         Query query = new Query();
         query.addCriteria(Criteria.where(ID_FIELD).in(id));
 
-        return this.mongoTemplate.findOne(query, B2CUserEmployer.class);
+        return this.mongoTemplate.findOne(query, B2BUserEmployer.class);
     }
 }

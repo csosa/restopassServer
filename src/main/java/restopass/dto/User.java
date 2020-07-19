@@ -19,7 +19,7 @@ public class User {
     private Integer actualMembership;
     private List<String> secondaryEmails;
     private Set<String> favoriteRestaurants;
-    private B2CUserEmployee b2CUserEmployee;
+    private B2BUserEmployee b2BUserEmployee;
 
     public User() {
     }
@@ -99,11 +99,11 @@ public class User {
         this.lastName = lastName;
     }
 
-    public B2CUserEmployee getB2CUserEmployee() {
-        return b2CUserEmployee;
+    public B2BUserEmployee getB2BUserEmployee() {
+        return b2BUserEmployee;
     }
 
-    public void setB2CUserEmployee(B2CUserEmployee b2CUserEmployee) {
-        this.b2CUserEmployee = b2CUserEmployee;
+    public void setB2BUserEmployee(B2BUserEmployee b2BUserEmployee) {
+        this.b2BUserEmployee = b2BUserEmployee;
     }
 }

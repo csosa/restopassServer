@@ -32,7 +32,7 @@ public class UserService {
     private static String NAME_FIELD = "name";
     private static String LAST_NAME_FIELD = "lastName";
     private static String VISITS_FIELD = "visits";
-    private static String B2C_FIELD = "b2CUserEmployee";
+    private static String B2B_FIELD = "b2BUserEmployee";
     private static String ACTUAL_MEMBERSHIP = "actualMembership";
     private static String FAVORITE_RESTAURANTS_FIELD = "favoriteRestaurants";
     private static String CREDIT_CARD_FIELD = "creditCard";
@@ -43,15 +43,15 @@ public class UserService {
     MongoTemplate mongoTemplate;
     UserRepository userRepository;
     GoogleLoginUtils googleLoginUtils;
-    B2CUserService b2CUserService;
+    B2BUserService b2bUserService;
 
     @Autowired
     public UserService(MongoTemplate mongoTemplate, UserRepository userRepository, GoogleLoginUtils googleLoginUtils,
-                       B2CUserService b2CUserService) {
+                       B2BUserService b2bUserService) {
         this.mongoTemplate = mongoTemplate;
         this.userRepository = userRepository;
         this.googleLoginUtils = googleLoginUtils;
-        this.b2CUserService = b2CUserService;
+        this.b2bUserService = b2bUserService;
     }
 
     public UserLoginResponse loginUser(UserLoginRequest user) {
@@ -82,10 +82,10 @@ public class UserService {
 
     public UserLoginResponse createUser(UserCreationRequest user) {
         User userDTO = new User(user.getEmail(), user.getPassword(), user.getName(), user.getLastName());
-        B2CUserEmployer b2CUserEmployer = this.b2CUserService.checkIfB2CUser(user.getEmail());
+        B2BUserEmployer b2BUserEmployer = this.b2bUserService.checkIfB2BUser(user.getEmail());
 
-        if (b2CUserEmployer != null) {
-            userDTO.setB2CUserEmployee(new B2CUserEmployee(b2CUserEmployer.getPercentageDiscountPerMembership(), b2CUserEmployer.getCompanyName()));
+        if (b2BUserEmployer != null) {
+            userDTO.setB2BUserEmployee(new B2BUserEmployee(b2BUserEmployer.getPercentageDiscountPerMembership(), b2BUserEmployer.getCompanyName()));
         }
 
         try {
@@ -282,13 +282,13 @@ public class UserService {
         }
     }
 
-    public void setB2CUserToEmployees(String employee, List<Float> percentageDiscountPerMembership, String companyName) {
+    public void setB2BUserToEmployees(String employee, List<Float> percentageDiscountPerMembership, String companyName) {
         User user = this.findById(employee);
 
         if(user != null) {
             Query query = new Query();
             query.addCriteria(Criteria.where(EMAIL_FIELD).is(employee));
-            Update update = new Update().set(B2C_FIELD, new B2CUserEmployee(percentageDiscountPerMembership, companyName));
+            Update update = new Update().set(B2B_FIELD, new B2BUserEmployee(percentageDiscountPerMembership, companyName));
 
             this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
         }
