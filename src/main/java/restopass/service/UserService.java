@@ -3,7 +3,6 @@ package restopass.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -36,6 +35,7 @@ public class UserService {
     private static String VISITS_FIELD = "visits";
     private static String B2B_FIELD = "b2BUserEmployee";
     private static String MEMBERSHIP_FINALIZE_DATE_FIELD = "membershipFinalizeDate";
+    private static String MEMBERSHIP_ENROLLED_DATE_FIELD = "membershipEnrolledDate";
     private static String ACTUAL_MEMBERSHIP = "actualMembership";
     private static String FAVORITE_RESTAURANTS_FIELD = "favoriteRestaurants";
     private static String CREDIT_CARD_FIELD = "creditCard";
@@ -150,7 +150,8 @@ public class UserService {
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
 
-    public void updateMembership(String userId, Membership membership) {
+    public LocalDateTime updateMembership(String userId, Membership membership) {
+        LocalDateTime enrolledDate = LocalDateTime.now();
         Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
 
@@ -158,12 +159,17 @@ public class UserService {
         update.set(ACTUAL_MEMBERSHIP, membership.getMembershipId());
         update.set(VISITS_FIELD, membership.getVisits());
         update.unset(MEMBERSHIP_FINALIZE_DATE_FIELD);
+        update.set(MEMBERSHIP_ENROLLED_DATE_FIELD, enrolledDate);
 
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+
+        return enrolledDate;
     }
 
     public LocalDateTime removeMembership(String userId) {
-        LocalDateTime membershipFinalizeDate = LocalDateTime.now().plusMonths(1).withDayOfMonth(1).minusDays(1);
+        User user = this.findById(userId);
+        LocalDateTime membershipFinalizeDate = LocalDateTime.now().withDayOfMonth(user.getMembershipEnrolledDate().getDayOfMonth()).plusDays(30);
+        
         Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
 

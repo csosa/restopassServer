@@ -22,6 +22,7 @@ public class User {
     private Set<String> favoriteRestaurants;
     private B2BUserEmployee b2BUserEmployee;
     private LocalDateTime membershipFinalizeDate;
+    private LocalDateTime membershipEnrolledDate;
 
     public User() {
     }
@@ -31,6 +32,14 @@ public class User {
         this.password = password;
         this.name = name;
         this.lastName = lastName;
+    }
+
+    public LocalDateTime getMembershipEnrolledDate() {
+        return membershipEnrolledDate;
+    }
+
+    public void setMembershipEnrolledDate(LocalDateTime membershipEnrolledDate) {
+        this.membershipEnrolledDate = membershipEnrolledDate;
     }
 
     public LocalDateTime getMembershipFinalizeDate() {

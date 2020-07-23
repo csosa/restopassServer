@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import restopass.dto.Membership;
 import restopass.dto.request.UpdateMembershipToUserRequest;
-import restopass.dto.response.DeleteMembershipResponse;
+import restopass.dto.response.ChangeMembershipResponse;
 import restopass.dto.response.MembershipsResponse;
 import restopass.service.MembershipService;
 
@@ -33,13 +33,13 @@ public class MembershipController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.PATCH)
-    public void updateMembershipToUser(HttpServletRequest request, @RequestBody UpdateMembershipToUserRequest updateMembershipToUserRequest) {
+    public ChangeMembershipResponse updateMembershipToUser(HttpServletRequest request, @RequestBody UpdateMembershipToUserRequest updateMembershipToUserRequest) {
         String userId = request.getAttribute(USER_ID_ATTR).toString();
-        this.membershipService.updateMembershipToUser(userId, updateMembershipToUserRequest);
+        return this.membershipService.updateMembershipToUser(userId, updateMembershipToUserRequest);
     }
 
     @RequestMapping(value = "", method = RequestMethod.DELETE)
-    public DeleteMembershipResponse removeMembershipToUser(HttpServletRequest request) {
+    public ChangeMembershipResponse removeMembershipToUser(HttpServletRequest request) {
         String userId = request.getAttribute(USER_ID_ATTR).toString();
         return this.membershipService.removeMembershipToUser(userId);
     }
