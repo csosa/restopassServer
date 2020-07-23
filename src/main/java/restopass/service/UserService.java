@@ -3,6 +3,7 @@ package restopass.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -161,7 +162,7 @@ public class UserService {
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
 
-    public void removeMembership(String userId) {
+    public LocalDateTime removeMembership(String userId) {
         LocalDateTime membershipFinalizeDate = LocalDateTime.now().plusMonths(1).withDayOfMonth(1).minusDays(1);
         Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
@@ -171,6 +172,8 @@ public class UserService {
         update.set(MEMBERSHIP_FINALIZE_DATE_FIELD, membershipFinalizeDate);
 
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+
+        return membershipFinalizeDate;
     }
 
     private UserLoginResponse buildUserLoginResponse(User user, Boolean isCreation) {

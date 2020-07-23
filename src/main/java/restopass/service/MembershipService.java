@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import restopass.dto.Membership;
+import restopass.dto.response.DeleteMembershipResponse;
 import restopass.dto.response.MembershipResponse;
 import restopass.dto.request.UpdateMembershipToUserRequest;
 import restopass.dto.response.MembershipsResponse;
@@ -82,14 +83,14 @@ public class MembershipService {
         this.userService.updateMembership(userId, membership);
     }
 
-    public void removeMembershipToUser(String userId){
+    public DeleteMembershipResponse removeMembershipToUser(String userId){
         User user = this.userService.findById(userId);
 
         if(user == null) {
             throw new UserNotFoundException();
         }
 
-        this.userService.removeMembership(userId);
+       return new DeleteMembershipResponse(this.userService.removeMembership(userId));
     }
 
     public List<Membership> findAll() {

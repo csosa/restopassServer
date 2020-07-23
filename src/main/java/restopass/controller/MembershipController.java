@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import restopass.dto.Membership;
 import restopass.dto.request.UpdateMembershipToUserRequest;
+import restopass.dto.response.DeleteMembershipResponse;
 import restopass.dto.response.MembershipsResponse;
 import restopass.service.MembershipService;
 
@@ -38,9 +39,9 @@ public class MembershipController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.DELETE)
-    public void removeMembershipToUser(HttpServletRequest request) {
+    public DeleteMembershipResponse removeMembershipToUser(HttpServletRequest request) {
         String userId = request.getAttribute(USER_ID_ATTR).toString();
-        this.membershipService.removeMembershipToUser(userId);
+        return this.membershipService.removeMembershipToUser(userId);
     }
 
 }
