@@ -21,6 +21,7 @@ import restopass.utils.GoogleLoginUtils;
 import restopass.utils.JWTHelper;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -33,6 +34,7 @@ public class UserService {
     private static String LAST_NAME_FIELD = "lastName";
     private static String VISITS_FIELD = "visits";
     private static String B2B_FIELD = "b2BUserEmployee";
+    private static String MEMBERSHIP_FINALIZE_DATE_FIELD = "membershipFinalizeDate";
     private static String ACTUAL_MEMBERSHIP = "actualMembership";
     private static String FAVORITE_RESTAURANTS_FIELD = "favoriteRestaurants";
     private static String CREDIT_CARD_FIELD = "creditCard";
@@ -151,17 +153,22 @@ public class UserService {
         Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
 
-        Update update = new Update().set(ACTUAL_MEMBERSHIP, membership.getMembershipId())
-                .set(VISITS_FIELD, membership.getVisits());
+        Update update = new Update();
+        update.set(ACTUAL_MEMBERSHIP, membership.getMembershipId());
+        update.set(VISITS_FIELD, membership.getVisits());
+        update.unset(MEMBERSHIP_FINALIZE_DATE_FIELD);
 
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
 
     public void removeMembership(String userId) {
+        LocalDateTime membershipFinalizeDate = LocalDateTime.now().plusMonths(1).withDayOfMonth(1).minusDays(1);
         Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
 
-        Update update = new Update().unset(ACTUAL_MEMBERSHIP);
+        Update update = new Update();
+        update.unset(ACTUAL_MEMBERSHIP);
+        update.set(MEMBERSHIP_FINALIZE_DATE_FIELD, membershipFinalizeDate);
 
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }

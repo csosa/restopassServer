@@ -184,7 +184,7 @@ public class ReservationService {
 
         this.updateReservationState(reservationId, ReservationState.CANCELED);
         this.userService.incrementUserVisits(userId);
-        
+
         if (reservation.getConfirmedUsers() != null) {
             this.firebaseService.sendCancelReservationNotification(
                     reservation.getConfirmedUsers().stream().map(UserReservation::getUserId).collect(Collectors.toList()),

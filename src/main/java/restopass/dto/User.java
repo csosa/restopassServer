@@ -3,6 +3,7 @@ package restopass.dto;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +21,7 @@ public class User {
     private List<String> secondaryEmails;
     private Set<String> favoriteRestaurants;
     private B2BUserEmployee b2BUserEmployee;
+    private LocalDateTime membershipFinalizeDate;
 
     public User() {
     }
@@ -29,6 +31,14 @@ public class User {
         this.password = password;
         this.name = name;
         this.lastName = lastName;
+    }
+
+    public LocalDateTime getMembershipFinalizeDate() {
+        return membershipFinalizeDate;
+    }
+
+    public void setMembershipFinalizeDate(LocalDateTime membershipFinalizeDate) {
+        this.membershipFinalizeDate = membershipFinalizeDate;
     }
 
     public Set<String> getFavoriteRestaurants() {
