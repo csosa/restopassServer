@@ -2,6 +2,7 @@ package restopass.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import restopass.dto.User;
 import restopass.dto.request.UserCreationRequest;
 import restopass.dto.request.UserLoginGoogleRequest;
@@ -80,5 +81,19 @@ public class UserController {
     public void removeEmail(HttpServletRequest request, @PathVariable String email) {
         String userId = request.getAttribute(USER_ID_ATTR).toString();
         this.userService.removeEmail(email, userId);
+    }
+
+    @RequestMapping(value = "/emails/confirm/{email}/{userId}", method = RequestMethod.GET)
+    public ModelAndView confirmEmail(@PathVariable String email, @PathVariable  String userId) {
+        this.userService.confirmEmail(email, userId);
+
+        ModelAndView modelAndView = new ModelAndView();
+
+        User user = this.userService.findById(userId);
+        modelAndView.addObject("name", user.getName());
+        modelAndView.addObject("email", email);
+        modelAndView.setViewName("/confirmEmail/confirm-email-success");
+
+        return modelAndView;
     }
 }
