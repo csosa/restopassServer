@@ -1,6 +1,7 @@
 package restopass.service;
 
 import io.jsonwebtoken.lang.Strings;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -53,7 +54,7 @@ public class ReservationService {
     }
 
     public void createReservation(CreateReservationRequest reservationRequest, String userId) {
-        String reservationId = UUID.randomUUID().toString();
+        String reservationId =  RandomStringUtils.randomNumeric(10);
         Reservation reservation = new Reservation();
         reservation.setRestaurantId(reservationRequest.getRestaurantId());
         reservation.setToConfirmUsers(reservationRequest.getToConfirmUsers());

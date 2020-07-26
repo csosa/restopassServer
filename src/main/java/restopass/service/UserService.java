@@ -48,16 +48,16 @@ public class UserService {
 
     MongoTemplate mongoTemplate;
     UserRepository userRepository;
-    GoogleLoginUtils googleLoginUtils;
+    GoogleService googleService;
 
     @Autowired
     B2BUserService b2bUserService;
 
     @Autowired
-    public UserService(MongoTemplate mongoTemplate, UserRepository userRepository, GoogleLoginUtils googleLoginUtils) {
+    public UserService(MongoTemplate mongoTemplate, UserRepository userRepository, GoogleService googleService) {
         this.mongoTemplate = mongoTemplate;
         this.userRepository = userRepository;
-        this.googleLoginUtils = googleLoginUtils;
+        this.googleService = googleService;
     }
 
     public UserLoginResponse loginUser(UserLoginRequest user) {
@@ -75,7 +75,7 @@ public class UserService {
     }
 
     public UserLoginResponse loginGoogleUser(UserLoginGoogleRequest userRequest) {
-        User newUser = googleLoginUtils.verifyGoogleToken(userRequest.getGoogleToken());
+        User newUser = googleService.verifyGoogleToken(userRequest.getGoogleToken());
         User userDB = this.findById(newUser.getEmail());
 
         if (userDB == null) {
@@ -177,12 +177,13 @@ public class UserService {
     public LocalDateTime removeMembership(String userId) {
         User user = this.findById(userId);
         LocalDateTime membershipFinalizeDate = LocalDateTime.now().withDayOfMonth(user.getMembershipEnrolledDate().getDayOfMonth()).plusDays(30);
-        
+
         Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
 
         Update update = new Update();
         update.unset(ACTUAL_MEMBERSHIP);
+        update.unset(MEMBERSHIP_ENROLLED_DATE_FIELD);
         update.set(MEMBERSHIP_FINALIZE_DATE_FIELD, membershipFinalizeDate);
 
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);

@@ -1,4 +1,4 @@
-package restopass.utils;
+package restopass.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
@@ -9,23 +9,28 @@ import org.springframework.stereotype.Service;
 import restopass.dto.User;
 import restopass.exception.NotValidGoogleLoginException;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 
 @Service
-public class GoogleLoginUtils {
+public class GoogleService {
 
     @Value("${google.api.key}")
     private String googleApiKey;
+    private GoogleIdTokenVerifier verifier;
 
-    public User verifyGoogleToken(String token) {
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
+    @PostConstruct
+    private void init() {
+        verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
                 .setAudience(Collections.singletonList(googleApiKey))
                 .setIssuer("https://accounts.google.com")
                 .build();
+    }
 
-        GoogleIdToken idToken = null;
+    public User verifyGoogleToken(String token) {
+        GoogleIdToken idToken;
         try {
             idToken = verifier.verify(token);
 
