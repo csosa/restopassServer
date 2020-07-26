@@ -6,8 +6,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.HashMap;
 import java.util.List;
 
-@Document(collection = "b2c_users")
-public class B2CUserEmployer {
+@Document(collection = "b2b_users")
+public class B2BUserEmployer {
 
     private String companyId;
     @Indexed(unique = true)

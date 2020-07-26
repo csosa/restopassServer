@@ -3,6 +3,7 @@ package restopass.dto;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -20,7 +21,9 @@ public class User {
     private List<String> secondaryEmails;
     private List<String> toConfirmEmails;
     private Set<String> favoriteRestaurants;
-    private B2CUserEmployee b2CUserEmployee;
+    private B2BUserEmployee b2BUserEmployee;
+    private LocalDateTime membershipFinalizeDate;
+    private LocalDateTime membershipEnrolledDate;
 
     public User() {
     }
@@ -30,6 +33,22 @@ public class User {
         this.password = password;
         this.name = name;
         this.lastName = lastName;
+    }
+
+    public LocalDateTime getMembershipEnrolledDate() {
+        return membershipEnrolledDate;
+    }
+
+    public void setMembershipEnrolledDate(LocalDateTime membershipEnrolledDate) {
+        this.membershipEnrolledDate = membershipEnrolledDate;
+    }
+
+    public LocalDateTime getMembershipFinalizeDate() {
+        return membershipFinalizeDate;
+    }
+
+    public void setMembershipFinalizeDate(LocalDateTime membershipFinalizeDate) {
+        this.membershipFinalizeDate = membershipFinalizeDate;
     }
 
     public Set<String> getFavoriteRestaurants() {
@@ -100,12 +119,12 @@ public class User {
         this.lastName = lastName;
     }
 
-    public B2CUserEmployee getB2CUserEmployee() {
-        return b2CUserEmployee;
+    public B2BUserEmployee getB2BUserEmployee() {
+        return b2BUserEmployee;
     }
 
-    public void setB2CUserEmployee(B2CUserEmployee b2CUserEmployee) {
-        this.b2CUserEmployee = b2CUserEmployee;
+    public void setB2BUserEmployee(B2BUserEmployee b2BUserEmployee) {
+        this.b2BUserEmployee = b2BUserEmployee;
     }
 
     public List<String> getToConfirmEmails() {

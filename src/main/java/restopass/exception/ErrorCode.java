@@ -13,6 +13,7 @@ public enum ErrorCode {
     EMPTY_VISITS(HttpStatus.BAD_REQUEST.value(), 8, "No tienes suficientes visitas ¿Quieres seguir visitando tus restaurantes favoritos? Porque no pruebas un mejor plan"),
     RESERVATION_ALREADY_CONFIRMED(HttpStatus.BAD_REQUEST.value(), 9, "Reserva ya confirmada"),
     RESERVATION_CANCELED(HttpStatus.BAD_REQUEST.value(), 10, "Reserva cancelada por el dueño"),
+    RESERVATION_CANCEL_TIME_EXPIRED(HttpStatus.BAD_REQUEST.value(), 11, "Se excedió el tiempo para cancelar la reserva. Lamentablemente el restaurante no acepta tu cancelación"),
 
     USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 1, "El usuario no esta registrado en RestoPass"),
     URL_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 2, "Url doesnt exist. Please check our wiki for more info"),

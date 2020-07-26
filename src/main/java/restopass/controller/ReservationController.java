@@ -38,6 +38,12 @@ public class ReservationController {
         return this.reservationService.getReservationsForUser(userId);
     }
 
+    @RequestMapping(value = "/history", method = RequestMethod.GET)
+    public List<ReservationResponse> getHistoryByUser(HttpServletRequest request) {
+        String userId = request.getAttribute(USER_ID).toString();
+        return this.reservationService.getReservationsHistoryForUser(userId);
+    }
+
     @RequestMapping(value = "/cancel/{reservationId}", method = RequestMethod.PATCH)
     public List<ReservationResponse> cancelReservation(@PathVariable String reservationId, HttpServletRequest request) {
         String userId = request.getAttribute(USER_ID).toString();

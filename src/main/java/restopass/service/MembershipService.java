@@ -6,11 +6,11 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import restopass.dto.Membership;
+import restopass.dto.response.ChangeMembershipResponse;
 import restopass.dto.response.MembershipResponse;
 import restopass.dto.request.UpdateMembershipToUserRequest;
 import restopass.dto.response.MembershipsResponse;
 import restopass.dto.User;
-import restopass.exception.InvalidUsernameOrPasswordException;
 import restopass.exception.UserNotFoundException;
 import restopass.mongo.MembershipRepository;
 
@@ -67,7 +67,7 @@ public class MembershipService {
         return membershipsResponse;
     }
 
-    public void updateMembershipToUser(String userId, UpdateMembershipToUserRequest request){
+    public ChangeMembershipResponse updateMembershipToUser(String userId, UpdateMembershipToUserRequest request){
         User user = this.userService.findById(userId);
 
         if(user == null) {
@@ -79,17 +79,17 @@ public class MembershipService {
         query.addCriteria(Criteria.where(ID).is(request.getMembershipId()));
         Membership membership = this.mongoTemplate.findOne(query, Membership.class);
 
-        this.userService.updateMembership(userId, membership);
+        return new ChangeMembershipResponse(this.userService.updateMembership(userId, membership));
     }
 
-    public void removeMembershipToUser(String userId){
+    public ChangeMembershipResponse removeMembershipToUser(String userId){
         User user = this.userService.findById(userId);
 
         if(user == null) {
             throw new UserNotFoundException();
         }
 
-        this.userService.removeMembership(userId);
+       return new ChangeMembershipResponse(this.userService.removeMembership(userId));
     }
 
     public List<Membership> findAll() {
