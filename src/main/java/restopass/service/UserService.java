@@ -316,8 +316,16 @@ public class UserService {
 
     private void pushToConfirmEmailIfNotEmpty(String email, User user, Update update) {
         if (email != null) {
+            if (user.getSecondaryEmails().contains(email) || user.getToConfirmEmails().contains(email)) {
+                throw new EmailAlreadyAddedException();
+            }
             if (user.getEmail().equalsIgnoreCase(email)) {
-                throw new EmalAlreadyExistsException();
+                throw new EmailAlreadyExistsException();
+            }
+
+            User anotherUser = this.findById(email);
+            if (anotherUser != null) {
+                throw new ForeignEmailAddedException();
             }
 
             update.addToSet(TO_CONFIRM_EMAILS_FIELD, email);
