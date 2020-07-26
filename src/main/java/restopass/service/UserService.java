@@ -28,6 +28,7 @@ public class UserService {
 
     private static String EMAIL_FIELD = "email";
     private static String SECONDARY_EMAILS_FIELD = "secondaryEmails";
+    private static String TO_CONFIRM_EMAILS_FIELD = "secondaryEmails";
     private static String PASSWORD_FIELD = "password";
     private static String NAME_FIELD = "name";
     private static String LAST_NAME_FIELD = "lastName";
@@ -226,7 +227,7 @@ public class UserService {
         this.setIfNotEmpty(NAME_FIELD, request.getName(), update);
         this.setIfNotEmpty(LAST_NAME_FIELD, request.getLastName(), update);
         this.setIfNotEmpty(PASSWORD_FIELD, request.getPassword(), update);
-        this.pushSecondaryEmailIfNotEmpty(request.getSecondaryEmail(), userId, update);
+        this.pushToConfirmEmailIfNotEmpty(request.getToConfirmEmail(), userId, update);
 
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
@@ -272,7 +273,16 @@ public class UserService {
             if (userId.equalsIgnoreCase(email)) {
                 throw new EmalAlreadyExistsException();
             }
-            update.push(SECONDARY_EMAILS_FIELD, email);
+            update.addToSet(SECONDARY_EMAILS_FIELD, email);
+        }
+    }
+
+    private void pushToConfirmEmailIfNotEmpty(String email, String userId, Update update) {
+        if (email != null) {
+            if (userId.equalsIgnoreCase(email)) {
+                throw new EmalAlreadyExistsException();
+            }
+            update.addToSet(TO_CONFIRM_EMAILS_FIELD, email);
         }
     }
 

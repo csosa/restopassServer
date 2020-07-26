@@ -69,4 +69,10 @@ public class UserController {
     public User checkCanAddToReservation(@PathVariable String userId, @PathVariable Integer baseMembership) {
         return this.userService.checkCanAddToReservation(userId, baseMembership);
     }
+
+    @RequestMapping(value = "", method = RequestMethod.PATCH)
+    public void addToConfirmEmail(HttpServletRequest request, @RequestBody UserUpdateRequest userUpdateRequest) {
+        String userId = request.getAttribute(USER_ID_ATTR).toString();
+        this.userService.updateUserInfo(userUpdateRequest, userId);
+    }
 }

@@ -18,6 +18,7 @@ public class User {
     private Integer visits;
     private Integer actualMembership;
     private List<String> secondaryEmails;
+    private List<String> toConfirmEmails;
     private Set<String> favoriteRestaurants;
     private B2CUserEmployee b2CUserEmployee;
 
@@ -105,5 +106,13 @@ public class User {
 
     public void setB2CUserEmployee(B2CUserEmployee b2CUserEmployee) {
         this.b2CUserEmployee = b2CUserEmployee;
+    }
+
+    public List<String> getToConfirmEmails() {
+        return toConfirmEmails;
+    }
+
+    public void setToConfirmEmails(List<String> toConfirmEmails) {
+        this.toConfirmEmails = toConfirmEmails;
     }
 }
