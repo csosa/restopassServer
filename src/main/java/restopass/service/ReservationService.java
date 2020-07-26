@@ -224,8 +224,8 @@ public class ReservationService {
         this.mongoTemplate.updateMulti(query, update, RESERVATION_COLLECTION);
     }
 
-    public void confirmReservation(String reservationId, String userId) {
-        User user = this.userService.findById(userId);
+    public void confirmReservation(String reservationId, String email) {
+        User user = this.userService.findById(email);
         Reservation reservation = this.findById(reservationId);
         Restaurant restaurant = this.restaurantService.findById(reservation.getRestaurantId());
 
@@ -236,7 +236,7 @@ public class ReservationService {
             throw new NoMoreVisitsException();
         }
 
-        if (reservation.getConfirmedUsers() != null && reservation.getConfirmedUsers().stream().anyMatch(u -> u.equalsIgnoreCase(userId))) {
+        if (reservation.getConfirmedUsers() != null && reservation.getConfirmedUsers().stream().anyMatch(u -> u.equalsIgnoreCase(email))) {
             throw new ReservationAlreadyConfirmedException();
         }
 
@@ -244,16 +244,16 @@ public class ReservationService {
         query.addCriteria(Criteria.where(RESERVATION_ID).is(reservationId));
 
         Update update = new Update();
-        update.pull(TO_CONFIRM_USERS, userId);
-        update.push(CONFIRMED_USERS, userId);
+        update.pull(TO_CONFIRM_USERS, email);
+        update.push(CONFIRMED_USERS, email);
 
         this.mongoTemplate.updateMulti(query, update, RESERVATION_COLLECTION);
 
-        this.sendConfirmBookingEmail(reservation, userId);
+        this.sendConfirmBookingEmail(reservation, email);
         this.firebaseService.sendConfirmedInvitationNotification(reservation.getOwnerUser(), reservationId,
                 user.getName() + " " + user.getLastName(), restaurant.getName(),
                 this.generateHumanDate(reservation.getDate()));
-        this.userService.decrementUserVisits(userId);
+        this.userService.decrementUserVisits(email);
 
     }
 
