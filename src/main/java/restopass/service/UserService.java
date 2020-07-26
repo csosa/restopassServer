@@ -29,7 +29,7 @@ public class UserService {
 
     private static String EMAIL_FIELD = "email";
     private static String SECONDARY_EMAILS_FIELD = "secondaryEmails";
-    private static String TO_CONFIRM_EMAILS_FIELD = "secondaryEmails";
+    private static String TO_CONFIRM_EMAILS_FIELD = "toConfirmEmails";
     private static String PASSWORD_FIELD = "password";
     private static String NAME_FIELD = "name";
     private static String LAST_NAME_FIELD = "lastName";
@@ -244,6 +244,17 @@ public class UserService {
         this.setIfNotEmpty(LAST_NAME_FIELD, request.getLastName(), update);
         this.setIfNotEmpty(PASSWORD_FIELD, request.getPassword(), update);
         this.pushToConfirmEmailIfNotEmpty(request.getToConfirmEmail(), userId, update);
+
+        this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+    }
+
+    public void removeEmail(String email, String userId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+
+        Update update = new Update();
+        update.pull(SECONDARY_EMAILS_FIELD, email);
+        update.pull(TO_CONFIRM_EMAILS_FIELD, email);
 
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }

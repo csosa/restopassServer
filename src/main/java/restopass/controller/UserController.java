@@ -70,9 +70,15 @@ public class UserController {
         return this.userService.checkCanAddToReservation(userId, baseMembership);
     }
 
-    @RequestMapping(value = "", method = RequestMethod.PATCH)
+    @RequestMapping(value = "/emails", method = RequestMethod.PATCH)
     public void addToConfirmEmail(HttpServletRequest request, @RequestBody UserUpdateRequest userUpdateRequest) {
         String userId = request.getAttribute(USER_ID_ATTR).toString();
         this.userService.updateUserInfo(userUpdateRequest, userId);
+    }
+
+    @RequestMapping(value = "/emails/{email}", method = RequestMethod.DELETE)
+    public void removeEmail(HttpServletRequest request, @PathVariable String email) {
+        String userId = request.getAttribute(USER_ID_ATTR).toString();
+        this.userService.removeEmail(email, userId);
     }
 }
