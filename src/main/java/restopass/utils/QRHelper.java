@@ -43,7 +43,7 @@ public class QRHelper {
 
     public static ByteArrayOutputStream getQrCodeImageWithLogo(String text) throws WriterException, IOException {
         Map<EncodeHintType, ErrorCorrectionLevel> hints = new HashMap<>();
-        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
 
         QRCodeWriter writer = new QRCodeWriter();
         BitMatrix bitMatrix;
