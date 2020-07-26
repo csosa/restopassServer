@@ -18,7 +18,6 @@ import restopass.dto.response.UserLoginResponse;
 import restopass.exception.*;
 import restopass.mongo.UserRepository;
 import restopass.utils.EmailSender;
-import restopass.utils.GoogleLoginUtils;
 import restopass.utils.JWTHelper;
 
 import javax.servlet.http.HttpServletRequest;
