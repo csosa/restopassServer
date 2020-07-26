@@ -11,6 +11,7 @@ import restopass.dto.request.ScoreRequest;
 import restopass.dto.response.RestaurantTagsResponse;
 import restopass.service.FirebaseService;
 import restopass.service.RestaurantService;
+import restopass.utils.QRHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -80,7 +81,7 @@ public class RestaurantController {
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     public void test() {
-        firebaseService.sendScoreNotification(Arrays.asList("prueba@prueba.com"), "b200dcd7-dabd-4df2-9305-edaf90dad56b", "La Causa Nikkei");
+        //firebaseService.sendScoreNotification(Arrays.asList("prueba@prueba.com"), "b200dcd7-dabd-4df2-9305-edaf90dad56b", "La Causa Nikkei");
     }
 
 }
