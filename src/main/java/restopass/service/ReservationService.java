@@ -100,12 +100,21 @@ public class ReservationService {
 
 
         EmailModel emailModel = new EmailModel();
-        emailModel.setEmailTo(reservation.getOwnerUser());
         emailModel.setMailTempate("confirm_booking.html");
         emailModel.setSubject("Tu reserva ha sido confirmada");
         emailModel.setModel(modelEmail);
 
+        this.sendEmail(user, emailModel);
+
+    }
+
+    private void sendEmail(User user, EmailModel emailModel) {
+        emailModel.setEmailTo(user.getEmail());
         EmailSender.sendEmail(emailModel);
+        user.getSecondaryEmails().forEach(email -> {
+            emailModel.setEmailTo(email);
+            EmailSender.sendEmail(emailModel);
+        });
     }
 
     private void sendNewBookingEmail(Reservation reservation) {
@@ -124,10 +133,11 @@ public class ReservationService {
         emailModel.setSubject("Parece que tienes una nueva reserva");
         emailModel.setModel(modelEmail);
 
-        reservation.getToConfirmUsers().forEach(user -> {
-            modelEmail.put("joinUrl", this.buildJoinUrl(reservation.getReservationId(), user));
-            emailModel.setEmailTo(user);
-            EmailSender.sendEmail(emailModel);
+        reservation.getToConfirmUsers().forEach(userEmail -> {
+            modelEmail.put("joinUrl", this.buildJoinUrl(reservation.getReservationId(), userEmail));
+
+            User user = userService.findById(userEmail);
+            this.sendEmail(user, emailModel);
         });
     }
 

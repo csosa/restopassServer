@@ -129,8 +129,13 @@ public class UserService {
     }
 
     public User findById(String userId) {
+        Criteria orCriteria = new Criteria();
+        orCriteria.orOperator(
+                Criteria.where(EMAIL_FIELD).is(userId),
+                Criteria.where(SECONDARY_EMAILS_FIELD).in(userId));
+
         Query query = new Query();
-        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+        query.addCriteria(orCriteria);
 
         return this.mongoTemplate.findOne(query, User.class);
     }
