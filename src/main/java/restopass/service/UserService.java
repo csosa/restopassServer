@@ -17,10 +17,12 @@ import restopass.dto.request.UserUpdateRequest;
 import restopass.dto.response.UserLoginResponse;
 import restopass.exception.*;
 import restopass.mongo.UserRepository;
+import restopass.utils.EmailSender;
 import restopass.utils.JWTHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -28,6 +30,7 @@ public class UserService {
 
     private static String EMAIL_FIELD = "email";
     private static String SECONDARY_EMAILS_FIELD = "secondaryEmails";
+    private static String TO_CONFIRM_EMAILS_FIELD = "toConfirmEmails";
     private static String PASSWORD_FIELD = "password";
     private static String NAME_FIELD = "name";
     private static String LAST_NAME_FIELD = "lastName";
@@ -125,8 +128,13 @@ public class UserService {
     }
 
     public User findById(String userId) {
+        Criteria orCriteria = new Criteria();
+        orCriteria.orOperator(
+                Criteria.where(EMAIL_FIELD).is(userId),
+                Criteria.where(SECONDARY_EMAILS_FIELD).in(userId));
+
         Query query = new Query();
-        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+        query.addCriteria(orCriteria);
 
         return this.mongoTemplate.findOne(query, User.class);
     }
@@ -234,6 +242,7 @@ public class UserService {
     }
 
     public void updateUserInfo(UserUpdateRequest request, String userId) {
+        User user = this.findById(userId);
 
         Query query = new Query();
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
@@ -242,7 +251,29 @@ public class UserService {
         this.setIfNotEmpty(NAME_FIELD, request.getName(), update);
         this.setIfNotEmpty(LAST_NAME_FIELD, request.getLastName(), update);
         this.setIfNotEmpty(PASSWORD_FIELD, request.getPassword(), update);
-        this.pushSecondaryEmailIfNotEmpty(request.getSecondaryEmail(), userId, update);
+        this.pushToConfirmEmailIfNotEmpty(request.getToConfirmEmail(), user, update);
+
+        this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+    }
+
+    public void removeEmail(String email, String userId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+
+        Update update = new Update();
+        update.pull(SECONDARY_EMAILS_FIELD, email);
+        update.pull(TO_CONFIRM_EMAILS_FIELD, email);
+
+        this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+    }
+
+    public void confirmEmail(String email, String userId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+
+        Update update = new Update();
+        update.pull(TO_CONFIRM_EMAILS_FIELD, email);
+        update.addToSet(SECONDARY_EMAILS_FIELD, email);
 
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
@@ -283,12 +314,24 @@ public class UserService {
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
 
-    private void pushSecondaryEmailIfNotEmpty(String email, String userId, Update update) {
+    private void pushToConfirmEmailIfNotEmpty(String email, User user, Update update) {
         if (email != null) {
-            if (userId.equalsIgnoreCase(email)) {
-                throw new EmalAlreadyExistsException();
+            if (user.getSecondaryEmails().contains(email) || user.getToConfirmEmails().contains(email)) {
+                throw new EmailAlreadyAddedException();
             }
-            update.push(SECONDARY_EMAILS_FIELD, email);
+            if (user.getEmail().equalsIgnoreCase(email)) {
+                throw new EmailAlreadyExistsException();
+            }
+
+            User anotherUser = this.findById(email);
+            if (anotherUser != null) {
+                throw new ForeignEmailAddedException();
+            }
+
+            update.addToSet(TO_CONFIRM_EMAILS_FIELD, email);
+
+            sendToConfirmEmail(email, user.getName(), user.getEmail());
+
         }
     }
 
@@ -308,5 +351,21 @@ public class UserService {
 
             this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
         }
+    }
+
+    private void sendToConfirmEmail(String email, String name, String userId) {
+        HashMap<String, Object> modelEmail = new HashMap<>();
+        modelEmail.put("name", name);
+        modelEmail.put("userId", userId);
+        modelEmail.put("email", email);
+
+
+        EmailModel emailModel = new EmailModel();
+        emailModel.setEmailTo(email);
+        emailModel.setMailTempate("/confirmEmail/confirm-email.ftl");
+        emailModel.setSubject("Confirma tu email");
+        emailModel.setModel(modelEmail);
+
+        EmailSender.sendEmail(emailModel);
     }
 }
