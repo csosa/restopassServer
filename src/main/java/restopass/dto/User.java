@@ -1,6 +1,5 @@
 package restopass.dto;
 
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -9,11 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 @Document(collection = "users")
-public class User {
+public class User extends GenericUser {
 
-    @Indexed(unique = true)
-    private String email;
-    private String password;
     private String name;
     private String lastName;
     private CreditCard creditCard;
@@ -27,11 +23,11 @@ public class User {
     private LocalDateTime membershipEnrolledDate;
 
     public User() {
+        super();
     }
 
     public User(String email, String password, String name, String lastName) {
-        this.email = email;
-        this.password = password;
+        super(email, password);
         this.name = name;
         this.lastName = lastName;
     }
@@ -92,16 +88,12 @@ public class User {
         this.actualMembership = actualMembership;
     }
 
-    public String getEmail() {
-        return email;
+    public B2BUserEmployee getB2BUserEmployee() {
+        return b2BUserEmployee;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void setB2BUserEmployee(B2BUserEmployee b2BUserEmployee) {
+        this.b2BUserEmployee = b2BUserEmployee;
     }
 
     public String getName() {
@@ -120,14 +112,6 @@ public class User {
         this.lastName = lastName;
     }
 
-    public B2BUserEmployee getB2BUserEmployee() {
-        return b2BUserEmployee;
-    }
-
-    public void setB2BUserEmployee(B2BUserEmployee b2BUserEmployee) {
-        this.b2BUserEmployee = b2BUserEmployee;
-    }
-
     public Set<String> getToConfirmEmails() {
         return toConfirmEmails;
     }
@@ -135,4 +119,5 @@ public class User {
     public void setToConfirmEmails(Set<String> toConfirmEmails) {
         this.toConfirmEmails = toConfirmEmails;
     }
+
 }
