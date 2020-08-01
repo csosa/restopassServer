@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import restopass.dto.User;
 import restopass.dto.request.CreateReservationRequest;
+import restopass.dto.response.DoneReservationResponse;
 import restopass.dto.response.ReservationResponse;
 import restopass.exception.NoMoreVisitsException;
 import restopass.exception.ReservationAlreadyConfirmedException;
@@ -52,10 +53,11 @@ public class ReservationController {
 
 
     @RequestMapping(value = "/done/{reservationId}", method = RequestMethod.GET)
-    public ModelAndView doneReservation(@PathVariable String reservationId,
-                                @RequestParam(value = "restaurant_id") String restaurantId,
-                                @RequestParam(value = "user_id") String userId) {
-         return this.reservationService.doneReservation(reservationId, restaurantId, userId);
+    public DoneReservationResponse doneReservation(@PathVariable String reservationId,
+                                                   @RequestParam(value = "restaurant_id") String restaurantId,
+                                                   @RequestParam(value = "user_id") String userId, HttpServletRequest request) {
+        String restaurantUserId = request.getAttribute(USER_ID).toString();
+        return this.reservationService.doneReservation(reservationId, restaurantId, userId, restaurantUserId);
     }
 
     @RequestMapping(value = "/confirm/{reservationId}", method = RequestMethod.PATCH)
@@ -98,8 +100,6 @@ public class ReservationController {
 
         return modelAndView;
     }
-
-
 
 
 }

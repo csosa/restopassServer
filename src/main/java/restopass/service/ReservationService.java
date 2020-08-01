@@ -9,9 +9,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.servlet.ModelAndView;
 import restopass.dto.*;
 import restopass.dto.request.CreateReservationRequest;
+import restopass.dto.response.DoneReservationResponse;
 import restopass.dto.response.ReservationResponse;
 import restopass.dto.response.UserReservation;
 import restopass.exception.*;
@@ -42,6 +42,8 @@ public class ReservationService {
 
     @Autowired
     private RestaurantService restaurantService;
+    @Autowired
+    private UserRestaurantService userRestaurantService;
 
     @Autowired
     public ReservationService(MongoTemplate mongoTemplate, ReservationRepository reservationRepository, UserService userService, FirebaseService firebaseService,
@@ -67,7 +69,7 @@ public class ReservationService {
         List<RestaurantSlot> slots = this.restaurantService.decrementTableInSlot(restaurantConfig, reservation.getDate());
         this.restaurantService.updateSlotsInDB(reservation.getRestaurantId(), slots);
 
-        reservation.setQrBase64(QRHelper.createQRBase64(reservationId, reservation.getRestaurantId(), userId));
+        reservation.setQrBase64(QRHelper.createQRBase64(reservationId, userId));
 
         this.sendConfirmBookingEmail(reservation, userId);
         if (!CollectionUtils.isEmpty(reservation.getToConfirmUsers())) {
@@ -255,10 +257,9 @@ public class ReservationService {
                 user.getName() + " " + user.getLastName(), restaurant.getName(),
                 this.generateHumanDate(reservation.getDate()));
         this.userService.decrementUserVisits(email);
-
     }
 
-    public ModelAndView doneReservation(String reservationId, String restaurantId, String userId) {
+    public DoneReservationResponse doneReservation(String reservationId, String restaurantId, String userId, String restaurantUserId) {
 
         Reservation reservation = this.findById(reservationId);
 
@@ -266,8 +267,14 @@ public class ReservationService {
             throw new ReservationNofFoundException();
         }
 
-        User user = this.userService.findById(userId);
+        UserRestaurant userRestaurant = this.userRestaurantService.findById(restaurantUserId);
+
+        if(userRestaurant == null || !userRestaurant.getRestaurantId().equals(reservation.getRestaurantId())) {
+            throw new ReservationNotInThisRestaurantException();
+        }
+
         Restaurant restaurant = this.restaurantService.findById(restaurantId);
+        User user = this.userService.findById(userId);
 
         List<String> userOwnerAndConfirmed = new LinkedList<>(Collections.singletonList(reservation.getOwnerUser()));
 
@@ -291,18 +298,18 @@ public class ReservationService {
                 .collect(Collectors.toMap(Membership::getName,
                         membership -> membershipIds.stream().filter(integer -> membership.getMembershipId().equals(integer)).count()));
 
-        this.updateReservationState(reservationId, ReservationState.DONE);
-        this.firebaseService.sendScoreNotification(userOwnerAndConfirmed, reservation.getRestaurantId(), restaurant.getName());
+        //this.updateReservationState(reservationId, ReservationState.DONE);
+        //this.firebaseService.sendScoreNotification(userOwnerAndConfirmed, reservation.getRestaurantId(), restaurant.getName());
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("restaurant_name", restaurant.getName());
-        modelAndView.addObject("name", user.getName());
-        modelAndView.addObject("lastname", user.getLastName());
-        modelAndView.addObject("membershipMap", membershipMap);
-        modelAndView.addObject("dishesMap", dishesMap);
-        modelAndView.setViewName("/reservation/done-reservation");
+        DoneReservationResponse response = new DoneReservationResponse();
+        response.setReservationId(reservationId);
+        response.setOwnerUserName(user.getName() + " " + user.getLastName());
+        response.setDinners(reservation.getDinners());
+        response.setDate(reservation.getDate().toString());
+        response.setDishesPerMembership(dishesMap);
+        response.setDinnersPerMembership(membershipMap);
 
-        return modelAndView;
+        return response;
     }
 
     private void updateReservationState(String reservationId, ReservationState state) {
