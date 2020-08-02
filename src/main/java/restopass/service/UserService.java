@@ -39,8 +39,6 @@ public class UserService extends GenericUserService {
     private static String SECONDARY_EMAILS_FIELD = "secondaryEmails";
     private static String TO_CONFIRM_EMAILS_FIELD = "toConfirmEmails";
     private static String USER_COLLECTION = "users";
-    private static String ACCESS_TOKEN_HEADER = "X-Auth-Token";
-    private static String REFRESH_TOKEN_HEADER = "X-Refresh-Token";
 
     MongoTemplate mongoTemplate;
     UserRepository userRepository;
@@ -149,16 +147,6 @@ public class UserService extends GenericUserService {
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
 
         return membershipFinalizeDate;
-    }
-
-    public UserLoginResponse<User> refreshToken(HttpServletRequest req) {
-        String refreshAccessToken = req.getHeader(REFRESH_TOKEN_HEADER);
-        String oldAccessToken = req.getHeader(ACCESS_TOKEN_HEADER);
-
-        String emailRefresh = JWTHelper.decodeJWT(refreshAccessToken).getId();
-        User user = this.findById(emailRefresh);
-
-        return JWTHelper.refreshToken(oldAccessToken, emailRefresh, user);
     }
 
 
