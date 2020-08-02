@@ -52,7 +52,7 @@ public class ReservationController {
     }
 
 
-    @RequestMapping(value = "/done/{reservationId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/done/{reservationId}", method = RequestMethod.PATCH)
     public DoneReservationResponse doneReservation(@PathVariable String reservationId,
                                                    @RequestParam(value = "restaurant_id") String restaurantId,
                                                    @RequestParam(value = "user_id") String userId, HttpServletRequest request) {
