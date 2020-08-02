@@ -77,7 +77,7 @@ public class QRHelper {
     }
 
     private static String generateUrl(String reservationId, String userId) {
-        return "https://restopass.herokuapp.com/reservations/done/" + reservationId + "?user_id=" + userId;
+        return reservationId + "?user_id=" + userId;
     }
 
 }
