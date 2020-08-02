@@ -33,7 +33,7 @@ public class UserRestaurantController {
 
     @RequestMapping(value = "/refresh", method = RequestMethod.GET)
     public UserLoginResponse<UserRestaurant> refreshToken(HttpServletRequest request) {
-        return this.userRestaurantService.refreshToken(request);
+        return this.userRestaurantService.refreshRestaurantToken(request);
     }
 
     @RequestMapping(value = "", method = RequestMethod.DELETE)

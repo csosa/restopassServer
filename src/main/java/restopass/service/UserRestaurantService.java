@@ -13,6 +13,8 @@ import restopass.dto.response.UserLoginResponse;
 import restopass.exception.UserAlreadyExistsException;
 import restopass.mongo.UserRestaurantRepository;
 
+import javax.servlet.http.HttpServletRequest;
+
 
 @Service
 public class UserRestaurantService extends GenericUserService {
@@ -38,6 +40,12 @@ public class UserRestaurantService extends GenericUserService {
 
     public UserLoginResponse<UserRestaurant> loginRestaurantUser(UserLoginRequest userLoginRequest) {
         UserLoginResponse<UserRestaurant> user = this.loginUser(userLoginRequest);
+        user.getUser().setRestaurant(this.restaurantService.findById(user.getUser().getRestaurantId()));
+        return user;
+    }
+
+    public UserLoginResponse<UserRestaurant> refreshRestaurantToken(HttpServletRequest req) {
+        UserLoginResponse<UserRestaurant> user = this.refreshToken(req);
         user.getUser().setRestaurant(this.restaurantService.findById(user.getUser().getRestaurantId()));
         return user;
     }
