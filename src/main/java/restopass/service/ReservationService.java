@@ -290,7 +290,7 @@ public class ReservationService {
 
         Map<String, List<Dish>> dishesMap = restaurant.getDishes().stream()
                 .filter(dish -> membershipIds.stream().max(Comparator.naturalOrder()).get() >= dish.getBaseMembership())
-                .collect(Collectors.groupingBy(dish -> dish.getBaseMembershipName().toUpperCase(),
+                .collect(Collectors.groupingBy(Dish::getBaseMembershipName,
                         Collectors.toList()));
 
         List<Membership> allMemberships = this.membershipRepository.findAll();
