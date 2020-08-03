@@ -96,7 +96,14 @@ public class ReservationService {
         Boolean isOwner = userId.equals(user.getEmail());
 
         HashMap<String, Object> modelEmail = new HashMap<>();
-        modelEmail.put("userName", user.getName());
+
+        if(!isOwner) {
+            User userGuest = this.userService.findById(userId);
+            modelEmail.put("userName", userGuest.getName());
+        } else {
+            modelEmail.put("userName", user.getName());
+        }
+
         modelEmail.put("restaurantName", restaurant.getName());
         modelEmail.put("totalDiners", reservation.getDinners());
         modelEmail.put("date", this.generateHumanDate(reservation.getDate()));
