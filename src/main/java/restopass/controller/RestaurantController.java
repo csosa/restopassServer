@@ -11,8 +11,10 @@ import restopass.dto.request.ScoreRequest;
 import restopass.dto.response.RestaurantTagsResponse;
 import restopass.service.FirebaseService;
 import restopass.service.RestaurantService;
+import restopass.utils.QRHelper;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -79,7 +81,8 @@ public class RestaurantController {
     }
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public void test() {
+    public void test() throws IOException {
+        QRHelper.generateUrl("reserva", "usuario");
         firebaseService.sendScoreNotification(Arrays.asList("prueba@prueba.com"), "b200dcd7-dabd-4df2-9305-edaf90dad56b", "La Causa Nikkei");
     }
 
