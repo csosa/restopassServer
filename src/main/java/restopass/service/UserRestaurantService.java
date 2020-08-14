@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import restopass.dto.Dish;
 import restopass.dto.Restaurant;
 import restopass.dto.UserRestaurant;
 import restopass.dto.request.UserLoginRequest;
@@ -14,6 +15,8 @@ import restopass.exception.UserAlreadyExistsException;
 import restopass.mongo.UserRestaurantRepository;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Comparator;
+import java.util.List;
 
 
 @Service
@@ -40,7 +43,9 @@ public class UserRestaurantService extends GenericUserService {
 
     public UserLoginResponse<UserRestaurant> loginRestaurantUser(UserLoginRequest userLoginRequest) {
         UserLoginResponse<UserRestaurant> user = this.loginUser(userLoginRequest);
-        user.getUser().setRestaurant(this.restaurantService.findById(user.getUser().getRestaurantId()));
+        Restaurant restaurant = this.restaurantService.findById(user.getUser().getRestaurantId());
+        restaurant.getDishes().sort(Comparator.comparing(Dish::getBaseMembershipName));
+        user.getUser().setRestaurant(restaurant);
         return user;
     }
 
