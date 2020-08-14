@@ -292,6 +292,11 @@ public class RestaurantService {
         return this.mongoTemplate.findOne(query, Restaurant.class);
     }
 
+    public Restaurant getRestaurantById(String restaurantId) {
+        Restaurant r = this.findById(restaurantId);
+        r.getDishes().sort(Comparator.comparing(Dish::getBaseMembershipName));
+        return r;
+    }
 
     public void fillRestaurantData(ReservationResponse reservation) {
         Restaurant restaurant = this.findById(reservation.getRestaurantId());

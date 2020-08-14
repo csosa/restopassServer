@@ -5,7 +5,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import restopass.dto.Dish;
 import restopass.dto.Membership;
+import restopass.dto.Restaurant;
 import restopass.dto.response.ChangeMembershipResponse;
 import restopass.dto.response.MembershipResponse;
 import restopass.dto.request.UpdateMembershipToUserRequest;
@@ -14,6 +16,7 @@ import restopass.dto.User;
 import restopass.exception.UserNotFoundException;
 import restopass.mongo.MembershipRepository;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,21 +53,23 @@ public class MembershipService {
 
         if(user != null && user.getActualMembership() != null) {
             Membership actualMembership = memberships.stream().filter(m -> m.getMembershipId().equals(user.getActualMembership())).findAny().get();
-            MembershipResponse mr = new MembershipResponse();
-            mr.setMembershipInfo(actualMembership);
-            mr.setRestaurants(this.restaurantService.getRestaurantInAMemberships(actualMembership.getMembershipId()));
+            MembershipResponse mr = this.toMembershipResponse(actualMembership);
             membershipsResponse.setActualMembership(mr);
             memberships.remove(actualMembership);
         }
 
-        membershipsResponse.setMemberships(memberships.stream().map(m -> {
-            MembershipResponse mr = new MembershipResponse();
-            mr.setMembershipInfo(m);
-            mr.setRestaurants(this.restaurantService.getRestaurantInAMemberships(m.getMembershipId()));
-            return mr;
-        }).collect(Collectors.toList()));
+        membershipsResponse.setMemberships(memberships.stream().map(this::toMembershipResponse).collect(Collectors.toList()));
 
         return membershipsResponse;
+    }
+
+    private MembershipResponse toMembershipResponse(Membership membership) {
+        MembershipResponse mr = new MembershipResponse();
+        mr.setMembershipInfo(membership);
+        List<Restaurant> restaurants = this.restaurantService.getRestaurantInAMemberships(membership.getMembershipId());
+        restaurants.forEach(r -> r.getDishes().sort(Comparator.comparing(Dish::getBaseMembershipName)));
+        mr.setRestaurants(restaurants);
+        return mr;
     }
 
     public ChangeMembershipResponse updateMembershipToUser(String userId, UpdateMembershipToUserRequest request){

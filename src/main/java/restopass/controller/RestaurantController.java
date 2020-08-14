@@ -37,7 +37,7 @@ public class RestaurantController {
 
     @RequestMapping(value = "/{restaurantId}", method = RequestMethod.GET)
     public Restaurant findById(@PathVariable String restaurantId) {
-        return this.restaurantService.findById(restaurantId);
+        return this.restaurantService.getRestaurantById(restaurantId);
     }
 
     @RequestMapping(value = "/favorites", method = RequestMethod.GET)
