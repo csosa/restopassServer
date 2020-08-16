@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class UserService extends GenericUserService {
@@ -38,6 +39,7 @@ public class UserService extends GenericUserService {
     private static String CREDIT_CARD_FIELD = "creditCard";
     private static String SECONDARY_EMAILS_FIELD = "secondaryEmails";
     private static String TO_CONFIRM_EMAILS_FIELD = "toConfirmEmails";
+    private static String RECOVER_PASSWORD_TOKEN_FIELD = "recoverPasswordToken";
     private static String USER_COLLECTION = "users";
 
     MongoTemplate mongoTemplate;
@@ -318,5 +320,37 @@ public class UserService extends GenericUserService {
         emailModel.setModel(modelEmail);
 
         EmailSender.sendEmail(emailModel);
+    }
+
+    private void sendRecoverPasswordEmail(String email, String name, String token) {
+        HashMap<String, Object> modelEmail = new HashMap<>();
+        modelEmail.put("name", name);
+        modelEmail.put("token", token);
+
+        EmailModel emailModel = new EmailModel();
+        emailModel.setEmailTo(email);
+        emailModel.setMailTempate("recover-password.ftl");
+        emailModel.setSubject("Restablece tu contraseña");
+        emailModel.setModel(modelEmail);
+
+        EmailSender.sendEmail(emailModel);
+    }
+
+    public void recoverPassword(String userId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+
+        User user = this.mongoTemplate.findOne(query, User.class);
+
+        if (user != null) {
+            String token = String.format("%04d", new Random().nextInt(10000));
+            sendRecoverPasswordEmail(userId, user.getName(), token);
+
+            Update update = new Update();
+            update.set(RECOVER_PASSWORD_TOKEN_FIELD, token);
+
+            this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+        }
+
     }
 }
