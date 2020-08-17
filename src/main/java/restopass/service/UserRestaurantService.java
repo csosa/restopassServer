@@ -45,6 +45,8 @@ public class UserRestaurantService extends GenericUserService {
         UserLoginResponse<UserRestaurant> user = this.loginUser(userLoginRequest);
         Restaurant restaurant = this.restaurantService.findById(user.getUser().getRestaurantId());
         restaurant.getDishes().sort(Comparator.comparing(Dish::getBaseMembershipName));
+        restaurant.getDishes().forEach(d -> d.setStars(d.getStars() / d.getCountStars()));
+        restaurant.setStars(restaurant.getStars() / restaurant.getCountStars());
         user.getUser().setRestaurant(restaurant);
         return user;
     }
