@@ -294,7 +294,9 @@ public class RestaurantService {
 
     public Restaurant getRestaurantById(String restaurantId) {
         Restaurant r = this.findById(restaurantId);
+        r.setStars(r.getStars() / r.getCountStars());
         r.getDishes().sort(Comparator.comparing(Dish::getBaseMembershipName));
+        r.getDishes().forEach(d -> d.setStars(d.getStars() / d.getCountStars()));
         return r;
     }
 
@@ -314,12 +316,12 @@ public class RestaurantService {
     public void scoreRestaurantAndDish(ScoreRequest scoreRequest) {
         Restaurant restaurant = this.findById(scoreRequest.getRestaurantId());
         restaurant.setCountStars(restaurant.getCountStars() + 1);
-        restaurant.setStars((restaurant.getStars() + scoreRequest.getStarsRestaurant()) / restaurant.getCountStars());
+        restaurant.setStars(restaurant.getStars() + scoreRequest.getStarsRestaurant());
 
         restaurant.getDishes().forEach(d -> {
             if(d.getDishId().equalsIgnoreCase(scoreRequest.getDishId())) {
                 d.setCountStars(d.getCountStars() + 1);
-                d.setStars((d.getStars() + scoreRequest.getStarsDish()) / d.getCountStars());
+                d.setStars(d.getStars() + scoreRequest.getStarsDish());
             }
         });
 
