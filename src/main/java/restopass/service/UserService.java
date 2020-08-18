@@ -16,8 +16,6 @@ import restopass.exception.*;
 import restopass.mongo.UserRepository;
 import restopass.utils.EmailSender;
 import restopass.utils.JWTHelper;
-
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -364,6 +362,9 @@ public class UserService extends GenericUserService {
         if (!user.getRecoverPasswordToken().equals(token)) {
             this.recoverPassword(userId);
             throw new UnequalRecoverPasswordTokenException();
+        } else {
+            Update update = new Update().unset(RECOVER_PASSWORD_TOKEN_FIELD);
+            this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
         }
     }
 }
