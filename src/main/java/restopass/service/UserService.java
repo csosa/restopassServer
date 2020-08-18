@@ -351,6 +351,19 @@ public class UserService extends GenericUserService {
 
             this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
         }
+    }
 
+
+
+    public void verifyRecoverPassword(String userId, String token) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+
+        User user = this.mongoTemplate.findOne(query, User.class);
+
+        if (!user.getRecoverPasswordToken().equals(token)) {
+            this.recoverPassword(userId);
+            throw new UnequalRecoverPasswordTokenException();
+        }
     }
 }

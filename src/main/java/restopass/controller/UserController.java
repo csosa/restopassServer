@@ -99,4 +99,11 @@ public class UserController {
         this.userService.recoverPassword(recoverPasswordRequest.getEmail());
     }
 
+    @RequestMapping(value = "/recover-password/verify", method = RequestMethod.POST)
+    public void recoverPassword(@RequestBody VerifyRecoverPasswordRequest recoverPasswordRequest) {
+        this.userService.verifyRecoverPassword(recoverPasswordRequest.getEmail(), recoverPasswordRequest.getToken());
+    }
+
+
+
 }
