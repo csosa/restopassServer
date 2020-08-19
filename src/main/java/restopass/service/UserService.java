@@ -348,6 +348,8 @@ public class UserService extends GenericUserService {
             update.set(RECOVER_PASSWORD_TOKEN_FIELD, token);
 
             this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
+        } else {
+            throw new UserNotFoundException();
         }
     }
 

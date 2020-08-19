@@ -104,6 +104,13 @@ public class UserController {
         this.userService.verifyRecoverPassword(recoverPasswordRequest.getEmail(), recoverPasswordRequest.getToken());
     }
 
+    @RequestMapping(value = "/password", method = RequestMethod.PATCH)
+    public void changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+        UserUpdateRequest userUpdateRequest = new UserUpdateRequest();
+        userUpdateRequest.setPassword(changePasswordRequest.getPassword());
+        this.userService.updateUserInfo(userUpdateRequest, changePasswordRequest.getEmail());
+    }
+
 
 
 }
