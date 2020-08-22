@@ -5,7 +5,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import restopass.dto.Dish;
 import restopass.dto.Restaurant;
 import restopass.dto.UserRestaurant;
@@ -16,7 +15,6 @@ import restopass.mongo.UserRestaurantRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Comparator;
-import java.util.List;
 
 
 @Service
@@ -37,7 +35,7 @@ public class UserRestaurantService extends GenericUserService {
         }
 
         Restaurant restaurant = this.restaurantService.findById(userRestaurant.getRestaurantId());
-        userRestaurant.setEmail(restaurant.getName().replaceAll(" ","").toLowerCase() + RESTOPASS_MAIL);
+        userRestaurant.setEmail(restaurant.getName().replaceAll(" ", "").toLowerCase() + RESTOPASS_MAIL);
         this.userRestaurantRepository.save(userRestaurant);
     }
 
