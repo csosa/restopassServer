@@ -54,8 +54,8 @@ public class UserRestaurantService extends GenericUserService {
     private void setRestaurantInfo(UserLoginResponse<UserRestaurant> user) {
         Restaurant restaurant = this.restaurantService.findById(user.getUser().getRestaurantId());
         restaurant.getDishes().sort(Comparator.comparing(Dish::getBaseMembershipName));
-        restaurant.getDishes().forEach(d -> d.setStars(d.getStars() / d.getCountStars()));
-        restaurant.setStars(restaurant.getStars() / restaurant.getCountStars());
+        restaurant.getDishes().forEach(Dish::setAverageStars);
+        restaurant.setAverageStars();
         user.getUser().setRestaurant(restaurant);
     }
 

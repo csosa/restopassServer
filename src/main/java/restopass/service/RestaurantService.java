@@ -294,9 +294,9 @@ public class RestaurantService {
 
     public Restaurant getRestaurantById(String restaurantId) {
         Restaurant r = this.findById(restaurantId);
-        r.setStars(r.getStars() / r.getCountStars());
+        r.setAverageStars();
         r.getDishes().sort(Comparator.comparing(Dish::getBaseMembershipName));
-        r.getDishes().forEach(d -> d.setStars(d.getStars() / d.getCountStars()));
+        r.getDishes().forEach(Dish::setAverageStars);
         return r;
     }
 
