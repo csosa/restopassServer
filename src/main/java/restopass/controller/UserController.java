@@ -34,6 +34,12 @@ public class UserController {
         return this.userService.createUser(user);
     }
 
+    @RequestMapping(value = "", method = RequestMethod.DELETE)
+    public void deleteUser(HttpServletRequest request, @RequestBody UserLoginRequest body) {
+        String userId = request.getAttribute(USER_ID_ATTR).toString();
+        this.userService.deleteUser(userId, body.getPassword());
+    }
+
     @RequestMapping(value = "", method = RequestMethod.GET)
     public User getUser(HttpServletRequest request) {
         String userId = request.getAttribute(USER_ID_ATTR).toString();

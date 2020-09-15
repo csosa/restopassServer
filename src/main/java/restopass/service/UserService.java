@@ -16,6 +16,7 @@ import restopass.exception.*;
 import restopass.mongo.UserRepository;
 import restopass.utils.EmailSender;
 import restopass.utils.JWTHelper;
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +50,9 @@ public class UserService extends GenericUserService {
     B2BUserService b2bUserService;
 
     @Autowired
+    ReservationService reservationService;
+
+    @Autowired
     public UserService(MongoTemplate mongoTemplate, UserRepository userRepository, GoogleService googleService) {
         this.mongoTemplate = mongoTemplate;
         this.userRepository = userRepository;
@@ -71,7 +75,7 @@ public class UserService extends GenericUserService {
         }
     }
 
-    public  UserLoginResponse<User> createUser(UserCreationRequest user) {
+    public UserLoginResponse<User> createUser(UserCreationRequest user) {
         User userDTO = new User(user.getEmail(), user.getPassword(), user.getName(), user.getLastName());
         B2BUserEmployer b2BUserEmployer = this.b2bUserService.checkIfB2BUser(user.getEmail());
 
@@ -85,6 +89,22 @@ public class UserService extends GenericUserService {
         } catch (DuplicateKeyException e) {
             throw new UserAlreadyExistsException();
         }
+    }
+
+    public void deleteUser(String userId, String pass) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
+        query.addCriteria(Criteria.where(PASSWORD_FIELD).is(pass));
+
+        User user = this.findByUserAndPass(query);
+
+        if(user != null) {
+            throw new DeleteUserBadPasswordException();
+        }
+
+        this.reservationService.deleteUserReservations(userId);
+
+        this.mongoTemplate.remove(query, USER_COLLECTION);
     }
 
     public User findById(String userId) {
