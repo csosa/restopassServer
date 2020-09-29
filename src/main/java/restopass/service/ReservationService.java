@@ -206,7 +206,7 @@ public class ReservationService {
         ReservationResponse reservation = reservations.stream().filter(r -> r.getReservationId().equalsIgnoreCase(reservationId)).findFirst().get();
         Restaurant restaurant = this.restaurantService.findById(reservation.getRestaurantId());
 
-        if (reservation.getDate().minusHours(restaurant.getHoursToCancel()).isAfter(LocalDateTime.now())) {
+        if (reservation.getDate().minusHours(restaurant.getHoursToCancel()).isBefore(LocalDateTime.now())) {
             throw new ReservationCancelTimeExpiredException();
         }
 
