@@ -1,6 +1,5 @@
 package restopass.service;
 
-import com.google.api.gax.tracing.TracedOperationCallable;
 import io.jsonwebtoken.lang.Strings;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
