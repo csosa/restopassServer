@@ -221,7 +221,7 @@ public class ReservationService {
             reservation.getConfirmedUsers().forEach(u -> this.userService.incrementUserVisits(u.getUserId()));
         }
 
-        return reservations;
+        return this.getReservationsForUser(userId);
     }
 
     public void rejectReservation(String reservationId, String userId) {
