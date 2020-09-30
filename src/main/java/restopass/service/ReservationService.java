@@ -230,6 +230,7 @@ public class ReservationService {
 
         Update update = new Update();
         update.pull(TO_CONFIRM_USERS, userId);
+        update.pull(CONFIRMED_USERS, userId);
 
         this.mongoTemplate.updateMulti(query, update, RESERVATION_COLLECTION);
     }
