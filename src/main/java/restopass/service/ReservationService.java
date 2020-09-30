@@ -31,7 +31,6 @@ public class ReservationService {
     private MongoTemplate mongoTemplate;
     private ReservationRepository reservationRepository;
     private MembershipRepository membershipRepository;
-    private UserService userService;
     private FirebaseService firebaseService;
     private String OWNER_USER_ID = "ownerUser";
     private String RESERVATION_ID = "reservationId";
@@ -44,14 +43,15 @@ public class ReservationService {
     private RestaurantService restaurantService;
     @Autowired
     private UserRestaurantService userRestaurantService;
+    @Autowired
+    private UserService userService;
 
     @Autowired
-    public ReservationService(MongoTemplate mongoTemplate, ReservationRepository reservationRepository, UserService userService, FirebaseService firebaseService,
+    public ReservationService(MongoTemplate mongoTemplate, ReservationRepository reservationRepository, FirebaseService firebaseService,
                               MembershipRepository membershipRepository) {
         this.mongoTemplate = mongoTemplate;
         this.reservationRepository = reservationRepository;
         this.membershipRepository = membershipRepository;
-        this.userService = userService;
         this.firebaseService = firebaseService;
     }
 
