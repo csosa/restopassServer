@@ -37,6 +37,7 @@ public class UserRepositoryTest {
     private UserService userService;
     public static final String USER_ID_1 = "prueba@prueba.com";
     public static final String USER_ID_2 = "juan@prueba.com";
+    public static final String USER_ID_3 = "sofia@prueba.com";
 
     @Before
     public void init(){
@@ -44,6 +45,7 @@ public class UserRepositoryTest {
         this.userService = new UserService(mongoTemplate, userRepository, googleService);
         this.userRepository.save(getUser());
         this.userRepository.save(getUser2());
+        this.userRepository.save(getUserWithNoMembership());
     }
 
     @After
@@ -127,7 +129,7 @@ public class UserRepositoryTest {
     @Test
     public void checkCanAddToReservationOK(){
 
-        User userFind = userService.checkCanAddToReservation(USER_ID_1, 1);
+        User userFind = userService.checkCanAddToReservation(USER_ID_1, USER_ID_2, 1);
 
         assertNotNull(userFind);
     }
@@ -135,15 +137,29 @@ public class UserRepositoryTest {
     @Test
     public void checkCanAddToReservation_throwUserNotFoundException(){
 
-        assertThatThrownBy(() -> userService.checkCanAddToReservation("user", 2))
+        assertThatThrownBy(() -> userService.checkCanAddToReservation(USER_ID_1, "guest",2))
                 .isInstanceOf(UserNotFoundException.class);
     }
 
     @Test
     public void checkCanAddToReservation_throwRestaurantNotInMembershipException(){
 
-        assertThatThrownBy(() -> userService.checkCanAddToReservation(USER_ID_1, 2))
+        assertThatThrownBy(() -> userService.checkCanAddToReservation(USER_ID_1, USER_ID_2,3))
                 .isInstanceOf(RestaurantNotInMembershipException.class);
+    }
+
+    @Test
+    public void checkCanAddToReservation_throwCannotSelfInviteException(){
+
+        assertThatThrownBy(() -> userService.checkCanAddToReservation(USER_ID_1, USER_ID_1,1))
+                .isInstanceOf(CannotSelfInviteException.class);
+    }
+
+    @Test
+    public void checkCanAddToReservation_throwUserIsNotEnrolledException(){
+
+        assertThatThrownBy(() -> userService.checkCanAddToReservation(USER_ID_1, USER_ID_3,1))
+                .isInstanceOf(UserIsNotEnrolledException.class);
     }
 
     @Test
@@ -307,6 +323,15 @@ public class UserRepositoryTest {
     private User getUser2() {
         User user = new User();
         user.setEmail(USER_ID_2);
+        user.setPassword("pasword");
+        user.setRecoverPasswordToken("token");
+        user.setActualMembership(2);
+        return user;
+    }
+
+    private User getUserWithNoMembership() {
+        User user = new User();
+        user.setEmail(USER_ID_3);
         user.setPassword("pasword");
         user.setRecoverPasswordToken("token");
         return user;
