@@ -191,13 +191,18 @@ public class UserService extends GenericUserService {
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
 
-    public User checkCanAddToReservation(String userId, Integer baseMembership) {
+    public User checkCanAddToReservation(String userId, String guestId, Integer baseMembership) {
+
+        if(guestId.equalsIgnoreCase(userId)) {
+            throw new CannotSelfInviteException();
+        }
+
         Query query = new Query();
 
         Criteria orCriteria = new Criteria();
         orCriteria.orOperator(
-                Criteria.where(EMAIL_FIELD).is(userId.trim()),
-                Criteria.where(SECONDARY_EMAILS_FIELD).in(userId));
+                Criteria.where(EMAIL_FIELD).is(guestId.trim()),
+                Criteria.where(SECONDARY_EMAILS_FIELD).in(guestId.trim()));
 
         query.addCriteria(orCriteria);
 
@@ -206,6 +211,10 @@ public class UserService extends GenericUserService {
 
         if (user == null) {
             throw new UserNotFoundException();
+        }
+
+        if(user.getActualMembership() == null) {
+            throw new UserIsNotEnrolledException();
         }
 
         if (user.getActualMembership() >= baseMembership) {
