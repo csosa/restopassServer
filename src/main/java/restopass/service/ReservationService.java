@@ -41,10 +41,15 @@ public class ReservationService {
 
     @Autowired
     private RestaurantService restaurantService;
+
     @Autowired
     private UserRestaurantService userRestaurantService;
+
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private EmailSender emailSender;
 
     @Autowired
     public ReservationService(MongoTemplate mongoTemplate, ReservationRepository reservationRepository, FirebaseService firebaseService,
@@ -120,17 +125,17 @@ public class ReservationService {
             this.sendMultiEmail(user, emailModel);
         } else {
             emailModel.setEmailTo(userId);
-            EmailSender.sendEmail(emailModel);
+            emailSender.sendEmail(emailModel);
         }
 
     }
 
     private void sendMultiEmail(User user, EmailModel emailModel) {
         emailModel.setEmailTo(user.getEmail());
-        EmailSender.sendEmail(emailModel);
+        emailSender.sendEmail(emailModel);
         user.getSecondaryEmails().forEach(email -> {
             emailModel.setEmailTo(email);
-            EmailSender.sendEmail(emailModel);
+            emailSender.sendEmail(emailModel);
         });
     }
 
