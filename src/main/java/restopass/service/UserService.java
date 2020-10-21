@@ -98,7 +98,7 @@ public class UserService extends GenericUserService {
 
         User user = this.findByUserAndPass(query);
 
-        if(user != null) {
+        if(user == null) {
             throw new DeleteUserBadPasswordException();
         }
 
