@@ -307,9 +307,8 @@ public class ReservationService {
                 .collect(Collectors.toMap(Membership::getName,
                         membership -> membershipIds.stream().filter(integer -> membership.getMembershipId().equals(integer)).count()));
 
-        //FIXME commented for test
-        //this.updateReservationState(reservationId, ReservationState.DONE);
-        //this.firebaseService.sendScoreNotification(userOwnerAndConfirmed, reservation.getRestaurantId(), restaurant.getName());
+        this.updateReservationState(reservationId, ReservationState.DONE);
+        this.firebaseService.sendScoreNotification(userOwnerAndConfirmed, reservation.getRestaurantId(), restaurant.getName());
 
         DoneReservationResponse response = new DoneReservationResponse();
         response.setReservationId(reservationId);
