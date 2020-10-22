@@ -22,6 +22,7 @@ public class Restaurant {
     private Float stars = 0f;
     private Integer countStars = 0;
     private Integer hoursToCancel;
+    private List<RestaurantComment> comments;
 
     public Restaurant() {
     }
@@ -120,5 +121,13 @@ public class Restaurant {
         if (countStars != 0) {
             this.setStars(getStars() / countStars);
         }
+    }
+
+    public List<RestaurantComment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<RestaurantComment> comments) {
+        this.comments = comments;
     }
 }

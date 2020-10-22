@@ -7,7 +7,8 @@ import restopass.dto.RestaurantConfig;
 import restopass.dto.request.DishRequest;
 import restopass.dto.request.RestaurantCreationRequest;
 import restopass.dto.request.RestaurantTagsRequest;
-import restopass.dto.request.ScoreRequest;
+import restopass.dto.request.RestaurantCommentRequest;
+import restopass.dto.response.RestaurantResponse;
 import restopass.dto.response.RestaurantTagsResponse;
 import restopass.service.FirebaseService;
 import restopass.service.RestaurantService;
@@ -36,12 +37,12 @@ public class RestaurantController {
     }
 
     @RequestMapping(value = "/{restaurantId}", method = RequestMethod.GET)
-    public Restaurant findById(@PathVariable String restaurantId) {
+    public RestaurantResponse findById(@PathVariable String restaurantId) {
         return this.restaurantService.getRestaurantById(restaurantId);
     }
 
     @RequestMapping(value = "/favorites", method = RequestMethod.GET)
-    public Set<Restaurant> getAllFavoritesByUser(HttpServletRequest request) {
+    public Set<RestaurantResponse> getAllFavoritesByUser(HttpServletRequest request) {
         String userId = request.getAttribute(USER_ID_ATTR).toString();
         return this.restaurantService.findAllFavoritesByUser(userId);
     }
@@ -61,7 +62,7 @@ public class RestaurantController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.PUT)
-    public List<Restaurant> getRestaurantByTags(@RequestBody RestaurantTagsRequest request) {
+    public List<RestaurantResponse> getRestaurantByTags(@RequestBody RestaurantTagsRequest request) {
         return this.restaurantService.getByTags(request.getLat(), request.getLng(), request.getRadius(), request.getTags(), request.getTopMembership(), request.getFreeText());
     }
 
@@ -71,8 +72,9 @@ public class RestaurantController {
     }
 
     @RequestMapping(value = "/score", method = RequestMethod.POST)
-    public void scoreRestaurantAndDish(@RequestBody ScoreRequest scoreRequest) {
-        this.restaurantService.scoreRestaurantAndDish(scoreRequest);
+    public void scoreRestaurantAndDish(HttpServletRequest request, @RequestBody RestaurantCommentRequest commentRequest) {
+        String userId = request.getAttribute(USER_ID_ATTR).toString();
+        this.restaurantService.scoreRestaurantAndDish(commentRequest, userId);
     }
 
     @RequestMapping(value = "/timetable/{restaurantId}", method = RequestMethod.PATCH)
