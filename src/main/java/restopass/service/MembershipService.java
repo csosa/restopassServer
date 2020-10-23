@@ -13,6 +13,7 @@ import restopass.dto.response.MembershipResponse;
 import restopass.dto.request.UpdateMembershipToUserRequest;
 import restopass.dto.response.MembershipsResponse;
 import restopass.dto.User;
+import restopass.dto.response.RestaurantResponse;
 import restopass.exception.UserNotFoundException;
 import restopass.mongo.MembershipRepository;
 
@@ -72,7 +73,9 @@ public class MembershipService {
             r.getDishes().forEach(Dish::setAverageStars);
             r.getDishes().sort(Comparator.comparing(Dish::getBaseMembershipName));
         });
-        mr.setRestaurants(restaurants);
+
+        List<RestaurantResponse> restaurantsResponse = restaurants.stream().map(r -> restaurantService.toResponse(r)).collect(Collectors.toList());
+        mr.setRestaurants(restaurantsResponse);
         return mr;
     }
 

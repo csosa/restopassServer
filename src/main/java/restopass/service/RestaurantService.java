@@ -361,12 +361,14 @@ public class RestaurantService {
 
     }
 
-    private RestaurantResponse toResponse(Restaurant restaurant) {
+    public RestaurantResponse toResponse(Restaurant restaurant) {
         RestaurantResponse response = new RestaurantResponse(restaurant);
 
-        List<RestaurantCommentResponse> comments = restaurant.getComments().stream().map(comment ->
-                this.fromCommentToResponse(restaurant, comment)).collect(Collectors.toList());
-        response.setComments(comments);
+        if (restaurant.getComments() != null) {
+            List<RestaurantCommentResponse> comments = restaurant.getComments().stream().map(comment ->
+                    this.fromCommentToResponse(restaurant, comment)).collect(Collectors.toList());
+            response.setComments(comments);
+        }
 
         return response;
     }
