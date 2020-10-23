@@ -15,8 +15,10 @@ import org.springframework.stereotype.Service;
 import restopass.dto.*;
 import restopass.dto.request.DishRequest;
 import restopass.dto.request.RestaurantCreationRequest;
-import restopass.dto.request.ScoreRequest;
+import restopass.dto.request.RestaurantCommentRequest;
 import restopass.dto.response.ReservationResponse;
+import restopass.dto.response.RestaurantCommentResponse;
+import restopass.dto.response.RestaurantResponse;
 import restopass.dto.response.RestaurantTagsResponse;
 import restopass.exception.LastTableAlreadyBookedException;
 import restopass.mongo.FiltersMapRepository;
@@ -53,6 +55,7 @@ public class RestaurantService {
     private String STARS_FIELD = "stars";
     private String COUNT_STARS_FIELD = "countStars";
     private String TAGS_FIELD = "tags";
+    private String COMMENTS_FIELD = "comments";
     private Double DEFAULT_KM_RADIUS = 30D;
     private Integer SIZE_CALENDAR = 45;
     private String RESTAURANT_CONFIG_COLLECTION = "restaurant_configs";
@@ -222,7 +225,7 @@ public class RestaurantService {
         this.mongoTemplate.updateMulti(query, update, RESTAURANTS_COLLECTION);
     }
 
-    public List<Restaurant> getByTags(Double lat, Double lng, Double radius, List<String> tags, Integer topMembership, String freeText) {
+    public List<RestaurantResponse> getByTags(Double lat, Double lng, Double radius, List<String> tags, Integer topMembership, String freeText) {
         List<String> freeTextList = Arrays.asList(Strings.delimitedListToStringArray(freeText, " "));
 
         Query query = new Query();
@@ -259,7 +262,8 @@ public class RestaurantService {
             query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(BASE_MEMBERSHIP_FIELD).lte(topMembership)));
         }
 
-        return this.mongoTemplate.find(query, Restaurant.class);
+        List<Restaurant> restaurants = this.mongoTemplate.find(query, Restaurant.class);
+        return restaurants.stream().map(this::toResponse).collect(Collectors.toList());
     }
 
     public List<Restaurant> getRestaurantInAMemberships(Integer membership) {
@@ -292,12 +296,12 @@ public class RestaurantService {
         return this.mongoTemplate.findOne(query, Restaurant.class);
     }
 
-    public Restaurant getRestaurantById(String restaurantId) {
+    public RestaurantResponse getRestaurantById(String restaurantId) {
         Restaurant r = this.findById(restaurantId);
         r.setAverageStars();
         r.getDishes().sort(Comparator.comparing(Dish::getBaseMembershipName));
         r.getDishes().forEach(Dish::setAverageStars);
-        return r;
+        return toResponse(r);
     }
 
     public void fillRestaurantData(ReservationResponse reservation) {
@@ -307,31 +311,40 @@ public class RestaurantService {
         reservation.setRestaurantName(restaurant.getName());
     }
 
-    public Set<Restaurant> findAllFavoritesByUser(String userId) {
+    public Set<RestaurantResponse> findAllFavoritesByUser(String userId) {
         Set<String> restaurantsIds = this.userService.findById(userId).getFavoriteRestaurants();
 
-        return restaurantsIds.stream().map(this::findById).collect(Collectors.toSet());
+        return restaurantsIds.stream().map(this::findById)
+                .map(this::toResponse).collect(Collectors.toSet());
     }
 
-    public void scoreRestaurantAndDish(ScoreRequest scoreRequest) {
-        Restaurant restaurant = this.findById(scoreRequest.getRestaurantId());
+    public void scoreRestaurantAndDish(RestaurantCommentRequest commentReq, String userId) {
+        Restaurant restaurant = this.findById(commentReq.getRestaurantId());
         restaurant.setCountStars(restaurant.getCountStars() + 1);
-        restaurant.setStars(restaurant.getStars() + scoreRequest.getStarsRestaurant());
+        restaurant.setStars(restaurant.getStars() + commentReq.getRestaurantStars());
 
         restaurant.getDishes().forEach(d -> {
-            if(d.getDishId().equalsIgnoreCase(scoreRequest.getDishId())) {
+            if(d.getDishId().equalsIgnoreCase(commentReq.getDishId())) {
                 d.setCountStars(d.getCountStars() + 1);
-                d.setStars(d.getStars() + scoreRequest.getStarsDish());
+                d.setStars(d.getStars() + commentReq.getDishStars());
             }
         });
 
+        RestaurantComment comment = new RestaurantComment(UUID.randomUUID().toString(),
+                userId,
+                commentReq.getDishId(),
+                commentReq.getDishStars(),
+                commentReq.getRestaurantStars(),
+                commentReq.getDescription());
+
         Query query = new Query();
-        query.addCriteria(Criteria.where(RESTAURANT_ID).is(scoreRequest.getRestaurantId()));
+        query.addCriteria(Criteria.where(RESTAURANT_ID).is(commentReq.getRestaurantId()));
 
         Update update = new Update();
         update.set(STARS_FIELD, restaurant.getStars());
         update.set(COUNT_STARS_FIELD, restaurant.getCountStars());
         update.set(DISHES_FIELD, restaurant.getDishes());
+        update.push(COMMENTS_FIELD, comment);
 
         this.mongoTemplate.updateMulti(query, update, RESTAURANTS_COLLECTION);
 
@@ -346,5 +359,33 @@ public class RestaurantService {
 
         this.mongoTemplate.updateMulti(query, update, RESTAURANTS_COLLECTION);
 
+    }
+
+    public RestaurantResponse toResponse(Restaurant restaurant) {
+        RestaurantResponse response = new RestaurantResponse(restaurant);
+
+        if (restaurant.getComments() != null) {
+            List<RestaurantCommentResponse> comments = restaurant.getComments().stream().map(comment ->
+                    this.fromCommentToResponse(restaurant, comment)).collect(Collectors.toList());
+            response.setComments(comments);
+        }
+
+        return response;
+    }
+
+    private RestaurantCommentResponse fromCommentToResponse(Restaurant restaurant, RestaurantComment comment) {
+        User user = this.userService.findById(comment.getUserId());
+        Dish dish = restaurant.getDishes().stream().filter(d -> d.getDishId().equals(comment.getDishId())).findAny().get();
+
+        RestaurantCommentResponse response = new RestaurantCommentResponse();
+        response.setCommentId(comment.getCommentId());
+        response.setDate(comment.getDate());
+        response.setDescription(comment.getDescription());
+        response.setDishStars(comment.getDishStars());
+        response.setRestaurantStars(comment.getRestaurantStars());
+        response.setDish(dish);
+        response.setUser(user);
+
+        return response;
     }
 }

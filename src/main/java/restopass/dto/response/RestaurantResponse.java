@@ -1,55 +1,40 @@
-package restopass.dto;
+package restopass.dto.response;
 
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
-import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
-import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
-import org.springframework.data.mongodb.core.mapping.Document;
+import restopass.dto.Dish;
+import restopass.dto.Restaurant;
+import restopass.dto.RestaurantHours;
 
 import java.util.List;
 
-@Document(collection = "restaurants")
-public class Restaurant {
-
+public class RestaurantResponse {
     private String restaurantId;
     private String name;
     private String img;
     private String address;
-    @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
     private GeoJsonPoint location;
     private List<RestaurantHours> timeTable;
     private List<String> tags;
     private List<Dish> dishes;
     private Float stars = 0f;
-    private Integer countStars = 0;
     private Integer hoursToCancel;
-    private List<RestaurantComment> comments;
+    private List<RestaurantCommentResponse> comments;
 
-    public Restaurant() {
+    public RestaurantResponse(Restaurant restaurant) {
+        this.restaurantId = restaurant.getRestaurantId();
+        this.name = restaurant.getName();
+        this.img = restaurant.getImg();
+        this.address = restaurant.getAddress();
+        this.location = restaurant.getLocation();
+        this.timeTable = restaurant.getTimeTable();
+        this.tags = restaurant.getTags();
+        this.dishes = restaurant.getDishes();
+        this.stars = restaurant.getStars();
+        this.hoursToCancel = restaurant.getHoursToCancel();
     }
 
-
-    public Integer getCountStars() {
-        return countStars;
-    }
-
-    public void setCountStars(Integer countStars) {
-        this.countStars = countStars;
-    }
-
-    public Integer getHoursToCancel() {
-        return hoursToCancel;
-    }
-
-    public void setHoursToCancel(Integer hoursToCancel) {
-        this.hoursToCancel = hoursToCancel;
-    }
-
-    public Float getStars() {
-        return stars;
-    }
-
-    public void setStars(Float stars) {
-        this.stars = stars;
+    public void setComments(List<RestaurantCommentResponse> comments) {
+        this.comments = comments;
     }
 
     public String getRestaurantId() {
@@ -58,14 +43,6 @@ public class Restaurant {
 
     public void setRestaurantId(String restaurantId) {
         this.restaurantId = restaurantId;
-    }
-
-    public GeoJsonPoint getLocation() {
-        return location;
-    }
-
-    public void setLocation(GeoJsonPoint location) {
-        this.location = location;
     }
 
     public String getName() {
@@ -92,6 +69,14 @@ public class Restaurant {
         this.address = address;
     }
 
+    public GeoJsonPoint getLocation() {
+        return location;
+    }
+
+    public void setLocation(GeoJsonPoint location) {
+        this.location = location;
+    }
+
     public List<RestaurantHours> getTimeTable() {
         return timeTable;
     }
@@ -116,18 +101,23 @@ public class Restaurant {
         this.dishes = dishes;
     }
 
-    public void setAverageStars() {
-        Integer countStars = getCountStars();
-        if (countStars != 0) {
-            this.setStars(getStars() / countStars);
-        }
+    public Float getStars() {
+        return stars;
     }
 
-    public List<RestaurantComment> getComments() {
+    public void setStars(Float stars) {
+        this.stars = stars;
+    }
+
+    public Integer getHoursToCancel() {
+        return hoursToCancel;
+    }
+
+    public void setHoursToCancel(Integer hoursToCancel) {
+        this.hoursToCancel = hoursToCancel;
+    }
+
+    public List<RestaurantCommentResponse> getComments() {
         return comments;
-    }
-
-    public void setComments(List<RestaurantComment> comments) {
-        this.comments = comments;
     }
 }
