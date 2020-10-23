@@ -3,7 +3,7 @@ package restopass.dto.response;
 import restopass.dto.Dish;
 import restopass.dto.User;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class RestaurantCommentResponse {
     private String commentId;
@@ -12,7 +12,7 @@ public class RestaurantCommentResponse {
     private Integer dishStars;
     private Integer restaurantStars;
     private String description;
-    private LocalDateTime date;
+    private LocalDate date;
 
     public String getCommentId() {
         return commentId;
@@ -62,11 +62,11 @@ public class RestaurantCommentResponse {
         this.description = description;
     }
 
-    public LocalDateTime getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 }

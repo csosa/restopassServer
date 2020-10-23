@@ -1,6 +1,6 @@
 package restopass.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class RestaurantComment {
     private String commentId;
@@ -9,7 +9,7 @@ public class RestaurantComment {
     private Integer dishStars;
     private Integer restaurantStars;
     private String description;
-    private LocalDateTime date;
+    private LocalDate date;
 
     public RestaurantComment(String commentId, String userId, String dishId, Integer dishStars, Integer restaurantStars, String description) {
         this.commentId = commentId;
@@ -18,7 +18,7 @@ public class RestaurantComment {
         this.dishStars = dishStars;
         this.restaurantStars = restaurantStars;
         this.description = description;
-        this.date = LocalDateTime.now();
+        this.date = LocalDate.now();
     }
 
     public String getCommentId() {
@@ -69,11 +69,11 @@ public class RestaurantComment {
         this.description = description;
     }
 
-    public LocalDateTime getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 }
