@@ -1,8 +1,6 @@
 package restopass.dto.response;
 
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
-import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
-import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import restopass.dto.Dish;
 import restopass.dto.Restaurant;
 import restopass.dto.RestaurantHours;
@@ -14,7 +12,6 @@ public class RestaurantResponse {
     private String name;
     private String img;
     private String address;
-    @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
     private GeoJsonPoint location;
     private List<RestaurantHours> timeTable;
     private List<String> tags;
