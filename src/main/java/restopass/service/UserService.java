@@ -161,7 +161,6 @@ public class UserService extends GenericUserService {
         query.addCriteria(Criteria.where(EMAIL_FIELD).is(userId));
 
         Update update = new Update();
-        update.unset(ACTUAL_MEMBERSHIP);
         update.unset(MEMBERSHIP_ENROLLED_DATE_FIELD);
         update.set(MEMBERSHIP_FINALIZE_DATE_FIELD, membershipFinalizeDate);
 
