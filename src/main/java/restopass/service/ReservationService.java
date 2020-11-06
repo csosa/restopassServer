@@ -136,6 +136,23 @@ public class ReservationService {
     }
 
     private void sendNewBookingEmail(Reservation reservation) {
+        List<String> canBookUsers = reservation.getToConfirmUsers().stream()
+                .filter(userId -> restaurantService.isEnabledToBook(userId, reservation.getRestaurantId())).collect(Collectors.toList());
+
+        if (!canBookUsers.isEmpty()) {
+            sendConfirmationEmail(canBookUsers, reservation);
+        }
+
+        List<String> mayUpgradeUsers = reservation.getToConfirmUsers().stream()
+                .filter(userId -> !restaurantService.isEnabledToBook(userId, reservation.getRestaurantId())).collect(Collectors.toList());
+
+        if (!mayUpgradeUsers.isEmpty()) {
+            sendRequiredMembershipEmail(mayUpgradeUsers, reservation);
+        }
+
+    }
+
+    private void sendConfirmationEmail(List<String> users, Reservation reservation) {
         User ownerUser = this.userService.findById(reservation.getOwnerUser());
         Restaurant restaurant = this.restaurantService.findById(reservation.getRestaurantId());
 
@@ -151,8 +168,32 @@ public class ReservationService {
         emailModel.setSubject("Parece que tienes una nueva reserva");
         emailModel.setModel(modelEmail);
 
-        reservation.getToConfirmUsers().forEach(userEmail -> {
+        users.forEach(userEmail -> {
             modelEmail.put("joinUrl", this.buildJoinUrl(reservation.getReservationId(), userEmail));
+
+            User user = userService.findById(userEmail);
+            this.sendMultiEmail(user, emailModel);
+        });
+    }
+
+    private void sendRequiredMembershipEmail(List<String> users, Reservation reservation) {
+        User ownerUser = this.userService.findById(reservation.getOwnerUser());
+        Restaurant restaurant = this.restaurantService.findById(reservation.getRestaurantId());
+
+        HashMap<String, Object> modelEmail = new HashMap<>();
+        modelEmail.put("ownerUser", ownerUser.getName() + " " + ownerUser.getLastName());
+        modelEmail.put("restaurantName", restaurant.getName());
+        modelEmail.put("totalDiners", reservation.getDinners());
+        modelEmail.put("date", this.generateHumanDate(reservation.getDate()));
+        modelEmail.put("restaurantAddress", restaurant.getAddress());
+
+        EmailModel emailModel = new EmailModel();
+        emailModel.setMailTempate("upgrade_membership.html");
+        emailModel.setSubject("Parece que tienes una nueva reserva");
+        emailModel.setModel(modelEmail);
+
+        users.forEach(userEmail -> {
+            modelEmail.put("requiredMembership", restaurantService.getMinMembershipRequired(reservation.getRestaurantId()).getName());
 
             User user = userService.findById(userEmail);
             this.sendMultiEmail(user, emailModel);

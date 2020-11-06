@@ -25,6 +25,7 @@ import restopass.mongo.FiltersMapRepository;
 import restopass.mongo.RestaurantConfigRepository;
 import restopass.mongo.RestaurantRepository;
 
+import java.lang.reflect.Member;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -387,5 +388,31 @@ public class RestaurantService {
         response.setUser(user);
 
         return response;
+    }
+
+    public Boolean isEnabledToBook(String userId, String restaurantId) {
+        User user = this.userService.findById(userId);
+
+        if (user.getActualMembership() == null) {
+            return false;
+        }
+
+        Integer minMembershipRequired =  getMinMembershipRequired(restaurantId).getMembershipId();
+
+        return minMembershipRequired != null && user.getActualMembership() >= minMembershipRequired;
+    }
+
+    public Membership getMinMembershipRequired(String restaurantId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
+
+        Restaurant restaurant = this.mongoTemplate.findOne(query, Restaurant.class);
+
+        if (restaurant != null && restaurant.getDishes() != null) {
+            Integer membershipId = restaurant.getDishes().stream().map(Dish::getBaseMembership).min(Integer::compare).get();
+            return membershipService.getMembershipById(membershipId);
+        }
+
+        return null;
     }
 }

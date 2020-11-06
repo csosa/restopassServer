@@ -189,7 +189,7 @@ public class UserService extends GenericUserService {
         this.mongoTemplate.updateMulti(query, update, USER_COLLECTION);
     }
 
-    public User checkCanAddToReservation(String userId, String guestId, Integer baseMembership) {
+    public User checkCanAddToReservation(String userId, String guestId) {
 
         if(guestId.equalsIgnoreCase(userId)) {
             throw new CannotSelfInviteException();
@@ -211,15 +211,8 @@ public class UserService extends GenericUserService {
             throw new UserNotFoundException();
         }
 
-        if(user.getActualMembership() == null) {
-            throw new UserIsNotEnrolledException();
-        }
+        return user;
 
-        if (user.getActualMembership() >= baseMembership) {
-            return user;
-        } else {
-            throw new RestaurantNotInMembershipException();
-        }
     }
 
     public void updateUserInfo(UserUpdateRequest request, String userId) {

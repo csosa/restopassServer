@@ -64,6 +64,13 @@ public class MembershipService {
         return membershipsResponse;
     }
 
+    public Membership getMembershipById(Integer id) {
+        Query query = new Query();
+
+        query.addCriteria(Criteria.where(ID).is(id));
+        return this.mongoTemplate.findOne(query, Membership.class);
+    }
+
     private MembershipResponse toMembershipResponse(Membership membership) {
         MembershipResponse mr = new MembershipResponse();
         mr.setMembershipInfo(membership);
