@@ -1,5 +1,6 @@
 package restopass.dto.response;
 
+import restopass.dto.Membership;
 import restopass.dto.ReservationState;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public class ReservationResponse {
     private String img;
     private Integer dinners;
     private Boolean isInvitation = false;
+    private Membership minMembershipRequired;
 
     public Integer getDinners() {
         return dinners;
@@ -125,4 +127,11 @@ public class ReservationResponse {
         this.restaurantAddress = restaurantAddress;
     }
 
+    public Membership getMinMembershipRequired() {
+        return minMembershipRequired;
+    }
+
+    public void setMinMembershipRequired(Membership minMembershipRequired) {
+        this.minMembershipRequired = minMembershipRequired;
+    }
 }
