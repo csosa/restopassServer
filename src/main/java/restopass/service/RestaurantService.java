@@ -1,5 +1,6 @@
 package restopass.service;
 
+import com.google.common.collect.Lists;
 import io.jsonwebtoken.lang.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Circle;
@@ -388,4 +389,5 @@ public class RestaurantService {
 
         return response;
     }
+
 }

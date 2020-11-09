@@ -1,5 +1,7 @@
 package restopass.dto;
 
+import java.util.List;
+
 public class Dish {
 
     private String dishId;
@@ -8,6 +10,7 @@ public class Dish {
     private String img;
     private Integer baseMembership;
     private String baseMembershipName;
+    private List<String> tags;
     private Float stars = 0f;
     private Integer countStars = 0;
 
@@ -87,6 +90,14 @@ public class Dish {
 
     public void setBaseMembershipName(String baseMembershipName) {
         this.baseMembershipName = baseMembershipName;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 
     public void setAverageStars() {

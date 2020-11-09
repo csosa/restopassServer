@@ -2,11 +2,14 @@ package restopass.dto.request;
 
 import restopass.dto.MembershipType;
 
+import java.util.List;
+
 public class DishRequest {
     String name;
     String img;
     String description;
     MembershipType baseMembership;
+    List<String> tags;
 
     public String getName() {
         return name;
@@ -38,5 +41,13 @@ public class DishRequest {
 
     public void setBaseMembership(MembershipType baseMembership) {
         this.baseMembership = baseMembership;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 }
