@@ -42,6 +42,7 @@ public class UserRestaurantService extends GenericUserService {
     public UserLoginResponse<UserRestaurant> loginRestaurantUser(UserLoginRequest userLoginRequest) {
         UserLoginResponse<UserRestaurant> user = this.loginUser(userLoginRequest);
         this.setRestaurantInfo(user);
+
         return user;
     }
 
