@@ -56,6 +56,7 @@ public class UserRestaurantService extends GenericUserService {
         restaurant.getDishes().sort(Comparator.comparing(Dish::getBaseMembershipName));
         restaurant.getDishes().forEach(Dish::setAverageStars);
         restaurant.setAverageStars();
+        restaurant.setComments(null);
         user.getUser().setRestaurant(restaurant);
     }
 
