@@ -42,6 +42,7 @@ public class UserRestaurantService extends GenericUserService {
     public UserLoginResponse<UserRestaurant> loginRestaurantUser(UserLoginRequest userLoginRequest) {
         UserLoginResponse<UserRestaurant> user = this.loginUser(userLoginRequest);
         this.setRestaurantInfo(user);
+
         return user;
     }
 
@@ -56,6 +57,7 @@ public class UserRestaurantService extends GenericUserService {
         restaurant.getDishes().sort(Comparator.comparing(Dish::getBaseMembershipName));
         restaurant.getDishes().forEach(Dish::setAverageStars);
         restaurant.setAverageStars();
+        restaurant.setComments(null);
         user.getUser().setRestaurant(restaurant);
     }
 

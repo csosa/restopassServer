@@ -1,5 +1,6 @@
 package restopass.service;
 
+import com.google.common.collect.Lists;
 import io.jsonwebtoken.lang.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Circle;
@@ -136,9 +137,7 @@ public class RestaurantService {
                         //Por cada par hora inicio hora fin genero los distintos horarios con sus mesas
                         pairHours.forEach(pair -> {
                             LocalDateTime startHour = date.withHour(pair.getOpeningHour()).withMinute(pair.getOpeningMinute()).truncatedTo(ChronoUnit.MINUTES);
-                            ;
                             LocalDateTime endHour = date.withHour(pair.getClosingHour()).withMinute(pair.getClosingMinute()).truncatedTo(ChronoUnit.MINUTES);
-                            ;
                             List<DateTimeWithTables> dateTimeWithTables = new ArrayList<>();
 
                             Integer minutes = restaurantConfig.getMinutesGap();
