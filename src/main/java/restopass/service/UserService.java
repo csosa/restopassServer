@@ -53,6 +53,9 @@ public class UserService extends GenericUserService {
     ReservationService reservationService;
 
     @Autowired
+    private EmailSender emailSender;
+
+    @Autowired
     public UserService(MongoTemplate mongoTemplate, UserRepository userRepository, GoogleService googleService) {
         this.mongoTemplate = mongoTemplate;
         this.userRepository = userRepository;
@@ -168,7 +171,6 @@ public class UserService extends GenericUserService {
 
         return membershipFinalizeDate;
     }
-
 
     public void addNewRestaurantFavorite(String restaurantId, String userId) {
         Query query = new Query();
@@ -339,7 +341,7 @@ public class UserService extends GenericUserService {
         emailModel.setSubject("Confirma tu email");
         emailModel.setModel(modelEmail);
 
-        EmailSender.sendEmail(emailModel);
+        emailSender.sendEmail(emailModel);
     }
 
     private void sendRecoverPasswordEmail(String email, String name, String token) {
@@ -353,7 +355,7 @@ public class UserService extends GenericUserService {
         emailModel.setSubject("Restablece tu contraseña");
         emailModel.setModel(modelEmail);
 
-        EmailSender.sendEmail(emailModel);
+        emailSender.sendEmail(emailModel);
     }
 
     public void recoverPassword(String userId) {
