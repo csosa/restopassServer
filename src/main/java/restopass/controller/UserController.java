@@ -69,10 +69,10 @@ public class UserController {
         this.userService.removeRestaurantFavorite(restaurantId, userId);
     }
 
-    @RequestMapping(value = "/check/{guestId}/{baseMembership}", method = RequestMethod.POST)
-    public User checkCanAddToReservation(HttpServletRequest request, @PathVariable String guestId, @PathVariable Integer baseMembership) {
+    @RequestMapping(value = "/check/{guestId}", method = RequestMethod.POST)
+    public User checkCanAddToReservation(HttpServletRequest request, @PathVariable String guestId) {
         String userId = request.getAttribute(USER_ID_ATTR).toString();
-        return this.userService.checkCanAddToReservation(userId, guestId, baseMembership);
+        return this.userService.checkCanAddToReservation(userId, guestId);
     }
 
     @RequestMapping(value = "/emails", method = RequestMethod.PATCH)

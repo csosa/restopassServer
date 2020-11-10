@@ -26,6 +26,7 @@ import restopass.mongo.FiltersMapRepository;
 import restopass.mongo.RestaurantConfigRepository;
 import restopass.mongo.RestaurantRepository;
 
+import java.lang.reflect.Member;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -88,11 +89,11 @@ public class RestaurantService {
         restaurant.setTags(restaurantCreation.getTags());
         List<DishRequest> dishes = restaurantCreation.getDishes();
         List<Dish> dishesToSave;
-        if(dishes != null) {
+        if (dishes != null) {
             dishesToSave = dishes.stream().map(dr -> {
                 String dishId = UUID.randomUUID().toString();
-                return new Dish(dishId, dr.getName(), this.firebaseService.createImageFromURL(dr.getImg(),dishId, restaurantId),
-                            dr.getDescription(), dr.getBaseMembership());
+                return new Dish(dishId, dr.getName(), this.firebaseService.createImageFromURL(dr.getImg(), dishId, restaurantId),
+                        dr.getDescription(), dr.getBaseMembership());
             }).collect(Collectors.toList());
             restaurant.setDishes(dishesToSave);
         }
@@ -103,7 +104,7 @@ public class RestaurantService {
     public void createRestaurantConfig(RestaurantConfig restaurantConfig) {
         RestaurantConfig restaurantConfigBD = this.findConfigurationByRestaurantId(restaurantConfig.getRestaurantId());
 
-        if(restaurantConfigBD == null) {
+        if (restaurantConfigBD == null) {
             this.restaurantConfigRepository.save(restaurantConfig);
         }
 
@@ -135,8 +136,8 @@ public class RestaurantService {
 
                         //Por cada par hora inicio hora fin genero los distintos horarios con sus mesas
                         pairHours.forEach(pair -> {
-                            LocalDateTime startHour = date.withHour(pair.getOpeningHour()).withMinute(pair.getOpeningMinute()).truncatedTo(ChronoUnit.MINUTES);;
-                            LocalDateTime endHour = date.withHour(pair.getClosingHour()).withMinute(pair.getClosingMinute()).truncatedTo(ChronoUnit.MINUTES);;
+                            LocalDateTime startHour = date.withHour(pair.getOpeningHour()).withMinute(pair.getOpeningMinute()).truncatedTo(ChronoUnit.MINUTES);
+                            LocalDateTime endHour = date.withHour(pair.getClosingHour()).withMinute(pair.getClosingMinute()).truncatedTo(ChronoUnit.MINUTES);
                             List<DateTimeWithTables> dateTimeWithTables = new ArrayList<>();
 
                             Integer minutes = restaurantConfig.getMinutesGap();
@@ -169,10 +170,10 @@ public class RestaurantService {
     public RestaurantConfig buildRestaurantConfig(String restaurantId) {
         RestaurantConfig restaurantConfig = this.findConfigurationByRestaurantId(restaurantId);
 
-        if(restaurantConfig != null) {
+        if (restaurantConfig != null) {
             restaurantConfig.getSlots().forEach(slot -> {
                 slot.getDateTime().forEach(dates -> {
-                    if(dates.stream().allMatch(date -> date.getTablesAvailable() <= 0)) slot.setDayFull(true);
+                    if (dates.stream().allMatch(date -> date.getTablesAvailable() <= 0)) slot.setDayFull(true);
                 });
             });
         }
@@ -203,7 +204,7 @@ public class RestaurantService {
                         slot.getDateTime().forEach(dt ->
                                 dt.forEach(date -> {
                                             if (date.getDateTime().equals(dateTime)) {
-                                                if(date.getTablesAvailable() <= 0) throw new LastTableAlreadyBookedException();
+                                                if (date.getTablesAvailable() <= 0) throw new LastTableAlreadyBookedException();
                                                 date.setTablesAvailable(date.getTablesAvailable() - 1);
                                             }
                                         }
@@ -216,7 +217,7 @@ public class RestaurantService {
 
     public void addDish(DishRequest dishRequest, String restaurantId) {
         String dishId = UUID.randomUUID().toString();
-        Dish dish = new Dish(dishId, dishRequest.getName(),this.firebaseService.createImageFromURL(dishRequest.getImg(),dishId,restaurantId),
+        Dish dish = new Dish(dishId, dishRequest.getName(), this.firebaseService.createImageFromURL(dishRequest.getImg(), dishId, restaurantId),
                 dishRequest.getDescription(), dishRequest.getBaseMembership());
         Query query = new Query();
         query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
@@ -236,7 +237,7 @@ public class RestaurantService {
         Circle geoCircle = new Circle(geoPoint, geoDistance);
         query.addCriteria(Criteria.where(LOCATION_FIELD).withinSphere(geoCircle));
 
-        if(tags == null) {
+        if (tags == null) {
             tags = new ArrayList<>();
         }
 
@@ -245,21 +246,21 @@ public class RestaurantService {
         Criteria orTagFreeTextCriteria = new Criteria();
         List<Criteria> criterias = new ArrayList<>();
 
-        if(!tags.isEmpty()) {
+        if (!tags.isEmpty()) {
             criterias.add(Criteria.where(TAGS_FIELD).all(tags));
         }
 
-        if(freeText != null) {
-            String freeTextRegex = freeTextList.stream().map(s -> ".*"+Strings.capitalize(s)+".*").collect(Collectors.joining("|"));
+        if (freeText != null) {
+            String freeTextRegex = freeTextList.stream().map(s -> ".*" + Strings.capitalize(s) + ".*").collect(Collectors.joining("|"));
             criterias.add(Criteria.where(RESTAURANT_NAME).regex(freeTextRegex));
         }
 
-        if(!criterias.isEmpty()) {
+        if (!criterias.isEmpty()) {
             orTagFreeTextCriteria.orOperator(criterias.toArray(new Criteria[criterias.size()]));
             query.addCriteria(orTagFreeTextCriteria);
         }
 
-        if(topMembership != null) {
+        if (topMembership != null) {
             query.addCriteria(Criteria.where(DISHES_FIELD).elemMatch(Criteria.where(BASE_MEMBERSHIP_FIELD).lte(topMembership)));
         }
 
@@ -310,6 +311,8 @@ public class RestaurantService {
         reservation.setImg(restaurant.getImg());
         reservation.setRestaurantAddress(restaurant.getAddress());
         reservation.setRestaurantName(restaurant.getName());
+
+        reservation.setMinMembershipRequired(getMinMembershipRequired(restaurant));
     }
 
     public Set<RestaurantResponse> findAllFavoritesByUser(String userId) {
@@ -325,7 +328,7 @@ public class RestaurantService {
         restaurant.setStars(restaurant.getStars() + commentReq.getRestaurantStars());
 
         restaurant.getDishes().forEach(d -> {
-            if(d.getDishId().equalsIgnoreCase(commentReq.getDishId())) {
+            if (d.getDishId().equalsIgnoreCase(commentReq.getDishId())) {
                 d.setCountStars(d.getCountStars() + 1);
                 d.setStars(d.getStars() + commentReq.getDishStars());
             }
@@ -388,6 +391,36 @@ public class RestaurantService {
         response.setUser(user);
 
         return response;
+    }
+
+    public Boolean isEnabledToBook(String userId, String restaurantId) {
+        User user = this.userService.findById(userId);
+
+        if (user.getActualMembership() == null) {
+            return false;
+        }
+
+        Integer minMembershipRequired = getMinMembershipRequired(restaurantId).getMembershipId();
+
+        return minMembershipRequired != null && user.getActualMembership() >= minMembershipRequired;
+    }
+
+    public Membership getMinMembershipRequired(String restaurantId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
+
+        Restaurant restaurant = this.mongoTemplate.findOne(query, Restaurant.class);
+
+        return getMinMembershipRequired(restaurant);
+    }
+
+    private Membership getMinMembershipRequired(Restaurant restaurant) {
+        if (restaurant != null && restaurant.getDishes() != null) {
+            Integer membershipId = restaurant.getDishes().stream().map(Dish::getBaseMembership).min(Integer::compare).get();
+            return membershipService.getMembershipById(membershipId);
+        }
+
+        return null;
     }
 
 }
