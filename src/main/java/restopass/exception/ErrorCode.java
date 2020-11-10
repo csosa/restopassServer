@@ -20,6 +20,7 @@ public enum ErrorCode {
     DELETE_USER_BAD_PASSWORD(HttpStatus.BAD_REQUEST.value(), 15, "La contraseña es incorrecta"),
     CANNOT_SELF_INVITE_RESERVATION(HttpStatus.BAD_REQUEST.value(), 16, "Ups, no podés autoinvitarte a tu reserva"),
     USER_IS_NOT_ENROLLED(HttpStatus.BAD_REQUEST.value(), 17, "El usuario que estás tratando de invitar no esta enrolado en ninguna membresía"),
+    RESERVATION_CANNOT_CANCEL(HttpStatus.BAD_REQUEST.value(), 18, "No es posible cancelar esta reserva"),
 
     USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 1, "El usuario no esta registrado en RestoPass"),
     URL_NOT_FOUND(HttpStatus.NOT_FOUND.value(), 2, "Url doesnt exist. Please check our wiki for more info"),

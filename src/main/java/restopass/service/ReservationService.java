@@ -248,8 +248,12 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> cancelReservation(String reservationId, String userId) {
+
         List<ReservationResponse> reservations = this.getReservationsForUser(userId);
-        ReservationResponse reservation = reservations.stream().filter(r -> r.getReservationId().equalsIgnoreCase(reservationId)).findFirst().get();
+
+        ReservationResponse reservation = reservations.stream().filter(r -> r.getReservationId().equalsIgnoreCase(reservationId))
+                .findFirst().orElseThrow(ReservationCannotCancelException::new);
+
         Restaurant restaurant = this.restaurantService.findById(reservation.getRestaurantId());
 
         if (reservation.getDate().minusHours(restaurant.getHoursToCancel()).isBefore(LocalDateTime.now())) {
