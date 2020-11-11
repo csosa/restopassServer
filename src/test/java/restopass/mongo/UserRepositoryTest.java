@@ -104,7 +104,7 @@ public class UserRepositoryTest {
         User userFind = userService.findById(USER_ID_1);
 
         assertEquals(time, userFind.getMembershipFinalizeDate());
-        assertNull(userFind.getActualMembership());
+        assertNotNull(userFind.getActualMembership());
         assertNull(userFind.getMembershipEnrolledDate());
     }
 
@@ -129,7 +129,7 @@ public class UserRepositoryTest {
     @Test
     public void checkCanAddToReservationOK(){
 
-        User userFind = userService.checkCanAddToReservation(USER_ID_1, USER_ID_2, 1);
+        User userFind = userService.checkCanAddToReservation(USER_ID_1, USER_ID_2);
 
         assertNotNull(userFind);
     }
@@ -137,30 +137,18 @@ public class UserRepositoryTest {
     @Test
     public void checkCanAddToReservation_throwUserNotFoundException(){
 
-        assertThatThrownBy(() -> userService.checkCanAddToReservation(USER_ID_1, "guest",2))
+        assertThatThrownBy(() -> userService.checkCanAddToReservation(USER_ID_1, "guest"))
                 .isInstanceOf(UserNotFoundException.class);
     }
 
-    @Test
-    public void checkCanAddToReservation_throwRestaurantNotInMembershipException(){
-
-        assertThatThrownBy(() -> userService.checkCanAddToReservation(USER_ID_1, USER_ID_2,3))
-                .isInstanceOf(RestaurantNotInMembershipException.class);
-    }
 
     @Test
     public void checkCanAddToReservation_throwCannotSelfInviteException(){
 
-        assertThatThrownBy(() -> userService.checkCanAddToReservation(USER_ID_1, USER_ID_1,1))
+        assertThatThrownBy(() -> userService.checkCanAddToReservation(USER_ID_1, USER_ID_1))
                 .isInstanceOf(CannotSelfInviteException.class);
     }
 
-    @Test
-    public void checkCanAddToReservation_throwUserIsNotEnrolledException(){
-
-        assertThatThrownBy(() -> userService.checkCanAddToReservation(USER_ID_1, USER_ID_3,1))
-                .isInstanceOf(UserIsNotEnrolledException.class);
-    }
 
     @Test
     public void updateUserInfo_throwEmailAlreadyAddedException(){
