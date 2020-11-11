@@ -45,6 +45,8 @@ public class ReservationService {
     private UserRestaurantService userRestaurantService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private MembershipService membershipService;
     
 
     @Autowired
@@ -188,14 +190,22 @@ public class ReservationService {
         modelEmail.put("restaurantAddress", restaurant.getAddress());
 
         EmailModel emailModel = new EmailModel();
-        emailModel.setMailTempate("upgrade_membership.html");
+        emailModel.setMailTempate("upgrade_membership.ftl");
         emailModel.setSubject("Parece que tienes una nueva reserva");
         emailModel.setModel(modelEmail);
 
         users.forEach(userEmail -> {
-            modelEmail.put("requiredMembership", restaurantService.getMinMembershipRequired(reservation.getRestaurantId()).getName());
+            Membership requiredMembership = restaurantService.getMinMembershipRequired(reservation.getRestaurantId());
+            if (requiredMembership.getMembershipId() == 2) {
+                modelEmail.put("isTopRequiredMembership", true);
+            }
+            modelEmail.put("requiredMembership", requiredMembership.getName());
 
             User user = userService.findById(userEmail);
+            Membership userMembership = membershipService.getMembershipById(user.getActualMembership());
+            modelEmail.put("actualMembership", userMembership.getName());
+
+
             this.sendMultiEmail(user, emailModel);
         });
     }

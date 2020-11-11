@@ -132,7 +132,31 @@
                                                 <td width="600" valign="top" align="center" style="padding:0;Margin:0;">
                                                     <table style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;" width="100%" cellspacing="0" cellpadding="0" bgcolor="#ffffff" role="presentation">
                                                         <tr style="border-collapse:collapse;">
-                                                            <td class="es-m-txt-l" bgcolor="#ffffff" align="left" style="Margin:0;padding-bottom:15px;padding-top:20px;padding-left:30px;padding-right:30px;"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:18px;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;line-height:27px;color:#666666;">El usuario ${ownerUser} te ha sumado a su reserva.<br>Para poder asistir, debés elegir una membresía igual o superior a ${requiredMembership} a través de la aplicación.</p></td>
+                                                            <td class="es-m-txt-l" bgcolor="#ffffff" align="left" style="Margin:0;padding-bottom:15px;padding-top:20px;padding-left:30px;padding-right:30px;"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:18px;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;line-height:27px;color:#666666;">
+                                                                El usuario <b>${ownerUser}</b> te ha sumado a su reserva.<br>
+                                                            </p>
+                                                                <br></br>
+                                                                <#if actualMembership?has_content>
+                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:18px;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;line-height:27px;color:#666666;">
+                                                                    Tu membresía <b>${actualMembership}</b> no incluye el restaurant <b>${restaurantName}</b>
+                                                                </p>
+                                                                <#else>
+                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:18px;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;line-height:27px;color:#666666;">
+                                                                    No cuentas con ninguna membresía actualmente para asistir a esta reserva.
+                                                                </p>
+                                                            </#if>
+
+                                                            <#if isTopRequiredMembership?has_content>
+                                                            <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:18px;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;line-height:27px;color:#666666;">
+                                                                Para poder asistir al restaurant <b>${restaurantName}</b>, deberás elegir la membresía <b>${requiredMembership}</b> a través de la aplicación.<br>
+                                                            </p>
+                                                            <#else>
+                                                            <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:18px;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;line-height:27px;color:#666666;">
+                                                                Para poder asistir al restaurant <b>${restaurantName}</b>, deberás elegir una membresía igual o superior a <b>${requiredMembership}</b> a través de la aplicación.<br>
+                                                            </p>
+                                                        </#if>
+
+                                                        </td>
                                                         </tr>
                                                         <tr style="border-collapse:collapse;">
                                                             <td class="es-m-txt-l" bgcolor="#ffffff" align="center" style="Margin:0;padding-bottom:5px;padding-top:20px;padding-left:30px;padding-right:30px;"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:20px;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;line-height:30px;color:#3700B3;">${restaurantName}</p></td>
