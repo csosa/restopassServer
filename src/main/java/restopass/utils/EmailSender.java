@@ -22,16 +22,16 @@ import restopass.dto.EmailModel;
 @Component
 public class EmailSender {
 
-    private static JavaMailSender mailSender;
-    private static Configuration fmConfiguration;
+    private JavaMailSender mailSender;
+    private Configuration fmConfiguration;
 
     @Autowired
     public EmailSender(JavaMailSender mailSender, Configuration fmConfiguration) {
-        EmailSender.mailSender = mailSender;
-        EmailSender.fmConfiguration = fmConfiguration;
+        this.mailSender = mailSender;
+        this.fmConfiguration = fmConfiguration;
     }
 
-    public static void sendEmail(EmailModel mail) {
+    public void sendEmail(EmailModel mail) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
 
         try {
@@ -67,7 +67,7 @@ public class EmailSender {
         }
     }
 
-    public static void sendMultipleEmails(EmailModel mail, String addresses) {
+    public void sendMultipleEmails(EmailModel mail, String addresses) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         try {
 
@@ -104,7 +104,7 @@ public class EmailSender {
         }
     }
 
-    public static String geContentFromTemplate(String mailTemplate, Map < String, Object > model) {
+    public String geContentFromTemplate(String mailTemplate, Map < String, Object > model) {
         StringBuffer content = new StringBuffer();
 
         try {

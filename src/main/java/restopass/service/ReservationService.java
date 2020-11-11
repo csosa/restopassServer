@@ -41,13 +41,18 @@ public class ReservationService {
 
     @Autowired
     private RestaurantService restaurantService;
+
     @Autowired
     private UserRestaurantService userRestaurantService;
+
     @Autowired
     private UserService userService;
     @Autowired
     private MembershipService membershipService;
     
+
+    @Autowired
+    private EmailSender emailSender;
 
     @Autowired
     public ReservationService(MongoTemplate mongoTemplate, ReservationRepository reservationRepository, FirebaseService firebaseService,
@@ -123,17 +128,17 @@ public class ReservationService {
             this.sendMultiEmail(user, emailModel);
         } else {
             emailModel.setEmailTo(userId);
-            EmailSender.sendEmail(emailModel);
+            emailSender.sendEmail(emailModel);
         }
 
     }
 
     private void sendMultiEmail(User user, EmailModel emailModel) {
         emailModel.setEmailTo(user.getEmail());
-        EmailSender.sendEmail(emailModel);
+        emailSender.sendEmail(emailModel);
         user.getSecondaryEmails().forEach(email -> {
             emailModel.setEmailTo(email);
-            EmailSender.sendEmail(emailModel);
+            emailSender.sendEmail(emailModel);
         });
     }
 
@@ -253,8 +258,12 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> cancelReservation(String reservationId, String userId) {
+
         List<ReservationResponse> reservations = this.getReservationsForUser(userId);
-        ReservationResponse reservation = reservations.stream().filter(r -> r.getReservationId().equalsIgnoreCase(reservationId)).findFirst().get();
+
+        ReservationResponse reservation = reservations.stream().filter(r -> r.getReservationId().equalsIgnoreCase(reservationId))
+                .findFirst().orElseThrow(ReservationCannotCancelException::new);
+
         Restaurant restaurant = this.restaurantService.findById(reservation.getRestaurantId());
 
         if (reservation.getDate().minusHours(restaurant.getHoursToCancel()).isBefore(LocalDateTime.now())) {

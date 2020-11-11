@@ -50,7 +50,7 @@ public class MembershipService {
         MembershipsResponse membershipsResponse = new MembershipsResponse();
 
         User user = this.userService.findById(userId);
-        List<Membership> memberships = this.membershipRepository.findAll();
+        List<Membership> memberships = this.findAll();
 
         if(user != null && user.getActualMembership() != null) {
             Membership actualMembership = memberships.stream().filter(m -> m.getMembershipId().equals(user.getActualMembership())).findAny().get();
