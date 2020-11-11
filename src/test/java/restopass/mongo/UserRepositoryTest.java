@@ -39,6 +39,7 @@ public class UserRepositoryTest {
     public static final String USER_ID_2 = "juan@prueba.com";
     public static final String USER_ID_3 = "sofia@prueba.com";
 
+
     @Before
     public void init(){
         GoogleService googleService = mock(GoogleService.class);
