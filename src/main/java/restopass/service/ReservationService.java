@@ -416,6 +416,10 @@ public class ReservationService {
         String dayName = dt.getDayOfWeek().getDisplayName(TextStyle.FULL,
                 new Locale("es"));
 
+        if (dayName.equals("Miércoles")) {
+            dayName = "Miercoles";
+        }
+
         String monthName = dt.getMonth().getDisplayName(TextStyle.FULL, new Locale("es"));
 
         String hour;
