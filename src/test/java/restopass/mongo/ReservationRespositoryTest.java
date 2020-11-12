@@ -49,14 +49,6 @@ public class ReservationRespositoryTest {
         assertNotNull(reservation);
     }
 
-    @Test
-    public void rejectReservationOK(){
-
-        reservationService.rejectReservation("123","jose@prueba.com");
-        Reservation reservation = reservationService.findById("123");
-
-        assertEquals(1, reservation.getConfirmedUsers().size());
-    }
 
     @Test
     public void deleteUserReservationsOK(){
