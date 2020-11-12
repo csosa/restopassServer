@@ -15,11 +15,16 @@ public class FirebaseService {
     private FirebaseClient firebaseClient;
 
     public void sendCancelReservationNotification(List<String> confirmedUsers, String reservationId, String userOwnerName, String restaurantName, String date) {
-        confirmedUsers.forEach( user -> {
+        confirmedUsers.forEach(user -> {
             SimpleTopicPush<ReservationPushNotifData> notif = this.buildCancelReservationNotification(user, reservationId, userOwnerName, restaurantName, date);
             this.firebaseClient.sendReservationNotification(notif);
-                });
+        });
 
+    }
+
+    public void sendRejectReservationNotification(String ownerUser, String rejectedUser, String reservationId, String restaurantName, String date) {
+        SimpleTopicPush<ReservationPushNotifData> notif = this.buildRejectReservationNotification(ownerUser, rejectedUser, reservationId, restaurantName, date);
+        this.firebaseClient.sendReservationNotification(notif);
     }
 
     public void sendNewInvitationNotification(List<String> users, String reservationId, String userOwnerName, String restaurantName, String date) {
@@ -49,7 +54,7 @@ public class FirebaseService {
         SimpleTopicPush<ReservationPushNotifData> simpleTopicPush = new SimpleTopicPush<>();
         simpleTopicPush.setTo(userId);
         ReservationPushNotifData reservationPushNotifData = new ReservationPushNotifData();
-        reservationPushNotifData.setDescription("El usuario " + userOwnerName + "ha cancelado la reserva del " + date + "en " + restaurantName);
+        reservationPushNotifData.setDescription(userOwnerName + " ha cancelado la reserva del " + date + " en " + restaurantName);
         reservationPushNotifData.setTitle("Reserva cancelada");
         reservationPushNotifData.setReservationId(reservationId);
         reservationPushNotifData.setType("CANCEL_RESERVATION");
@@ -58,12 +63,27 @@ public class FirebaseService {
         return simpleTopicPush;
     }
 
+    public SimpleTopicPush<ReservationPushNotifData> buildRejectReservationNotification(String toNotifyUser, String rejectedUser, String reservationId, String restaurantName, String date) {
+        SimpleTopicPush<ReservationPushNotifData> simpleTopicPush = new SimpleTopicPush<>();
+        simpleTopicPush.setTo(toNotifyUser);
+
+        ReservationPushNotifData reservationPushNotifData = new ReservationPushNotifData();
+        reservationPushNotifData.setDescription(rejectedUser + " rechazo la asistencia del " + date + " en " + restaurantName);
+        reservationPushNotifData.setTitle("Asistencia rechazada");
+        reservationPushNotifData.setReservationId(reservationId);
+        reservationPushNotifData.setType("REJECTED_RESERVATION");
+        simpleTopicPush.setData(reservationPushNotifData);
+
+        return simpleTopicPush;
+    }
+
     public SimpleTopicPush<ReservationPushNotifData> buildNewInvitationNotification(String userId, String reservationId, String userOwnerName, String restaurantName, String date) {
         SimpleTopicPush<ReservationPushNotifData> simpleTopicPush = new SimpleTopicPush<>();
         simpleTopicPush.setTo(userId);
+
         ReservationPushNotifData reservationPushNotifData = new ReservationPushNotifData();
-        reservationPushNotifData.setDescription("Chequea tu mail para aceptar la invitacion");
-        reservationPushNotifData.setTitle("El usuario " + userOwnerName + " te invito a " + restaurantName + " el " + date);
+        reservationPushNotifData.setTitle("Tenes una nueva invitacion");
+        reservationPushNotifData.setDescription(userOwnerName + " te invito a " + restaurantName + " el " + date);
         reservationPushNotifData.setReservationId(reservationId);
         reservationPushNotifData.setType("INVITE_RESERVATION");
         simpleTopicPush.setData(reservationPushNotifData);
@@ -74,9 +94,10 @@ public class FirebaseService {
     public SimpleTopicPush<ReservationPushNotifData> buildConfirmedInvitationNotification(String userOwner, String reservationId, String userInviteName, String restaurantName, String date) {
         SimpleTopicPush<ReservationPushNotifData> simpleTopicPush = new SimpleTopicPush<>();
         simpleTopicPush.setTo(userOwner);
+
         ReservationPushNotifData reservationPushNotifData = new ReservationPushNotifData();
         reservationPushNotifData.setTitle("Confirmaron tu invitacion");
-        reservationPushNotifData.setDescription("El usuario " + userInviteName + " confirmo su asistencia a " + restaurantName + " el " + date);
+        reservationPushNotifData.setDescription(userInviteName + " confirmo su asistencia a " + restaurantName + " el " + date);
         reservationPushNotifData.setReservationId(reservationId);
         reservationPushNotifData.setType("CONFIRMED_RESERVATION");
         simpleTopicPush.setData(reservationPushNotifData);
@@ -87,6 +108,7 @@ public class FirebaseService {
     public SimpleTopicPush<ScorePushNotifData> buildScoreExperienceNotification(String userId, String restaurantId, String restaurantName) {
         SimpleTopicPush<ScorePushNotifData> simpleTopicPush = new SimpleTopicPush<>();
         simpleTopicPush.setTo(userId);
+
         ScorePushNotifData reservationPushNotifData = new ScorePushNotifData();
         reservationPushNotifData.setDescription("Dejanos tu opinion para poder mejorar nuestro servicio");
         reservationPushNotifData.setTitle("¿Como estuvo tu experiencia en " + restaurantName + "?");

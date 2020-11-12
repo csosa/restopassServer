@@ -274,8 +274,9 @@ public class ReservationService {
         this.userService.incrementUserVisits(userId);
 
         if (reservation.getConfirmedUsers() != null) {
+            List<String> usersToNotify =  reservation.getConfirmedUsers().stream().map(UserReservation::getUserId).collect(Collectors.toList());
             this.firebaseService.sendCancelReservationNotification(
-                    reservation.getConfirmedUsers().stream().map(UserReservation::getUserId).collect(Collectors.toList()),
+                    usersToNotify,
                     reservationId, reservation.getOwnerUser().getName() + " " + reservation.getOwnerUser().getLastName(),
                     reservation.getRestaurantName(), generateHumanDate(reservation.getDate()));
 
@@ -286,6 +287,17 @@ public class ReservationService {
     }
 
     public void rejectReservation(String reservationId, String userId) {
+        List<ReservationResponse> reservations = this.getReservationsForUser(userId);
+
+        ReservationResponse reservation = reservations.stream().filter(r -> r.getReservationId().equalsIgnoreCase(reservationId))
+                .findFirst().orElseThrow(ReservationCannotCancelException::new);
+
+        Restaurant restaurant = this.restaurantService.findById(reservation.getRestaurantId());
+
+        if (reservation.getDate().minusHours(restaurant.getHoursToCancel()).isBefore(LocalDateTime.now())) {
+            throw new ReservationCancelTimeExpiredException();
+        }
+
         Query query = new Query();
         query.addCriteria(Criteria.where(RESERVATION_ID).is(reservationId));
 
@@ -294,6 +306,15 @@ public class ReservationService {
         update.pull(CONFIRMED_USERS, userId);
 
         this.mongoTemplate.updateMulti(query, update, RESERVATION_COLLECTION);
+
+
+        this.firebaseService.sendRejectReservationNotification(
+                reservation.getOwnerUser().getUserId(),
+                userId,
+                reservationId,
+                restaurant.getName(),
+                generateHumanDate(reservation.getDate()
+                ));
     }
 
     public void confirmReservation(String reservationId, String email) {
