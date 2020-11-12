@@ -74,7 +74,6 @@ public class FirebaseService {
         reservationPushNotifData.setType("REJECTED_RESERVATION");
         simpleTopicPush.setData(reservationPushNotifData);
 
-
         return simpleTopicPush;
     }
 
