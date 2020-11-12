@@ -3,6 +3,7 @@ package restopass.dto.firebase;
 public class SimpleTopicPush<T> {
     private String to;
     private T data;
+    private String priority = "high";
 
     public String getTo() {
         return to;
