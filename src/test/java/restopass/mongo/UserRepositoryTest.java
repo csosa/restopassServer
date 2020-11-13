@@ -69,6 +69,7 @@ public class UserRepositoryTest {
         userService.decrementUserVisits(USER_ID_1);
         User userFind = userService.findById(USER_ID_1);
 
+
         assertNotNull(userFind);
         assertEquals(4, userFind.getVisits().intValue());
     }
