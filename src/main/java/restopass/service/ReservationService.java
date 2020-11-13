@@ -377,12 +377,19 @@ public class ReservationService {
             return oneUser.getActualMembership();
         }).collect(Collectors.toList());
 
-        Map<String, List<Dish>> dishesMap = restaurant.getDishes().stream()
-                .filter(dish -> membershipIds.stream().max(Comparator.naturalOrder()).get() >= dish.getBaseMembership())
-                .collect(Collectors.groupingBy(Dish::getBaseMembershipName,
-                        Collectors.toList()));
-
         List<Membership> allMemberships = this.membershipRepository.findAll();
+
+        Map<String, List<Dish>> dishesMap = new HashMap<>();
+        membershipIds.forEach( membershipId -> {
+            String membershipName = allMemberships.stream().filter(membership -> membership.getMembershipId()
+                    .equals(membershipId)).findFirst().get().getName();
+           List<Dish> membershipDishes = restaurant.getDishes().stream().filter(dish -> dish.getBaseMembership() <= membershipId)
+                   .collect(Collectors.toList());
+
+           dishesMap.put(membershipName, membershipDishes);
+
+        });
+
 
         Map<String, Long> membershipMap = allMemberships.stream()
                 .collect(Collectors.toMap(Membership::getName,
