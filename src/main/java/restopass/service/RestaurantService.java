@@ -93,7 +93,7 @@ public class RestaurantService {
             dishesToSave = dishes.stream().map(dr -> {
                 String dishId = UUID.randomUUID().toString();
                 return new Dish(dishId, dr.getName(), this.firebaseService.createImageFromURL(dr.getImg(), dishId, restaurantId),
-                        dr.getDescription(), dr.getBaseMembership());
+                        dr.getDescription(), dr.getBaseMembership(), dr.getTags());
             }).collect(Collectors.toList());
             restaurant.setDishes(dishesToSave);
         }
@@ -218,7 +218,7 @@ public class RestaurantService {
     public void addDish(DishRequest dishRequest, String restaurantId) {
         String dishId = UUID.randomUUID().toString();
         Dish dish = new Dish(dishId, dishRequest.getName(), this.firebaseService.createImageFromURL(dishRequest.getImg(), dishId, restaurantId),
-                dishRequest.getDescription(), dishRequest.getBaseMembership());
+                dishRequest.getDescription(), dishRequest.getBaseMembership(), dishRequest.getTags());
         Query query = new Query();
         query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurantId));
 

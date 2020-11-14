@@ -19,13 +19,14 @@ public class Dish {
 
     }
 
-    public Dish(String dishId, String name, String img, String description, MembershipType baseMembership) {
+    public Dish(String dishId, String name, String img, String description, MembershipType baseMembership, List<String> tags) {
         this.dishId = dishId;
         this.name = name;
         this.img = img;
         this.description = description;
         this.baseMembership = baseMembership.ordinal();
         this.baseMembershipName = baseMembership.getName();
+        this.tags = tags;
     }
 
     public Integer getCountStars() {
