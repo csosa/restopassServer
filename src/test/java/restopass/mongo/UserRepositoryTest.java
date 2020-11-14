@@ -219,6 +219,7 @@ public class UserRepositoryTest {
                 .isInstanceOf(UserNotFoundException.class);
     }
 
+    
     @Test
     public void getPayment_throwNoCreditCardException(){
 
