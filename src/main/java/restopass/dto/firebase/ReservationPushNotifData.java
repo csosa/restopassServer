@@ -3,7 +3,6 @@ package restopass.dto.firebase;
 public class ReservationPushNotifData extends SimpleNotifData{
     private String type;
     private String reservationId;
-    private String restaurantId;
 
     public String getType() {
         return type;
@@ -19,13 +18,5 @@ public class ReservationPushNotifData extends SimpleNotifData{
 
     public void setReservationId(String reservationId) {
         this.reservationId = reservationId;
-    }
-
-    public String getRestaurantId() {
-        return restaurantId;
-    }
-
-    public void setRestaurantId(String restaurantId) {
-        this.restaurantId = restaurantId;
     }
 }
