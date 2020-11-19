@@ -4,7 +4,6 @@ import java.time.DayOfWeek;
 import java.util.List;
 
 public class RestaurantHours {
-
     private List<DayOfWeek> openingDays;
     private List<PairHour> pairHours;
 
