@@ -93,7 +93,7 @@ public class ReservationService {
         Restaurant restaurant = this.restaurantService.findById(reservation.getRestaurantId());
         this.firebaseService.sendNewInvitationNotification(reservation.getToConfirmUsers(),
                 reservation.getReservationId(), reservation.getOwnerUser(), restaurant.getName(),
-                this.generateHumanDate(reservation.getDate()));
+                this.generateHumanDate(reservation.getDate()), reservation.getRestaurantId());
     }
 
     private void sendConfirmBookingEmail(Reservation reservation, String userId) {

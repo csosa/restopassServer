@@ -27,9 +27,9 @@ public class FirebaseService {
         this.firebaseClient.sendReservationNotification(notif);
     }
 
-    public void sendNewInvitationNotification(List<String> users, String reservationId, String userOwnerName, String restaurantName, String date) {
+    public void sendNewInvitationNotification(List<String> users, String reservationId, String userOwnerName, String restaurantName, String date, String restaurantId) {
         users.forEach(user -> {
-            SimpleTopicPush<ReservationPushNotifData> notif = this.buildNewInvitationNotification(user, reservationId, userOwnerName, restaurantName, date);
+            SimpleTopicPush<ReservationPushNotifData> notif = this.buildNewInvitationNotification(user, reservationId, userOwnerName, restaurantName, date, restaurantId);
             this.firebaseClient.sendReservationNotification(notif);
         });
     }
@@ -77,7 +77,7 @@ public class FirebaseService {
         return simpleTopicPush;
     }
 
-    public SimpleTopicPush<ReservationPushNotifData> buildNewInvitationNotification(String userId, String reservationId, String userOwnerName, String restaurantName, String date) {
+    public SimpleTopicPush<ReservationPushNotifData> buildNewInvitationNotification(String userId, String reservationId, String userOwnerName, String restaurantName, String date, String restaurantId) {
         SimpleTopicPush<ReservationPushNotifData> simpleTopicPush = new SimpleTopicPush<>();
         simpleTopicPush.setTo(userId);
 
@@ -85,6 +85,7 @@ public class FirebaseService {
         reservationPushNotifData.setTitle("Tenes una nueva invitacion");
         reservationPushNotifData.setDescription(userOwnerName + " te invito a " + restaurantName + " el " + date);
         reservationPushNotifData.setReservationId(reservationId);
+        reservationPushNotifData.setRestaurantId(restaurantId);
         reservationPushNotifData.setType("INVITE_RESERVATION");
         simpleTopicPush.setData(reservationPushNotifData);
 
