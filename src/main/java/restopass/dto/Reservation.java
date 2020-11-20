@@ -17,6 +17,7 @@ public class Reservation {
     private Integer dinners;
     private List<String> confirmedUsers;
     private List<String> toConfirmUsers;
+    private List<String> alreadyScoreUsers;
 
     public Integer getDinners() {
         return dinners;
@@ -88,5 +89,13 @@ public class Reservation {
 
     public void setToConfirmUsers(List<String> toConfirmUsers) {
         this.toConfirmUsers = toConfirmUsers;
+    }
+
+    public List<String> getAlreadyScoreUsers() {
+        return alreadyScoreUsers;
+    }
+
+    public void setAlreadyScoreUsers(List<String> alreadyScoreUsers) {
+        this.alreadyScoreUsers = alreadyScoreUsers;
     }
 }

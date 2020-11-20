@@ -16,6 +16,7 @@ public class ReservationResponse {
     private String qrBase64;
     private List<UserReservation> confirmedUsers;
     private List<UserReservation> toConfirmUsers;
+    private List<String> alreadyScoreUsers;
     private String restaurantName;
     private String restaurantAddress;
     private String img;
@@ -133,5 +134,13 @@ public class ReservationResponse {
 
     public void setMinMembershipRequired(Membership minMembershipRequired) {
         this.minMembershipRequired = minMembershipRequired;
+    }
+
+    public List<String> getAlreadyScoreUsers() {
+        return alreadyScoreUsers;
+    }
+
+    public void setAlreadyScoreUsers(List<String> alreadyScoreUsers) {
+        this.alreadyScoreUsers = alreadyScoreUsers;
     }
 }
