@@ -40,16 +40,6 @@ public class RestaurantService {
     final RestaurantRepository restaurantRepository;
     final FiltersMapRepository filtersMapRepository;
     final RestaurantConfigRepository restaurantConfigRepository;
-
-    @Autowired
-    private MembershipService membershipService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private ReservationService reservationService;
-    @Autowired
-    private FirebaseService firebaseService;
-
     private String RESTAURANT_ID = "restaurantId";
     private String DISHES_FIELD = "dishes";
     private String BASE_MEMBERSHIP_FIELD = "baseMembership";
@@ -64,6 +54,15 @@ public class RestaurantService {
     private Integer SIZE_CALENDAR = 45;
     private String RESTAURANT_CONFIG_COLLECTION = "restaurant_configs";
     private String SLOTS_FIELD = "slots";
+
+    @Autowired
+    private MembershipService membershipService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private ReservationService reservationService;
+    @Autowired
+    private FirebaseService firebaseService;
 
 
     @Autowired
