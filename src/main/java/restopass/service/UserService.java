@@ -48,10 +48,8 @@ public class UserService extends GenericUserService {
 
     @Autowired
     B2BUserService b2bUserService;
-
     @Autowired
     ReservationService reservationService;
-
     @Autowired
     private EmailSender emailSender;
 

@@ -42,16 +42,12 @@ public class ReservationService {
 
     @Autowired
     private RestaurantService restaurantService;
-
     @Autowired
     private UserRestaurantService userRestaurantService;
-
     @Autowired
     private UserService userService;
     @Autowired
     private MembershipService membershipService;
-    
-
     @Autowired
     private EmailSender emailSender;
 
