@@ -78,7 +78,6 @@ public class ReservationController {
     public ModelAndView confirmReservation(@PathVariable String reservationId, @PathVariable String email) {
         ModelAndView modelAndView = new ModelAndView();
         User user;
-
         try {
             this.reservationService.confirmReservation(reservationId, email);
             user = this.userService.findById(email);
