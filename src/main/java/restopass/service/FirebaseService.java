@@ -39,9 +39,9 @@ public class FirebaseService {
         this.firebaseClient.sendReservationNotification(notif);
     }
 
-    public void sendScoreNotification(List<String> users, String restaurantId, String restaurantName) {
+    public void sendScoreNotification(String reservationId, List<String> users, String restaurantId, String restaurantName) {
         users.forEach(user -> {
-            SimpleTopicPush<ScorePushNotifData> notif = this.buildScoreExperienceNotification(user, restaurantId, restaurantName);
+            SimpleTopicPush<ScorePushNotifData> notif = this.buildScoreExperienceNotification(reservationId, user, restaurantId, restaurantName);
             this.firebaseClient.sendScoreNotification(notif);
         });
     }
@@ -105,13 +105,14 @@ public class FirebaseService {
         return simpleTopicPush;
     }
 
-    public SimpleTopicPush<ScorePushNotifData> buildScoreExperienceNotification(String userId, String restaurantId, String restaurantName) {
+    public SimpleTopicPush<ScorePushNotifData> buildScoreExperienceNotification(String reservationId, String userId, String restaurantId, String restaurantName) {
         SimpleTopicPush<ScorePushNotifData> simpleTopicPush = new SimpleTopicPush<>();
         simpleTopicPush.setTo(userId);
 
         ScorePushNotifData reservationPushNotifData = new ScorePushNotifData();
         reservationPushNotifData.setDescription("Dejanos tu opinion para poder mejorar nuestro servicio");
         reservationPushNotifData.setTitle("¿Como estuvo tu experiencia en " + restaurantName + "?");
+        reservationPushNotifData.setReservationId(reservationId);
         reservationPushNotifData.setRestaurantId(restaurantId);
         reservationPushNotifData.setType("SCORE_EXPERIENCE");
         simpleTopicPush.setData(reservationPushNotifData);

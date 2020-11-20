@@ -85,7 +85,6 @@ public class RestaurantController {
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     public void test() throws IOException {
         QRHelper.generateUrl("reserva", "usuario");
-        firebaseService.sendScoreNotification(Arrays.asList("prueba@prueba.com"), "b200dcd7-dabd-4df2-9305-edaf90dad56b", "La Causa Nikkei");
     }
 
 }

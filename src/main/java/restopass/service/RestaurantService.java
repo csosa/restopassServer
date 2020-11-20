@@ -46,6 +46,8 @@ public class RestaurantService {
     @Autowired
     private UserService userService;
     @Autowired
+    private ReservationService reservationService;
+    @Autowired
     private FirebaseService firebaseService;
 
     private String RESTAURANT_ID = "restaurantId";
@@ -351,6 +353,8 @@ public class RestaurantService {
         update.push(COMMENTS_FIELD, comment);
 
         this.mongoTemplate.updateMulti(query, update, RESTAURANTS_COLLECTION);
+
+        this.reservationService.updateAlreadyScoreUser(commentReq.getReservationId(), userId);
 
     }
 

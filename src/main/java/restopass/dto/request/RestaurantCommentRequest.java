@@ -1,11 +1,20 @@
 package restopass.dto.request;
 
 public class RestaurantCommentRequest {
+    private String reservationId;
     private String restaurantId;
     private Integer restaurantStars;
     private String dishId;
     private Integer dishStars;
     private String description;
+
+    public String getReservationId() {
+        return reservationId;
+    }
+
+    public void setReservationId(String reservationId) {
+        this.reservationId = reservationId;
+    }
 
     public String getRestaurantId() {
         return restaurantId;

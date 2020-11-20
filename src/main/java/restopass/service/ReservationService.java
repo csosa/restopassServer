@@ -33,6 +33,7 @@ public class ReservationService {
     private MembershipRepository membershipRepository;
     private FirebaseService firebaseService;
     private String OWNER_USER_ID = "ownerUser";
+    private String ALREADY_SCORE_USERS = "alreadyScoreUsers";
     private String RESERVATION_ID = "reservationId";
     private String RESERVATION_STATE = "state";
     private String CONFIRMED_USERS = "confirmedUsers";
@@ -396,7 +397,7 @@ public class ReservationService {
                         membership -> membershipIds.stream().filter(integer -> membership.getMembershipId().equals(integer)).count()));
 
         this.updateReservationState(reservationId, ReservationState.DONE);
-        this.firebaseService.sendScoreNotification(userOwnerAndConfirmed, reservation.getRestaurantId(), restaurant.getName());
+        this.firebaseService.sendScoreNotification(reservation.getReservationId(), userOwnerAndConfirmed, reservation.getRestaurantId(), restaurant.getName());
 
         DoneReservationResponse response = new DoneReservationResponse();
         response.setReservationId(reservationId);
@@ -504,4 +505,13 @@ public class ReservationService {
         this.mongoTemplate.remove(query, RESERVATION_COLLECTION);
     }
 
+    public void updateAlreadyScoreUser(String reservationId, String userId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(RESERVATION_ID).is(reservationId));
+
+        Update update = new Update();
+        update.push(ALREADY_SCORE_USERS, userId);
+
+        this.mongoTemplate.updateMulti(query, update, RESERVATION_COLLECTION);
+    }
 }
