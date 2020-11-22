@@ -32,11 +32,16 @@ public class MembershipService {
     @Autowired
     private RestaurantService restaurantService;
 
+    @Autowired
     private UserService userService;
 
     @Autowired
-    public MembershipService(MembershipRepository membershipRepository, MongoTemplate mongoTemplate,
-                             UserService userService) {
+    public MembershipService(MembershipRepository membershipRepository, MongoTemplate mongoTemplate) {
+        this.membershipRepository = membershipRepository;
+        this.mongoTemplate = mongoTemplate;
+    }
+
+    public MembershipService(MembershipRepository membershipRepository, MongoTemplate mongoTemplate, UserService userService) {
         this.membershipRepository = membershipRepository;
         this.mongoTemplate = mongoTemplate;
         this.userService = userService;
