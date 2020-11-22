@@ -52,6 +52,8 @@ public class UserService extends GenericUserService {
     ReservationService reservationService;
     @Autowired
     private EmailSender emailSender;
+    @Autowired
+    private RestaurantService restaurantService;
 
     @Autowired
     public UserService(MongoTemplate mongoTemplate, UserRepository userRepository, GoogleService googleService) {
@@ -103,6 +105,7 @@ public class UserService extends GenericUserService {
             throw new DeleteUserBadPasswordException();
         }
 
+        this.restaurantService.deleteUserComments(userId);
         this.reservationService.deleteUserReservations(userId);
 
         this.mongoTemplate.remove(query, USER_COLLECTION);

@@ -32,7 +32,7 @@ public enum ErrorCode {
     RESTAURANT_NOT_IN_MEMBERSHIP(HttpStatus.UNAUTHORIZED.value(), 2, "El restaurante no tiene platos disponibles en la membresía de este usuario"),
     UNEQUAL_RECOVER_PASSWORD_TOKEN(HttpStatus.UNAUTHORIZED.value(), 3, "El código ingresado es incorrecto. Te hemos enviado un nuevo código a tu correo"),
 
-    SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), 0, "Ups, server exploded. Contact Yami");
+    SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), 0, "Ups! Tuvimos un problema. Inténtalo de nuevo más tarde");
 
     private Integer status;
     private Integer code;
