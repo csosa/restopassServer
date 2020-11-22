@@ -426,4 +426,23 @@ public class RestaurantService {
         return null;
     }
 
+    public void deleteUserComments(String userId) {
+        List<Restaurant> restaurants = restaurantRepository.findAll();
+
+        List<Restaurant> commentedRestaurants = restaurants.stream()
+                .filter(restaurant -> restaurant.getComments().stream().anyMatch(comment -> comment.getUserId().equals(userId)))
+        .collect(Collectors.toList());
+
+        commentedRestaurants.forEach(restaurant -> {
+            List<RestaurantComment> comments = restaurant.getComments().stream()
+                    .filter(comment -> !comment.getUserId().equals(userId)).collect(Collectors.toList());
+            Query query = new Query();
+            query.addCriteria(Criteria.where(RESTAURANT_ID).is(restaurant.getRestaurantId()));
+            Update update = new Update();
+            update.set(COMMENTS_FIELD, comments);
+
+            this.mongoTemplate.updateMulti(query, update, RESTAURANTS_COLLECTION);
+        });
+    }
+
 }
