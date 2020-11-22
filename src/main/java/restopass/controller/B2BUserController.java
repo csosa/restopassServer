@@ -1,10 +1,7 @@
 package restopass.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import restopass.dto.B2BUserEmployer;
 import restopass.service.B2BUserService;
 
@@ -18,6 +15,11 @@ public class B2BUserController {
     @RequestMapping(value = "", method = RequestMethod.POST)
     public void createB2BUserEmployer(@RequestBody B2BUserEmployer user) {
         this.b2BUserService.createUser(user);
+    }
+
+    @RequestMapping(value = "/{userId}", method = RequestMethod.POST)
+    public void addExistingUserToCompany(@RequestBody B2BUserEmployer company, @PathVariable(name = "userId") String userId) {
+        this.b2BUserService.addExistingUserToCompany(company, userId);
     }
 
     @RequestMapping(value = "", method = RequestMethod.PATCH)

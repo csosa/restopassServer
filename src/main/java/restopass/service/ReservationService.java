@@ -205,9 +205,9 @@ public class ReservationService {
 
             User user = userService.findById(userEmail);
             Membership userMembership = membershipService.getMembershipById(user.getActualMembership());
-            modelEmail.put("actualMembership", userMembership.getName());
-
-
+            if(userMembership != null) {
+                modelEmail.put("actualMembership", userMembership.getName());
+            }
             this.sendMultiEmail(user, emailModel);
         });
     }

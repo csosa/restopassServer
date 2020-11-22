@@ -16,6 +16,7 @@ public class B2BUserService {
 
     private String EMPLOYEES_EMAILS_FIELD = "employeesEmails";
     private String DISCOUNTS_FIELD = "percentageDiscountPerMembership";
+    private String COMPANY_NAME_FIELD = "companyName";
     private String ID_FIELD = "companyId";
     private String B2B_USERS_COLLECTION = "b2b_users";
 
@@ -45,6 +46,11 @@ public class B2BUserService {
                 employee -> this.userService.setB2BUserToEmployees(employee, user.getPercentageDiscountPerMembership(), user.getCompanyName()));
     }
 
+    public void addExistingUserToCompany(B2BUserEmployer company, String userId) {
+        B2BUserEmployer companyEntity = this.findByName(company.getCompanyName());
+        this.userService.setB2BUserToEmployees(userId, companyEntity.getPercentageDiscountPerMembership(), companyEntity.getCompanyName());
+    }
+
     public void updateDiscounts(B2BUserEmployer user) {
         Query query = new Query();
         query.addCriteria(Criteria.where(ID_FIELD).in(user.getCompanyId()));
@@ -63,6 +69,13 @@ public class B2BUserService {
     private B2BUserEmployer findById(String id) {
         Query query = new Query();
         query.addCriteria(Criteria.where(ID_FIELD).in(id));
+
+        return this.mongoTemplate.findOne(query, B2BUserEmployer.class);
+    }
+
+    private B2BUserEmployer findByName(String name) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(COMPANY_NAME_FIELD).in(name));
 
         return this.mongoTemplate.findOne(query, B2BUserEmployer.class);
     }
