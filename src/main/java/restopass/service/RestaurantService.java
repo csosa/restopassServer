@@ -369,6 +369,7 @@ public class RestaurantService {
     }
 
     public RestaurantResponse toResponse(Restaurant restaurant) {
+        restaurant.setAverageStars();
         RestaurantResponse response = new RestaurantResponse(restaurant);
 
         if (restaurant.getComments() != null) {
