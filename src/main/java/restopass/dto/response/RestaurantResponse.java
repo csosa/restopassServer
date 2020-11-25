@@ -29,7 +29,7 @@ public class RestaurantResponse {
         this.timeTable = restaurant.getTimeTable();
         this.tags = restaurant.getTags();
         this.dishes = restaurant.getDishes();
-        this.stars = restaurant.getStars();
+        this.stars = restaurant.getStars() / restaurant.getCountStars();
         this.hoursToCancel = restaurant.getHoursToCancel();
     }
 
