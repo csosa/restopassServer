@@ -301,7 +301,6 @@ public class RestaurantService {
 
     public RestaurantResponse getRestaurantById(String restaurantId) {
         Restaurant r = this.findById(restaurantId);
-        r.setAverageStars();
         r.getDishes().sort(Comparator.comparing(Dish::getBaseMembershipName));
         r.getDishes().forEach(Dish::setAverageStars);
         return toResponse(r);

@@ -81,7 +81,6 @@ public class MembershipService {
         mr.setMembershipInfo(membership);
         List<Restaurant> restaurants = this.restaurantService.getRestaurantInAMemberships(membership.getMembershipId());
         restaurants.forEach(r -> {
-            r.setAverageStars();
             r.getDishes().forEach(Dish::setAverageStars);
             r.getDishes().sort(Comparator.comparing(Dish::getBaseMembershipName));
         });
